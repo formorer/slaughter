@@ -477,7 +477,12 @@ sub RunCommand
 
 
 ##
-##  See if the user exists.
+##
+##  Public:  Test to see if a user exists upon the local system.
+##
+##  Parameters:
+##       User     The username to test.
+##
 ##
 sub UserExists
 {
@@ -493,6 +498,41 @@ sub UserExists
     {
         return 1;
     }
+}
+
+
+
+##
+##
+##  Public:  Get the user details of the specified user.
+##
+##  Parameters:
+##       User     The username to query
+##
+##
+sub UserDetails
+{
+    my (%params) = (@_);
+
+
+    my ($name,$pwcode,$uid,$gid,$quota,$comment,$gcos,$home,$logprog) =
+      getpwnam( $params{'User'} );
+
+    if ( !defined($name) )
+    {
+        return undef;
+    }
+
+    #
+    #  Return the values as a hash
+    #
+    return( { Home => $home,
+              UID  => $uid,
+              GID  => $gid,
+              Quota => $quota,
+              Comment => $comment,
+              Shell   => $logprog,
+              Login => $name } );
 }
 
 
