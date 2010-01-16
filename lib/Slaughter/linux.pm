@@ -81,6 +81,113 @@ EOF
 }
 
 
+##
+##  Public
+##
+##  Append a line to a file if it is missing.
+##
+sub AppendIfMissing
+{
+    my (%params) = (@_);
+
+    my $line  = $params{ 'Line' };
+    my $file  = $params{ 'File' };
+    my $found = 0;
+
+    if ( open( my $handle, "<", $file ) )
+    {
+
+        foreach my $read (<$handle>)
+        {
+            chomp($read);
+
+            if ( $line eq $read )
+            {
+                $found = 1;
+            }
+        }
+        close($line);
+    }
+
+
+    #
+    #  If it wasn't found append
+    #
+    if ( !$found )
+    {
+        if ( open( my $handle, ">>", $file ) )
+        {
+            print $handle $line . "\n";
+            close($handle);
+            return 1;
+        }
+        else
+        {
+            return -1;
+        }
+    }
+    return 0;
+}
+
+
+##
+##  Public
+##
+sub CommentLinesMatching
+{
+    my (%params) = (@_);
+
+    my $pattern = $params{ 'Pattern' };
+    my $comment = $params{ 'Comment' } || "#";
+    my $file    = $params{ 'File' };
+
+    if ( open( my $handle, "<", $file ) )
+    {
+        my @lines;
+        my $found = 0;
+
+        foreach my $read (<$handle>)
+        {
+            chomp($read);
+
+            if ( $read =~ /$pattern/ )
+            {
+                $read = $comment . $read;
+                $found += 1;
+            }
+            push( @lines, $read );
+        }
+        close($handle);
+
+        #
+        #  Now write out the possibly modified fils.
+        #
+        if ($found)
+        {
+            if ( open( my $handle, ">", $file ) )
+            {
+                foreach my $line (@lines)
+                {
+                    print $handle $line . "\n";
+                }
+                close($handle);
+
+                return $found;
+            }
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else
+    {
+        return -1;
+    }
+}
+
+
+
 
 ##
 ##  Public
@@ -120,8 +227,8 @@ sub FetchFile
 
     $verbose && print "FetchFile( $params{'Source'} );\n";
 
-    my $src = $params{'Source'};
-    my $dst = $params{'Dest'};
+    my $src = $params{ 'Source' };
+    my $dst = $params{ 'Dest' };
 
     if ( !$src || !$dst )
     {
@@ -158,8 +265,8 @@ sub FetchFile
     #
     my ( $handle, $name ) = File::Temp::tempfile();
 
-    open my $fh, ">", $name
-      or return;
+    open my $fh, ">", $name or
+      return;
     print $fh $content;
     close($fh);
 
@@ -267,19 +374,19 @@ sub Mounts
 
     if ( open( my $handle, "<", "/proc/mounts" ) )
     {
-        foreach my $line ( <$handle> )
+        foreach my $line (<$handle>)
         {
-            chomp( $line );
+            chomp($line);
             my ( $dev, $point, $type ) = split( / /, $line );
             if ( $dev =~ /^\/dev/ )
             {
                 push( @results, $point );
             }
         }
-        close( $handle );
+        close($handle);
     }
 
-    return( @results );
+    return (@results);
 }
 
 
@@ -292,12 +399,12 @@ sub Mounts
 ##
 sub PercentageUsed
 {
-    my( %params ) = ( @_ );
+    my (%params) = (@_);
 
     #
     #  The mount-point
     #
-    my $point = $params{'path'} || "/";
+    my $point = $params{ 'path' } || "/";
 
     my $perc = 0;
 
@@ -307,7 +414,7 @@ sub PercentageUsed
     my $out = `df -P $point`;
     foreach my $line ( split( /[\r\n]/, $out ) )
     {
-        next unless( $line =~ /%/ );
+        next unless ( $line =~ /%/ );
 
         if ( $line =~ /[ \t]([0-9]*)%[ \t]/ )
         {
@@ -315,9 +422,8 @@ sub PercentageUsed
         }
     }
 
-    return( $perc );
+    return ($perc);
 }
-
 
 
 
