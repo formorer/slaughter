@@ -10,7 +10,7 @@ clean:
 
 
 tidy:
-	perltidy ./slaughter $$(find . -name '*.pm' -print)
+	perltidy ./bin/slaughter $$(find . -name '*.pm' -print)
 
 
 install: clean
