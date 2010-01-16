@@ -56,6 +56,18 @@ sub Alert
 }
 
 
+sub AppendIfMissing
+{
+    print "AppendIfMissing - not implemented for $^O\n";
+}
+
+
+sub CommentLinesMatching
+{
+    print "CommentLinesMatching - not implemented for $^O\n";
+}
+
+
 sub Define
 {
     my ( $name, $value ) = (@_);
