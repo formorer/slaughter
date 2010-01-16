@@ -21,3 +21,10 @@ install: clean
 	mkdir $(prefix)/sbin/ || true
 	cp ./bin/slaughter $(prefix)/sbin/
 	mkdir -p $(prefix)/etc/slaughter || true
+
+
+uninstall:
+	rm -f  $(prefix)/usr/share/perl5/Slaughter.pm
+	rm -rf $(prefix)/usr/share/perl5/Slaughter/
+	rm -f  $(prefix)/sbin/slaughter
+	rm -rf $(prefix)/etc/slaughter
