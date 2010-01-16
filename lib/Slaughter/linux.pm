@@ -343,6 +343,11 @@ sub FetchFile
         RunCommand("chmod $mode $dst");
     }
 
+    if ( -e $name )
+    {
+        unlink( $name );
+    }
+
     return ($replace);
 }
 
