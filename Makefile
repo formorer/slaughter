@@ -15,9 +15,9 @@ tidy:
 
 install: clean
 	mkdir -p $(prefix)/usr/share/perl5/ || true
-	cp Slaughter.pm $(prefix)/usr/share/perl5/
+	cp lib/Slaughter.pm $(prefix)/usr/share/perl5/
 	mkdir -p $(prefix)/usr/share/perl5/Slaughter || true
-	cp Slaughter/*.pm  $(prefix)/usr/share/perl5/Slaughter/
+	cp lib/Slaughter/*.pm  $(prefix)/usr/share/perl5/Slaughter/
 	mkdir $(prefix)/sbin/ || true
-	cp ./slaughter $(prefix)/sbin/
+	cp ./bin/slaughter $(prefix)/sbin/
 	mkdir -p $(prefix)/etc/slaughter || true
