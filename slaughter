@@ -177,7 +177,7 @@ sub findSystemDetails
 
 
     #
-    #  RAID?
+    #  Softare RAID?
     #
     if ( ( -e "/proc/mdstat" ) &&
          ( -x "/sbin/mdadm" ) )
@@ -317,9 +317,7 @@ sub validateEnvironment
     {
         print <<EOF;
 You need to specify the server which this node will fetch the policies
-form.
-
-You can either do this by running:
+from.  You can either do this by running:
 
 $0 slaughter --server=foo.example.org
 
@@ -447,7 +445,8 @@ EOF
 
 =begin doc
 
-Write out specified policy content into a form which can be executed.
+Write out specified policy content into a form which can be executed,
+and return the name of the file to which it was written.
 
 =end doc
 
