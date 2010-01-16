@@ -73,7 +73,6 @@ sub Defined
     return ( $template{ $name } || $DEFINES{ $name } || undef );
 }
 
-
 sub FetchFile
 {
     print "FetchFile - not implemented for $^O\n";
@@ -86,18 +85,23 @@ sub InstallPackage
 }
 
 
+sub Mounts
+{
+    print "Mounts - not implemented for $^O\n";
+}
+
+
+sub PercentageUsed
+{
+    print "PercentageUsed - not implemented for $^O\n";
+}
+
+
 sub RunCommand
 {
     my ($cmd) = (@_);
 
     system($cmd );
-}
-
-
-sub Value
-{
-    my ($name) = (@_);
-    return ( Defined($name) );
 }
 
 sub UserExists
@@ -117,16 +121,14 @@ sub UserExists
 }
 
 
-sub Mounts
+sub Value
 {
-    print "Mounts - not implemented for $^O\n";
+    my ($name) = (@_);
+    return ( Defined($name) );
 }
 
 
-sub PercentageUsed
-{
-    print "PercentageUsed - not implemented for $^O\n";
-}
+
 
 
 1;
