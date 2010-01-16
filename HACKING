@@ -4,18 +4,18 @@ There are two phases of work when slaughter runs:
 
   1.  Finding out local system information and downloading the
      remote policies.  Both of these jobs are carried out by
-     ./slaughter.  Which then wraps the policies in a little perl-fu
+     ./bin/slaughter.  Which then wraps the policies in a little perl-fu
      and executes them directly.
 
   2.  Providing the facilities needed at run-time, this is handled
-     via ./Slaughter.pm
+     via ./lib/Slaughter.pm
 
 
 If you'd like to make a new variable available to running scripts you'll
 need to investigate the slaughter code - see "findSystemDetails".
 
 If you'd like to make a new support function available implement it in
-Slaughter/linux.pm, and Slaughter/generic.pm and you should be good to
+lib/Slaughter/linux.pm, and lib/Slaughter/generic.pm and you should be good to
 go.
 
 
