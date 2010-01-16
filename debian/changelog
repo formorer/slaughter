@@ -1,3 +1,11 @@
+slaughter (0.2-1) stable; urgency=low
+
+  * Added "CommentLinesMatching" & "AppendIfMissing" as new primitives,
+    inspired by CFEngine.
+  * Moved generic code into Slaughter::Private;
+
+ -- Steve Kemp <steve@steve.org.uk>  Saturday, 16 Jan 2010 23:33:32 +0000
+
 slaughter (0.1-2) stable; urgency=low
 
   * Added "Mounts" & "PercengateUsed" as new primitives.
