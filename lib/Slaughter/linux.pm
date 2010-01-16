@@ -45,9 +45,8 @@ use Slaughter::Private;
 
 
 ##
-##  Public
 ##
-##  Send an email
+##  Public:  Send a message by email.
 ##
 ##  Parameters:
 ##       Message   defaults to: "No message".
@@ -56,15 +55,15 @@ use Slaughter::Private;
 ##       From      defaults to: "root".
 ##       Sendmail  defaults to: "/usr/lib/sendamil -t"
 ##
+##
 sub Alert
 {
     my (%params) = (@_);
 
-    my $message = $params{ 'Message' } || "No message";
-    my $subject = $params{ 'Subject' } || "No subject";
-    my $to      = $params{ 'Email' }   || "root";
-    my $from    = $params{ 'From' }    || "root";
-
+    my $message  = $params{ 'Message' }  || "No message";
+    my $subject  = $params{ 'Subject' }  || "No subject";
+    my $to       = $params{ 'Email' }    || "root";
+    my $from     = $params{ 'From' }     || "root";
     my $sendmail = $params{ 'Sendmail' } || "/usr/lib/sendmail -t";
 
     open( SENDMAIL, "|$sendmail -f $from" ) or
@@ -82,9 +81,13 @@ EOF
 
 
 ##
-##  Public
 ##
-##  Append a line to a file if it is missing.
+##  Public:  Append a line to a file, if that line is not already present.
+##
+##  Parameters:
+##       File   The filename to examine.
+##       Line   The line to search for, or append.
+##
 ##
 sub AppendIfMissing
 {
@@ -131,7 +134,14 @@ sub AppendIfMissing
 
 
 ##
-##  Public
+##
+##  Public:  Comment every line of a file matching a regexp.
+##
+##  Parameters:
+##       File      The filename to examine.
+##       Pattern   The pattern to search for.
+##       Comment   The string to use to insert the coomment
+##
 ##
 sub CommentLinesMatching
 {
@@ -190,7 +200,15 @@ sub CommentLinesMatching
 
 
 ##
-##  Public
+##
+##  Public:  Define a value for the given symbol.
+##
+##  Usage:
+##       Define($name, $value);
+##
+##    $name    The symbol to define.
+##    $value   The value of that symbol.
+##
 ##
 sub Define
 {
@@ -204,7 +222,14 @@ sub Define
 
 
 ##
-##  Defined
+##
+##  Public:  Return the value of a user-defined symbol, or global symbol.
+##
+##  Usage:
+##       Defined($name);
+##
+##    $name    The symbol to test/lookup.
+##
 ##
 sub Defined
 {
@@ -345,7 +370,7 @@ sub FetchFile
 
     if ( -e $name )
     {
-        unlink( $name );
+        unlink($name);
     }
 
     return ($replace);
