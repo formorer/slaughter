@@ -1,0 +1,503 @@
+#!/usr/bin/perl
+#
+#  Given a policy repeatedly fetch any included files in it, then
+# convert to real code which can then be executed.
+#
+# Steve
+# --
+#
+
+
+use strict;
+use warnings;
+
+
+use English;
+use File::Temp;
+use Getopt::Long;
+use LWP::UserAgent;
+
+
+
+#
+#  Find our hostname, IP address, etc.
+#
+my %SYSTEM = findSystemDetails();
+
+
+#
+#  Configuration variables.
+#
+my %CONFIG;
+
+
+#
+#  Parse our configuration file.
+#
+parseConfigurationFile();
+
+
+#
+#  Parse any command line options.
+#
+parseCommandLine();
+
+
+#
+#  Ensure we have a server.
+#
+validateEnvironment();
+
+
+#
+#  Find the policy to fetch.  This will be "default.policy" unless
+# a different one is specified.
+#
+my $policy = "http://$CONFIG{'server'}/slaughter/policies/";
+
+if ( $CONFIG{ 'policy' } )
+{
+    $policy .= $CONFIG{ 'policy' };
+}
+else
+{
+    $policy .= "default.policy";
+}
+
+
+
+#
+#  Fetch the contents of the actual policy, recursively handling
+# include files.
+#
+my $contents = fetchPolicy($policy);
+
+
+#
+#  Write it out
+#
+my $file = writeoutPolicy($contents);
+
+
+#
+#  Call the policy
+#
+system("$file  2>&1 >> /var/log/slaughter.log");
+
+
+#
+#  All done
+#
+if ( $CONFIG{ 'keep' } )
+{
+    print "File left at: $file\n";
+}
+else
+{
+    unlink($file);
+}
+
+
+exit 0;
+
+
+
+
+=begin doc
+
+Find the system details.
+
+=end doc
+
+=cut
+
+sub findSystemDetails
+{
+    my %info;
+
+    #
+    #  Fully Qualified hostname
+    #
+    $info{ 'fqdn' } = `hostname --fqdn`;
+    chomp( $info{ 'fqdn' } );
+
+    #
+    #  Hostname
+    #
+    $info{ 'hostname' } = $info{ 'fqdn' };
+    if ( $info{ 'hostname' } =~ /^([^.]+)\./ )
+    {
+        $info{ 'hostname' } = $1;
+    }
+
+    #
+    #  Kernel
+    #
+    $info{ 'kernel' } = `uname -r`;
+    chomp( $info{ 'kernel' } );
+
+    #
+    #  Are we i386/amd64?
+    #
+    $info{ 'arch' } = "i386";
+    $info{ 'bits' } = 32;
+
+    my $type = `file /bin/ls`;
+    if ( $type =~ /64-bit/i )
+    {
+        $info{ 'arch' } = "amd64";
+        $info{ 'bits' } = 64;
+    }
+
+    #
+    #  IP address
+    #
+    # TODO:
+    #
+    $info{ 'ip' } = "192.168.1.10";
+
+    #
+    #  Xen?
+    #
+    $info{ 'xen' } = 1 if -d "/proc/xen/capabilities";
+
+    #
+    #  KVM / Qemu?
+    #
+    if ( open( my $cpu, "<", "/proc/cpuinfo" ) )
+    {
+        foreach my $line (<$cpu>)
+        {
+            chomp($line);
+
+            $info{ 'kvm' } = 1 if ( $line =~ /model/ && $line =~ /qemu/i );
+        }
+        close($cpu);
+    }
+
+
+    #
+    #  RAID?
+    #
+    if ( ( -e "/proc/mdstat" ) &&
+         ( -x "/sbin/mdadm" ) )
+    {
+        if ( open( my $mdstat, "<", "/proc/mdstat" ) )
+        {
+            foreach my $line (<$mdstat>)
+            {
+                if ( ( $line =~ /^md([0-9]+)/ ) &&
+                     ( $line =~ /active/i ) )
+                {
+                    $info{ 'softwareraid' } = 1;
+                    $info{ 'raid' }         = "software";
+                }
+            }
+            close($mdstat);
+        }
+    }
+
+    #
+    #  3Ware RAID?
+    #
+
+    #
+    #  HP RAID?
+    #
+
+    return %info;
+}
+
+
+
+
+=begin doc
+
+Some minimal command line parsing.
+
+=end doc
+
+=cut
+
+sub parseCommandLine
+{
+    if (
+         !GetOptions( "server=s", \$CONFIG{ 'server' },
+                      "policy=s", \$CONFIG{ 'policy' },
+                      "keep",     \$CONFIG{ 'keep' },
+                      "port=s",   \$CONFIG{ 'port' },
+                      "verbose",  \$CONFIG{ 'verbose' },
+                    ) )
+    {
+        exit 1;
+    }
+
+    if ( $CONFIG{ 'verbose' } )
+    {
+        $SYSTEM{ 'verbose' } = 1;
+    }
+    else
+    {
+        $SYSTEM{ 'verbose' } = 0;
+    }
+}
+
+
+
+=begin doc
+
+Parse the configuration file.
+
+=end doc
+
+=cut
+
+sub parseConfigurationFile
+{
+    return unless ( -e "/etc/slaughter/slaughter.conf" );
+
+    open my $handle, "<", "/etc/slaughter/slaughter.conf" or
+      return;
+
+    while ( my $line = <$handle> )
+    {
+        chomp $line;
+        if ( $line =~ s/\\$// )
+        {
+            $line .= <$handle>;
+            redo unless eof($handle);
+        }
+
+        # Skip lines beginning with comments
+        next if ( $line =~ /^([ \t]*)\#/ );
+
+        # Skip blank lines
+        next if ( length($line) < 1 );
+
+        # Strip trailing comments.
+        if ( $line =~ /(.*)\#(.*)/ )
+        {
+            $line = $1;
+        }
+
+        # Find variable settings
+        if ( $line =~ /([^=]+)=([^\n]+)/ )
+        {
+            my $key = $1;
+            my $val = $2;
+
+            # Strip leading and trailing whitespace.
+            $key =~ s/^\s+//;
+            $key =~ s/\s+$//;
+            $val =~ s/^\s+//;
+            $val =~ s/\s+$//;
+
+            # Store value.
+            $CONFIG{ $key } = $val;
+        }
+    }
+    close($handle);
+}
+
+
+
+
+=begin doc
+
+Ensure that we're launched by root (such that we have permission to
+do admin things) and that we have a server defined.
+
+=end doc
+
+=cut
+
+sub validateEnvironment
+{
+    if ( !$CONFIG{ 'server' } )
+    {
+        print <<EOF;
+You need to specify the server which this node will fetch the policies
+form.
+
+You can either do this by running:
+
+$0 slaughter --server=foo.example.org
+
+Or by:
+
+echo "server = foo.example.org" >> /etc/slaughter/slaughter.conf
+EOF
+        exit 1;
+    }
+
+    if ( $UID != 0 )
+    {
+        print <<EOF;
+You must launch this command as root.
+EOF
+        exit 1;
+    }
+}
+
+
+
+
+=begin doc
+
+Fetch the contents of a remote URL.
+
+Recursively handle "FetchPolicy xxx ; " statements, and if a file isn't
+found then return "" - so that we don't stop execution.
+
+=end doc
+
+=cut
+
+
+sub fetchPolicy
+{
+    my ($url) = (@_);
+
+    $CONFIG{ 'verbose' } && print "Fetching $url\n";
+
+    #
+    #  Save the server
+    #
+    if ( !$SYSTEM{ 'server' } )
+    {
+        if ( $url =~ /:\/\/([^\/]+)\// )
+        {
+            $SYSTEM{ 'server' } = $1;
+        }
+    }
+
+
+    my $ua = LWP::UserAgent->new();
+    $ua->env_proxy();
+
+
+    my $ret = "";
+
+    $ret = <<EOF;
+
+#
+# $url
+#
+EOF
+
+    #
+    #  If we have a template handle it.
+    #
+    if ( $url =~ /(.*)\$([^.]+)\.(.*)/ )
+    {
+        $url = $1 . $SYSTEM{ $2 } . "." . $3;
+        print "\tNew URL: $url\n";
+    }
+
+    my $response = $ua->get($url);
+    if ( $response->is_success() )
+    {
+        my $txt = $response->decoded_content();
+
+        foreach my $line ( split( /[\r\n]/, $txt ) )
+        {
+            if ( $line =~ /FetchPolicy([ \t]+)(.*)[ \t]*\;/i )
+            {
+                my $inc = $2;
+
+                ##
+                ## Fully qualified URL?
+                ##
+                if ( $inc =~ /:\/\// )
+                {
+                    $ret .= fetchPolicy($inc);
+                }
+                else
+                {
+
+                    #
+                    #  Try to resolve the path.
+                    #
+                    if ( $url =~ /^(.*)\/([^\/]+)$/ )
+                    {
+                        $inc = $1 . "/" . $inc;
+
+                        $ret .= fetchPolicy($inc);
+                    }
+                }
+            }
+            else
+            {
+                $ret .= $line;
+            }
+
+            $ret .= "\n";
+        }
+    }
+    else
+    {
+        print "\tFailed to fetch: $url\n";
+        print "\t" . $response->status_line() . "\n";
+        return "";
+    }
+
+    return ($ret);
+}
+
+
+=begin doc
+
+Write out specified policy content into a form which can be executed.
+
+=end doc
+
+=cut
+
+sub writeoutPolicy
+{
+    my ($txt) = (@_);
+
+    my ( undef, $name ) = File::Temp::tempfile();
+
+    open my $handle, ">", $name or
+      die "Failed to write to file : $!";
+
+    print $handle <<EOF;
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+use Slaughter;
+
+# definitions set with Define
+our %DEFINES;
+
+
+# template variables.
+EOF
+
+    my $line = "my \%template = (";
+
+    foreach my $key ( keys %SYSTEM )
+    {
+        my $val = $SYSTEM{ $key };
+
+        print $handle "our \$$key = '$val';\n";
+
+        $line .= "\n\t$key => '$val',";
+    }
+
+    $line =~ s/, $//g;
+    $line .= "\t);\n";
+    print $handle "\n# template hash\n";
+    print $handle $line . "\n";
+    print $handle "#========\n\n";
+
+    print $handle $txt;
+    close($handle);
+
+    system("chmod", "755", $name );
+
+    return ($name );
+
+}

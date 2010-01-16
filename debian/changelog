@@ -1,0 +1,11 @@
+slaughter (0.1-2) stable; urgency=low
+
+  * Added "Mounts" & "PercengateUsed" as new primitives.
+
+ -- Steve Kemp <steve@steve.org.uk>  Saturday, 16 Jan 2010 20:00:02 +0000
+
+slaughter (0.1-1) stable; urgency=low
+
+  * Initial release
+
+ -- Steve Kemp <steve@steve.org.uk>  Saturday, 16 Jan 2010 16:55:16 +0000

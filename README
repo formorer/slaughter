@@ -1,0 +1,114 @@
+
+Slaughter
+---------
+
+The goal of this project is to have a lightweight system which will
+allow the control and manipulation of multiple systems.
+
+The task we support are:
+
+   1.  Replacing a file, literally.
+   2.  Replacing a file, expanding content within it.
+   3.  Running commands.
+   4.  Testing for the existance of local users.
+
+
+
+
+Overview
+--------
+
+We assume that we have a "server" somewhere.  This server is designed to
+allow files and policies to be retrieved from it.
+
+(This server is nothing more than Apache running HTTP.)
+
+
+
+Policies
+--------
+
+The list of tasks which each node should carry out is defined in a policy
+document.  These policy documents are fetched via HTTP from the server
+and may recursively include other policies.
+
+When a client node launches the first thing it will do is attempt to fetch
+the policy "default.policy", but you may configure a node to fetch a different
+policy if you wish.
+
+This default policy file can contain code in Perl, and the use of our
+additional primitives.  It is expected that because the file default.policy
+is fetched by all clients it should be used for house-keeping, and merely
+include other policies.
+
+For example this might be a sane default.policy file:
+
+---
+
+# actions to carry out globally
+FetchPolicy  global.policy ;
+
+# is there a per-client one?
+FetchPolicy $fqdn.policy
+
+----
+
+
+
+Client Layout
+-------------
+
+To get started a client needs to have :
+
+  a.  The slaughter-client package installed upon it.
+  b.  The name of the server stored in /etc/slaughter/slaughter.conf
+
+Once this is done use cron to ensure that /sbin/slaughter is invoked
+upon a regular basis.  (Hourly is a good choice.)
+
+You'll probably want to invoke it manually for the first few times as you're
+putting together your policies.
+
+
+
+Server Layout
+-------------
+
+A webserver should be setup to serve content from a root.   The root
+should look like this:
+
+           /var/www/slaughter/
+           /var/www/slaughter/policies/
+           /var/www/slaughter/files/
+
+e.g. The request for http://$master/slaughter/policies/default.policy should
+succeed.
+
+In the interests of security it is probably wise to ACL access to the
+/slaughter/ location addresses which aren't clients you're managing.
+
+
+
+
+In Depth Operation
+------------------
+
+
+ The client node will first fetch the policy, which might contain
+ recursive calls to include other policies via "FetchPolicy path ;".
+
+ Once the (recursive) fetching has been completed the downloaded
+content will be wrapped up a little such that it becomes a locally
+executable file, making use of the Slaughter.pm module.
+
+ (The Slaughter.pm module is where the primitives are implemented
+and exported to the perl script.)
+
+ Finally the locally writen script will be made executable and
+directly executed, before being removed.
+
+ The output of this operation will be saved to a logfile, and also emaile
+to a small list.
+
+Steve
+--
