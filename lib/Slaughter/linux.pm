@@ -81,6 +81,7 @@ EOF
 }
 
 
+
 ##
 ##  Public
 ##
@@ -94,6 +95,7 @@ sub Define
 }
 
 
+
 ##
 ##  Defined
 ##
@@ -104,34 +106,6 @@ sub Defined
     return ( $template{ $name } || $DEFINES{ $name } || undef );
 }
 
-
-##
-##  Public
-##
-##  Return the value of the named definition.
-##
-sub Value
-{
-    my ($name) = (@_);
-    return ( Defined($name) );
-}
-
-
-
-##
-##  Public
-##
-##  Run a command, via system.
-##
-##
-sub RunCommand
-{
-    my ($cmd) = (@_);
-
-    $verbose && print "runCommand( $cmd )\n";
-
-    system($cmd );
-}
 
 
 ##
@@ -265,6 +239,23 @@ sub FetchFile
     return ($replace);
 }
 
+
+
+##
+##  Public
+##
+##  Install a package
+##
+##
+sub InstallPackage
+{
+    my (%params) = (@_);
+
+    RunCommand("apt-get install -q -y $params{'Name'}");
+}
+
+
+
 ##
 ##  Public
 ##
@@ -290,6 +281,9 @@ sub Mounts
 
     return( @results );
 }
+
+
+
 
 ##
 ## Public
@@ -326,18 +320,24 @@ sub PercentageUsed
 
 
 
+
+
 ##
 ##  Public
 ##
-##  Install a package
+##  Run a command, via system.
 ##
 ##
-sub InstallPackage
+sub RunCommand
 {
-    my (%params) = (@_);
+    my ($cmd) = (@_);
 
-    RunCommand("apt-get install -q -y $params{'Name'}");
+    $verbose && print "runCommand( $cmd )\n";
+
+    system($cmd );
 }
+
+
 
 
 ##
@@ -358,6 +358,20 @@ sub UserExists
         return 1;
     }
 }
+
+
+
+##
+##  Public
+##
+##  Return the value of the named definition.
+##
+sub Value
+{
+    my ($name) = (@_);
+    return ( Defined($name) );
+}
+
 
 
 1;
