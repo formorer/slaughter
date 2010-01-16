@@ -1,3 +1,9 @@
+slaughter (0.2-2) stable; urgency=low
+
+  * Added UserDetails.
+
+ -- Steve Kemp <steve@steve.org.uk>  Saturday, 16 Jan 2010 23:55:32 +0000
+
 slaughter (0.2-1) stable; urgency=low
 
   * Added "CommentLinesMatching" & "AppendIfMissing" as new primitives,
