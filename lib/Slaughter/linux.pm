@@ -241,6 +241,44 @@ sub Defined
 
 
 ##
+##  Public:  Delete files from a given root directory matching a given pattern.
+##
+##  Parameters:
+##       Root      The root directory
+##       Pattern   The pattern to look for.
+##
+##
+sub DeleteFilesMatching
+{
+    my (%params) = (@_);
+
+    my $root    = $params{ 'Root' }    || return;
+    my $pattern = $params{ 'Pattern' } || return;
+
+    #
+    #  Reference to our routine.
+    #
+    my $wanted = sub {
+        my $file = $File::Find::name;
+        if ( basename($file) =~ /$pattern/ )
+        {
+            unlink($file);
+
+            $verbose &&
+              print "Removing $file - pattern: $pattern match in $root\n";
+        }
+    };
+
+    #
+    #
+    #
+    File::Find::find( { wanted => $wanted, no_chdir => 1 }, $root );
+}
+
+
+
+
+##
 ##  Public
 ##
 ##  Fetch a file, via HTTP.

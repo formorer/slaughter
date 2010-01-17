@@ -85,6 +85,13 @@ sub Defined
     return ( $template{ $name } || $DEFINES{ $name } || undef );
 }
 
+
+sub DeleteFilesMatching
+{
+    print "DeleteFilesMatching - not implemented for $^O\n";
+}
+
+
 sub FetchFile
 {
     print "FetchFile - not implemented for $^O\n";

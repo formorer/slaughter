@@ -36,7 +36,8 @@ The LICENSE file contains the full text of the license.
 
 use LWP::UserAgent;
 use Digest::SHA1;
-use File::Basename qw/ dirname /;
+use File::Basename qw/ dirname basename /;
+use File::Find;
 use File::Temp qw/ tempfile /;
 use File::Path qw/ mkpath /;
 use Text::Template;
