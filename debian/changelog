@@ -1,3 +1,12 @@
+slaughter (0.4-1) stable; urgency=low
+
+  * Added DeleteFilesMatching
+    - Delete files by regular expression.  Recursively.
+  * Added FileMatches
+    - Test the contents of a file, via line or regexp matches.
+
+ -- Steve Kemp <steve@steve.org.uk>  Sunday, 17 Jan 2010 02:11:20 +0000
+
 slaughter (0.3-1) stable; urgency=low
 
   * Added manpage, and --manual output to slaughter.
