@@ -1,3 +1,9 @@
+slaughter (0.6-1) stable; urgency=low
+
+  * New release as a clean package.
+
+ -- Steve Kemp <steve@steve.org.uk>  Sunday, 17 Jan 2010 22:22:22 +0000
+
 slaughter (0.5-1) stable; urgency=low
 
   * Package abstraction is here.  We can now install on at least my
