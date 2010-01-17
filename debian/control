@@ -18,10 +18,10 @@ Description: Automation tool to perform system administration remotely
  The policies which are executed locally are expressive perl scripts
  with an additional set of helper primitives which allow:
  .
- * Copying files.
+  * Copying files.
  .
- * Executing programs.
+  * Executing programs.
  .
- * Sending alerts.
+  * Sending alerts.
  .
  There is no server package.
