@@ -1,3 +1,10 @@
+slaughter (0.5-1) stable; urgency=low
+
+  * Package abstraction is here.  We can now install on at least my
+    Debian sid machine and my Centos 4.7 install.
+
+ -- Steve Kemp <steve@steve.org.uk>  Sunday, 17 Jan 2010 20:00:02 +0000
+
 slaughter (0.4-4) stable; urgency=low
 
   * More minor cleanup.
