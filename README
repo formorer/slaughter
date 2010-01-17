@@ -21,7 +21,10 @@ Overview
 We assume that we have a "server" somewhere.  This server is designed to
 allow files and policies to be retrieved from it.
 
-(This server is nothing more than Apache running HTTP.)
+This server is nothing more than Apache running HTTP, and each client
+will connect to it to download their policies - this means the management
+isn't pushed from the central source, instead each client node makes
+pull requests.
 
 
 
@@ -49,7 +52,7 @@ For example this might be a sane default.policy file:
 FetchPolicy  global.policy ;
 
 # is there a per-client one?
-FetchPolicy $fqdn.policy
+FetchPolicy $fqdn.policy;
 
 ----
 
@@ -74,8 +77,9 @@ putting together your policies.
 Server Layout
 -------------
 
-A webserver should be setup to serve content from a root.   The root
-should look like this:
+A webserver should be setup to serve content from a root.
+
+The root directory might look like like this:
 
            /var/www/slaughter/
            /var/www/slaughter/policies/
@@ -93,22 +97,18 @@ In the interests of security it is probably wise to ACL access to the
 In Depth Operation
 ------------------
 
-
  The client node will first fetch the policy, which might contain
- recursive calls to include other policies via "FetchPolicy path ;".
+recursive calls to include other policies via "FetchPolicy path ;".
 
  Once the (recursive) fetching has been completed the downloaded
 content will be wrapped up a little such that it becomes a locally
-executable file, making use of the Slaughter.pm module.
-
- (The Slaughter.pm module is where the primitives are implemented
-and exported to the perl script.)
+executable file, making use of the Slaughter.pm module (this module
+is where the primitives are implemented and exported to the perl script).
 
  Finally the locally writen script will be made executable and
 directly executed, before being removed.
 
- The output of this operation will be saved to a logfile, and also emaile
-to a small list.
+ The output of the script will be saved to a logfile.
 
 Steve
 --
