@@ -154,7 +154,9 @@ validateEnvironment();
 #  Find the policy to fetch.  This will be "default.policy" unless
 # a different one is specified.
 #
-my $policy = "http://$CONFIG{'server'}/slaughter/policies/";
+my $prefix = $CONFIG{'prefix'} || "slaughter/policies/";
+
+my $policy = "http://$CONFIG{'server'}/$prefix";
 
 if ( $CONFIG{ 'policy' } )
 {
