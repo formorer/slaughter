@@ -1,25 +1,51 @@
 
 
-There are two phases of work when slaughter runs:
+ There are several phases to an execution of slaughter upon a client
+machine:
 
-  1.  Finding out local system information and downloading the
-     remote policies.  Both of these jobs are carried out by
-     ./bin/slaughter.  Which then wraps the policies in a little perl-fu
-     and executes them directly.
+  - Determine system information.
+  - Read configuration file.
+  - Parse command line options.
+  - Download remote policy.
+  - Wrap the policy in a header to make it valid Perl.
+  - Execute that wrapped code.
+  - Cleanup
 
-  2.  Providing the facilities needed at run-time, this is handled
-     via ./lib/Slaughter.pm
+ Because the code is wrapped in a little magic the primitives we've provided
+are available.  These primitives are nothing more than exported subroutines
+which become available due to this in the wrapped file:
 
-If you'd like to make a new variable available to running scripts you'll
+
+    use Slaughter;
+
+ The Slaughter module is a stub which attempts to load the
+platform-specific implementations of the subroutines from another
+module, via the use of the perl $^O variable.
+
+ So, for example, on a GNU/Linux system "use Slaughter" actually becomes
+"use Slaughter::linux".
+
+ If no specific file may be found then the fall-back module
+Slaughter::generic is loaded.  This has some support written but is
+essentially full of methods which just print "Not implemented".
+
+
+
+Directions
+----------
+
+ If you'd like to make a new variable available to running scripts you'll
 need to investigate the slaughter code - see "findSystemDetails".
 
-If you'd like to make a new support function available implement it in
-lib/Slaughter/linux.pm, and lib/Slaughter/generic.pm and you should be good to
-go.
+ If you'd like to make a new support function available implement it in
+lib/Slaughter/linux.pm, and lib/Slaughter/generic.pm and you should be
+good to go.
 
-The system packaging system is currently implemented in
-lib/Slaughter/linux/packages.pm - this uses both apt-get and yum/rpm.
-If you'd like to add another system patches are most welcome.
+ The interface to the system's packaging is currently only implemented
+for GNU/Linux, via lib/Slaughter/linux/packages.pm.  I'd suggest if you
+add support for another platform you follow a similar pattern.
+
+
 
 Steve
 --
