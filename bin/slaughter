@@ -122,12 +122,12 @@ sub findSystemDetails
     chomp( $info{ 'fqdn' } );
 
     #
-    #  Hostname
+    #  Get the hostname and domain name as seperate strings.
     #
-    $info{ 'hostname' } = $info{ 'fqdn' };
-    if ( $info{ 'hostname' } =~ /^([^.]+)\./ )
+    if ( $info{ 'fqdn' } =~ /^([^.]+)\.(.*)$/ )
     {
         $info{ 'hostname' } = $1;
+        $info{ 'domain' }   = $2;
     }
 
     #
@@ -148,13 +148,6 @@ sub findSystemDetails
         $info{ 'arch' } = "amd64";
         $info{ 'bits' } = 64;
     }
-
-    #
-    #  IP address
-    #
-    # TODO:
-    #
-    $info{ 'ip' } = "192.168.1.10";
 
     #
     #  Xen?
@@ -197,12 +190,17 @@ sub findSystemDetails
         }
     }
 
+
     #
-    #  3Ware RAID?
+    #  TODO: IP address
     #
 
     #
-    #  HP RAID?
+    #  TODO: 3Ware RAID?
+    #
+
+    #
+    #  TODO: HP RAID?
     #
 
     return %info;
