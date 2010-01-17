@@ -11,9 +11,10 @@ slaughter - Perl Automation Tool
 
   General Options:
 
-   --keep          Don't delete the compiled perl post-execution.
-   --policy        Specify the policy file to load; default is "default.policy".
-   --server        Specify the file server to load policies from.
+   --keep        Don't delete the compiled perl post-execution.
+   --policy      Specify the policy file to load; default is "default.policy".
+   --prefix      The web-prefix beneath which /files and /policies live.
+   --server      Specify the file server to fetch policies from.
 
   Help Options:
 
@@ -40,12 +41,16 @@ will attempt to download and execute the contents of:
 
 =for example begin
 
-   http://server/slaughter/default.policy
+   http://server/slaughter/policies/default.policy
 
 =for example end
 
 This simple policy file may in turn include other policy files, or it
 might contain perl code to execute.
+
+The path to the policies will always be /slaughter/policies/, and similarly
+file-fetches will come from /slaughter/files/ - but you may change the
+/slaughter/ section of that with the B<--prefix> argument.
 
 =cut
 
@@ -70,7 +75,6 @@ These primitives are more fully described online:
 
 The output of any given run will be appended to the file
 /var/log/slaughter.log
-
 
 =cut
 
@@ -242,7 +246,7 @@ sub findSystemDetails
 
 
     #
-    #  Kernel
+    #  Kernel version.
     #
     $info{ 'kernel' } = `uname -r`;
     chomp( $info{ 'kernel' } );
@@ -250,15 +254,18 @@ sub findSystemDetails
     #
     #  Are we i386/amd64?
     #
-    $info{ 'arch' } = "i386";
-    $info{ 'bits' } = 32;
-
     my $type = `file /bin/ls`;
     if ( $type =~ /64-bit/i )
     {
         $info{ 'arch' } = "amd64";
         $info{ 'bits' } = 64;
     }
+    else
+    {
+        $info{ 'arch' } = "i386";
+        $info{ 'bits' } = 32;
+    }
+
 
     #
     #  Xen?
