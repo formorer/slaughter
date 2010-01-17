@@ -108,6 +108,10 @@ sub InstallPackage
     print "InstallPackage - not implemented for $^O\n";
 }
 
+sub PackageInstalled
+{
+    print "PackageInstalled - not implemented for $^O\n";
+}
 
 sub Mounts
 {

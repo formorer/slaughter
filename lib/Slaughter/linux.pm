@@ -487,6 +487,49 @@ sub InstallPackage
 
 
 ##
+##  Public:  Query whether the specified package is installed.
+##
+##  Parameters:
+##       Package  The package name to query.
+##
+sub PackageInstalled
+{
+    my (%params) = (@_);
+
+    my $package = $params{ 'Package' } || return 0;
+
+    #
+    #  COLUMS=
+    #
+    $ENV{ 'COLUMNS' } = 300;
+
+    my %installed;
+
+    open my $handle, "-|", "dpkg --list" or
+      die "Failed to run dpkg: $!";
+
+    while (<$handle>)
+    {
+        if ( $_ =~ /ii([ \t]+)([^\t ]+)[\t ]/ )
+        {
+            $installed{ $2 } += 1;
+        }
+    }
+    close($handle);
+
+    if ( $installed{ $package } )
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+
+}
+
+
+##
 ##  Public
 ##
 ##  Return an array of mountpoints.
