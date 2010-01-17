@@ -41,6 +41,11 @@ The LICENSE file contains the full text of the license.
 #
 use Slaughter::Private;
 
+#
+#  Package abstraction helpers.
+#
+use Slaughter::linux::packages;
+
 
 
 
@@ -477,31 +482,69 @@ sub FileMatches
 }
 
 
-
 ##
-##  Public
 ##
-##  Install a package
+##  Public:  Install a package upon the system.
+##
+##  Parameters:
+##       Package  The name of the package to install.
 ##
 ##
 sub InstallPackage
 {
     my (%params) = (@_);
 
+    my $package = $params{ 'Package' } || return;
+
     #
-    #  TODO:  Delegegate properly to a library helper.
+    #  Gain access to the Linux package helper.
     #
-    #  For now we'll assume that apt-get is available and bail otherwise.
+    my $helper = Slaughter::linux::packages->new();
+
     #
+    #  If we recognise the system, install the package
     #
-    if ( -x "/usr/bin/apt-get" &&
-         -e "/etc/apt/sources.list" )
+    if ( $helper->recognised() )
     {
-        RunCommand("apt-get install -q -y $params{'Name'}");
+        $helper->installPackage( $params{ 'Package' } );
     }
     else
     {
-        print "TODO: Support other package managers\n";
+        print "Unknown Linux type.  Packaging support not present\n";
+    }
+}
+
+
+
+##
+##
+##  Public:  Remove a package from the local system.
+##
+##  Parameters:
+##       Package  The name of the package to remove.
+##
+##
+sub RemovePackage
+{
+    my (%params) = (@_);
+
+    my $package = $params{ 'Package' } || return;
+
+    #
+    #  Gain access to the Linux package helper.
+    #
+    my $helper = Slaughter::linux::packages->new();
+
+    #
+    #  If we recognise the system, install the package
+    #
+    if ( $helper->recognised() )
+    {
+        $helper->removePackage( $params{ 'Package' } );
+    }
+    else
+    {
+        print "Unknown Linux type.  Packaging support not present\n";
     }
 }
 
@@ -515,52 +558,27 @@ sub InstallPackage
 ##
 sub PackageInstalled
 {
+
     my (%params) = (@_);
 
+    my $package = $params{ 'Package' } || return;
+
     #
-    #  TODO:  Delegegate properly to a library helper.
+    #  Gain access to the Linux package helper.
     #
-    #  For now we'll assume that dpkg is available and bail otherwise.
+    my $helper = Slaughter::linux::packages->new();
+
     #
+    #  If we recognise the system, install the package
     #
-    if ( ( !-x "/usr/bin/dpkg" ) ||
-         ( !-e "/etc/apt/sources.list" ) )
+    if ( $helper->recognised() )
     {
-        print "TODO: Port to other package managers\n";
-        return 0;
-    }
-
-
-    my $package = $params{ 'Package' } || return 0;
-
-    #
-    #  COLUMS=
-    #
-    $ENV{ 'COLUMNS' } = 300;
-
-    my %installed;
-
-    open my $handle, "-|", "dpkg --list" or
-      die "Failed to run dpkg: $!";
-
-    while (<$handle>)
-    {
-        if ( $_ =~ /ii([ \t]+)([^\t ]+)[\t ]/ )
-        {
-            $installed{ $2 } += 1;
-        }
-    }
-    close($handle);
-
-    if ( $installed{ $package } )
-    {
-        return 1;
+        $helper->isInstalled($package);
     }
     else
     {
-        return 0;
+        print "Unknown Linux type.  Packaging support not present\n";
     }
-
 }
 
 
