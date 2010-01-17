@@ -626,11 +626,11 @@ EOF
 
     if ( open( my $handle, "<", $file ) )
     {
-        while ( my $line = <$file> )
+        while ( my $line = <$handle> )
         {
             print SENDMAIL $line;
         }
-        close($file);
+        close($handle);
     }
 
     close(SENDMAIL);
