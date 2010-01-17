@@ -10,7 +10,6 @@ There are two phases of work when slaughter runs:
   2.  Providing the facilities needed at run-time, this is handled
      via ./lib/Slaughter.pm
 
-
 If you'd like to make a new variable available to running scripts you'll
 need to investigate the slaughter code - see "findSystemDetails".
 
@@ -18,6 +17,9 @@ If you'd like to make a new support function available implement it in
 lib/Slaughter/linux.pm, and lib/Slaughter/generic.pm and you should be good to
 go.
 
+The system packaging system is currently implemented in
+lib/Slaughter/linux/packages.pm - this uses both apt-get and yum/rpm.
+If you'd like to add another system patches are most welcome.
 
 Steve
 --
