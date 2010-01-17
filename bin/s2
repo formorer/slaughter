@@ -63,7 +63,7 @@ my $policy = fetchRemotePolicy();
 # it gets setup.
 #
 my $file = writeoutPolicy($policy);
-$CONFIG{ 'verbose' } && print "Written policy to $file\n";
+$CONFIG{ 'verbose' } && print "Policy written to $file\n";
 
 
 #
@@ -73,13 +73,30 @@ $CONFIG{ 'verbose' } && print "Written policy to $file\n";
 
 
 #
-#  Execute it.
+#  Find the logfile to write our run to.
 #
 my $logfile = getLogfile();
-$CONFIG{ 'verbose' } && print "Logging to $logfile\n";
 
-system("$file  2>&1 >> $logfile")
-  unless ( $CONFIG{ 'noexecute' } );
+#
+#  Run the script locally
+#
+if ( $CONFIG{ 'noexecute' } )
+{
+    $CONFIG{ 'verbose' } &&
+      print "Not launching script due to --no-execute\n";
+}
+else
+{
+    $CONFIG{ 'verbose' } &&
+      print "Script starting : " . scalar localtime() . "\n";
+
+    system("$file  2>&1 >> $logfile");
+
+    $CONFIG{ 'verbose' } &&
+      print "Script completed: " . scalar localtime() . "\n";
+
+}
+
 
 
 #
@@ -323,9 +340,11 @@ sub parseCommandLine
             "manual", \$MANUAL,
 
             # General options
-            "server=s", \$CONFIG{ 'server' },
-            "prefix=s", \$CONFIG{ 'prefix' },
-            "policy=s", \$CONFIG{ 'policy' },
+            "email=s",    \$CONFIG{ 'email' },
+            "policy=s",   \$CONFIG{ 'policy' },
+            "prefix=s",   \$CONFIG{ 'prefix' },
+            "protocol=s", \$CONFIG{ 'protocol' },
+            "server=s",   \$CONFIG{ 'server' },
 
             # Flags
             "dump",       \$CONFIG{ 'dump' },
@@ -552,6 +571,14 @@ EOF
 }
 
 
+=begin doc
+
+Find and return the name of the file to log this run to.
+
+=end doc
+
+=cut
+
 sub getLogfile
 {
     if ( !-d "/var/log/slaughter" )
@@ -565,5 +592,46 @@ sub getLogfile
     $year += 1900;
     $mon  += 1;
 
-    return "/var/log/slaughter/$year-$mon-$mday.$$.log";
+    my $file = "/var/log/slaughter/$year-$mon-$mday.$$.log";
+
+    $CONFIG{ 'verbose' } && print "Logfile: $file\n";
+
+    return ($file);
+}
+
+
+
+=begin doc
+
+Email the contents of the logfile to the named account.
+
+=end doc
+
+=cut
+
+sub emailLogfile
+{
+    my ( $to, $file ) = (@_);
+
+    my $sendmail = "/usr/lib/sendmail -t";
+
+    open( SENDMAIL, "|$sendmail -f root" ) or
+      return;
+    print SENDMAIL <<EOF;
+To: $to
+From: root
+Subject: slaughter run on $CONFIG{'fqdn'}
+
+EOF
+
+    if ( open( my $handle, "<", $file ) )
+    {
+        while ( my $line = <$file> )
+        {
+            print SENDMAIL $line;
+        }
+        close($file);
+    }
+
+    close(SENDMAIL);
 }
