@@ -1,3 +1,9 @@
+slaughter (0.3-1) stable; urgency=low
+
+  * Added manpage, and --manual output to slaughter.
+
+ -- Steve Kemp <steve@steve.org.uk>  Sunday, 17 Jan 2010 12:22:23 +0000
+
 slaughter (0.2-2) stable; urgency=low
 
   * Added UserDetails, and updated the variable list.
