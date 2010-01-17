@@ -20,8 +20,11 @@ Description: Automation tool to perform system administration remotely
  .
   * Copying files.
  .
+  * Manipulating system packages.
+ .
   * Executing programs.
  .
   * Sending alerts.
  .
- There is no server package.
+ (There is no need for a seperate server package, all files and policies
+ are transferred over HTTP.)
