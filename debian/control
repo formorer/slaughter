@@ -8,6 +8,7 @@ Homepage: http://www.steve.org.uk/Software/slaughter/
 
 
 Package: slaughter-client
+Provides: slaughter
 Architecture: all
 Depends: ${misc:Depends}, libdigest-sha1-perl, libwww-perl, libtext-template-perl, perl-modules
 Description: Automation tool to perform system administration remotely
