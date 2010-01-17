@@ -451,11 +451,11 @@ EOF
 
 
     #
-    #  Save the server
+    #  Save the server and other globals.
     #
     $SYSTEM{ 'server' }  = $CONFIG{ 'server' };
-    $SYSTEM{ 'verbose' } = $CONFIG{ 'verbose' };
-    $SYSTEM{ 'prefix' }  = $CONFIG{ 'prefix' } || "/slaughter/";
+    $SYSTEM{ 'verbose' } = ( $CONFIG{ 'verbose' } || 0  );
+    $SYSTEM{ 'prefix' }  = ( $CONFIG{ 'prefix' } || "/slaughter/" );
 }
 
 
