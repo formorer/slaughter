@@ -1,0 +1,61 @@
+#!/usr/bin/perl -w
+#
+#  This is a prototype of the new slaughter.
+#
+#
+
+use strict;
+use warnings;
+
+
+#
+#  Setup default options.
+#
+
+#
+#  Parse configuration file.
+#
+
+#
+#  Parse command line.
+#
+
+#
+#  Ensure we're root, and that we have the modules we require setup.
+# Similarly ensure that we have the option setup that we need.
+#
+
+#
+#  Fetch the remote policy via rsync/http.
+#
+
+#
+#  Recursively expand that policy, taking care to fetch other components.
+#
+
+
+#
+#  Write it out to disk, with the appropriate wrapper stuff so that
+# it gets setup.
+#
+#  Test at this point that we have the modules required for this particular
+# operating system.
+#
+
+
+#
+#  Execute it.
+#
+
+#
+#  Both save the logfile somewhere and submit via email, unless that has
+# been disabled.
+#
+
+#
+#  Cleanup.
+#
+
+
+
+
