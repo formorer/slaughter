@@ -342,6 +342,7 @@ sub parseCommandLine
 
             # General options
             "server=s", \$CONFIG{ 'server' },
+            "prefix=s", \$CONFIG{ 'prefix' },
             "policy=s", \$CONFIG{ 'policy' },
             "keep",     \$CONFIG{ 'keep' },
             "verbose",  \$CONFIG{ 'verbose' },
