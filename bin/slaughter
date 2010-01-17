@@ -1,11 +1,111 @@
-#!/usr/bin/perl
-#
-#  Given a policy repeatedly fetch any included files in it, then
-# convert to real code which can then be executed.
-#
-# Steve
-# --
-#
+#!/usr/bin/perl -w
+
+=head1 NAME
+
+slaughter - Perl Automation Tool
+
+=cut
+
+=head1 SYNOPSIS
+
+
+  General Options:
+
+   --keep          Don't delete the compiled perl post-execution.
+   --policy        Specify the policy file to load; default is "default.policy".
+   --server        Specify the file server to load policies from.
+
+  Help Options:
+
+   --help        Show the help information for this script.
+   --manual      Read the manual for this script.
+   --verbose     Show useful debugging information.
+
+=cut
+
+
+=head1 ABOUT
+
+slaugher is a simple system administration and server automation tool,
+which is designed to download policy files from a remote server via
+HTTP.
+
+The remote files which are downloaded are actually perl scripts which
+are executed with the help of a simple wrapper module - this module
+provides several new language functions (or primitives) which can be
+useful to manage systems.
+
+When this tool is invoked, with an appropriate server configured, it
+will attempt to download and execute the contents of:
+
+=for example begin
+
+   http://server/slaughter/default.policy
+
+=for example end
+
+This simple policy file may in turn include other policy files, or it
+might contain perl code to execute.
+
+=cut
+
+
+=head1 PRIMITIVES
+
+There are several primitives available to your code which are actually
+implemented in the Slaughter module.
+
+These primitives are more fully described online:
+
+=for example begin
+
+  http://www.steve.org.uk/Software/slaughter/primitives.html
+
+=for example end
+
+=cut
+
+
+=head1 LOGGING
+
+The output of any given run will be appended to the file
+/var/log/slaughter.log
+
+
+=cut
+
+
+=head1 DEBUGGING
+
+The simplest way to debug a potential problem is to execute slaughter
+with both the B<--keep> and B<--verbose> options.  This will ensure that
+once the policy/policies are downloaded and compiled they will be kept.
+
+The result should be that you'll be shown the name of a file - this file
+may be executed interactively to see what is going on.
+
+=cut
+
+
+=head1 AUTHOR
+
+ Steve
+ --
+ http://www.steve.org.uk/
+
+=cut
+
+=head1 LICENSE
+
+Copyright (c) 2010 by Steve Kemp.  All rights reserved.
+
+This module is free software;
+you can redistribute it and/or modify it under
+the same terms as Perl itself.
+The LICENSE file contains the full text of the license.
+
+=cut
+
 
 
 use strict;
@@ -16,6 +116,7 @@ use English;
 use File::Temp;
 use Getopt::Long;
 use LWP::UserAgent;
+use Pod::Usage;
 
 
 
@@ -219,12 +320,20 @@ Some minimal command line parsing.
 
 sub parseCommandLine
 {
+    my $HELP   = 0;
+    my $MANUAL = 0;
+
     if (
-         !GetOptions( "server=s", \$CONFIG{ 'server' },
-                      "policy=s", \$CONFIG{ 'policy' },
-                      "keep",     \$CONFIG{ 'keep' },
-                      "port=s",   \$CONFIG{ 'port' },
-                      "verbose",  \$CONFIG{ 'verbose' },
+         !GetOptions(
+                     # Help options
+                     "help",    \$HELP,
+                     "manual",  \$MANUAL,
+
+                     # General options
+                     "server=s", \$CONFIG{ 'server' },
+                     "policy=s", \$CONFIG{ 'policy' },
+                     "keep",     \$CONFIG{ 'keep' },
+                     "verbose",  \$CONFIG{ 'verbose' },
                     ) )
     {
         exit 1;
@@ -238,6 +347,10 @@ sub parseCommandLine
     {
         $SYSTEM{ 'verbose' } = 0;
     }
+
+
+    pod2usage(1) if $HELP;
+    pod2usage( -verbose => 2 ) if $MANUAL;
 }
 
 
