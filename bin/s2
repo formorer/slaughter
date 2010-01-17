@@ -161,8 +161,7 @@ if ( $CONFIG{ 'dump' } )
 
 
 #
-#  Ensure we're root, and that we have the modules we require setup.
-# Similarly ensure that we have the option setup that we need.
+#  Ensure we're root, and ensure that we have the options setup that we need.
 #
 testEnvironment();
 
@@ -696,6 +695,10 @@ Find and return the name of the file to log this run to.
 
 sub getLogfile
 {
+
+    #
+    #  Ensure we have a log directory.
+    #
     if ( !-d "/var/log/slaughter" )
     {
         mkpath( "/var/log/slaughter", { verbose => 0 } );
