@@ -109,7 +109,7 @@ sub AppendIfMissing
                 $found = 1;
             }
         }
-        close($line);
+        close($handle);
     }
 
 
@@ -412,6 +412,61 @@ sub FetchFile
     }
 
     return ($replace);
+}
+
+
+##
+##  Public:  See if file contents match either a line or a regexp.
+##
+##  Parameters:
+##       File     The file to examine.
+##       Pattern  The pattern to look for (regexp).
+##       Line     A literal line match to look for.
+##
+##  Returns 0 if no match, otherwise the number of matches.
+##
+##
+sub FileMatches
+{
+    my (%params) = (@_);
+
+    my $file    = $params{ 'File' }    || return;
+    my $pattern = $params{ 'Pattern' } || undef;
+    my $line    = $params{ 'Line' }    || undef;
+    my $count   = 0;
+
+    if ( !defined($line) && !defined($pattern) )
+    {
+        return -1;
+    }
+
+    #
+    #  Open
+    #
+    if ( open( my $handle, "<", $file ) )
+    {
+        foreach my $read (<$handle>)
+        {
+            chomp($read);
+
+            if ( defined($line) && ( $line eq $read ) )
+            {
+                $count += 1;
+            }
+            if ( defined($pattern) && ( $read =~ /$pattern/ ) )
+            {
+                $count += 1;
+            }
+        }
+        close($handle);
+
+        return ($count);
+
+    }
+    else
+    {
+        return -1;
+    }
 }
 
 

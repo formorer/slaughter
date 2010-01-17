@@ -97,6 +97,11 @@ sub FetchFile
     print "FetchFile - not implemented for $^O\n";
 }
 
+sub FileMatches
+{
+    print "FIleMatches - not implemented for $^O\n";
+}
+
 
 sub InstallPackage
 {
