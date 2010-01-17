@@ -1,0 +1,25 @@
+
+#
+#  preupload
+#
+preupload="make release"
+
+#
+#  Pattern for the dist-tarballs
+#
+pattern=slaughter-[0-9].[0-9].tar.gz
+
+#
+#  Pattern for the signatures
+#
+signature=slaughter-[0-9].[0-9].tar.gz.asc
+
+#
+#  The upload location, if any.
+#
+upload=steve@www.steve.org.uk:/home/www/www.steve.org.uk/htdocs/Software/slaughter/
+
+#
+#  post-upload
+#
+postupload="uptime"
