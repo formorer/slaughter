@@ -5,12 +5,15 @@ Slaughter
 The goal of this project is to have a lightweight system which will
 allow the control and manipulation of multiple systems.
 
-The task we support are:
+The task we support are pretty basic, but they include:
 
    1.  Replacing a file, literally.
    2.  Replacing a file, expanding content within it.
-   3.  Running commands.
-   4.  Testing for the existance of local users.
+   3.  Appending to files, commenting out lines in files.
+   4.  Running system commands commands.
+   5.  Testing for the existance of local users, and fetching their details.
+   6.  Checking disk space, and mount-points.
+   7.  Sending alerts via email.
 
 
 
@@ -37,7 +40,7 @@ and may recursively include other policies.
 
 When a client node launches the first thing it will do is attempt to fetch
 the policy "default.policy", but you may configure a node to fetch a different
-policy if you wish.
+policy if you wish via the "--policy" argument to the slaughter command.
 
 This default policy file can contain code in Perl, and the use of our
 additional primitives.  It is expected that because the file default.policy
