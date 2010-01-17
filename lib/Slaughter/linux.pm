@@ -523,8 +523,8 @@ sub PackageInstalled
     #  For now we'll assume that dpkg is available and bail otherwise.
     #
     #
-    if ( ( ! -x "/usr/bin/dpkg" ) ||
-         ( ! -e "/etc/apt/sources.list" ) )
+    if ( ( !-x "/usr/bin/dpkg" ) ||
+         ( !-e "/etc/apt/sources.list" ) )
     {
         print "TODO: Port to other package managers\n";
         return 0;

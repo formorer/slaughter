@@ -461,7 +461,7 @@ EOF
     #  Save the server and other globals.
     #
     $SYSTEM{ 'server' }  = $CONFIG{ 'server' };
-    $SYSTEM{ 'verbose' } = ( $CONFIG{ 'verbose' } || 0  );
+    $SYSTEM{ 'verbose' } = ( $CONFIG{ 'verbose' } || 0 );
     $SYSTEM{ 'prefix' }  = ( $CONFIG{ 'prefix' } || "/slaughter/" );
 }
 
