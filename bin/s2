@@ -7,36 +7,65 @@
 use strict;
 use warnings;
 
+use English;
+use File::Temp qw/ tempfile /;
+use File::Path qw/ mkpath /;
+use Getopt::Long;
+use LWP::UserAgent;
+use Pod::Usage;
+
+
 
 #
 #  Setup default options.
 #
+my %CONFIG = defaultOptions();
+
 
 #
 #  Parse configuration file.
 #
+parseConfigurationFile();
+
 
 #
 #  Parse command line.
 #
+parseCommandLine();
+
+
+#
+#  If we're dumping, do that.
+#
+if ( $CONFIG{ 'dump' } )
+{
+    use Data::Dumper;
+    print Dumper( \%CONFIG );
+    exit;
+}
+
 
 #
 #  Ensure we're root, and that we have the modules we require setup.
 # Similarly ensure that we have the option setup that we need.
 #
+testEnvironment();
+
 
 #
-#  Fetch the remote policy via rsync/http.
+#  Fetch the remote policy via http/https
 #
-
-#
-#  Recursively expand that policy, taking care to fetch other components.
-#
+my $policy = fetchRemotePolicy();
 
 
 #
 #  Write it out to disk, with the appropriate wrapper stuff so that
 # it gets setup.
+#
+my $file = writeoutPolicy($policy);
+$CONFIG{ 'verbose' } && print "Written policy to $file\n";
+
+
 #
 #  Test at this point that we have the modules required for this particular
 # operating system.
@@ -46,16 +75,495 @@ use warnings;
 #
 #  Execute it.
 #
+my $logfile = getLogfile();
+$CONFIG{ 'verbose' } && print "Logging to $logfile\n";
+
+system("$file  2>&1 >> $logfile")
+  unless ( $CONFIG{ 'noexecute' } );
+
 
 #
-#  Both save the logfile somewhere and submit via email, unless that has
-# been disabled.
+#  Submit the logfile via email if we should.
 #
+if ( $CONFIG{ 'email' } )
+{
+    emailLogfile( $CONFIG{ 'email' }, $logfile );
+}
+
 
 #
 #  Cleanup.
 #
+unlink($file) unless ( $CONFIG{ 'keep' } );
+exit;
 
 
 
 
+=begin doc
+
+Configure the default options, and return these as a hash.
+
+=end doc
+
+=cut
+
+sub defaultOptions
+{
+    my %defs = (
+        verbose  => 0,
+        prefix   => "/slaughter/",
+        policy   => "default.policy",
+        protocol => "http://",
+
+               );
+
+    #
+    #  Find the system information.
+    #
+    findSystemDetails( \%defs );
+
+    return (%defs);
+}
+
+
+=begin doc
+
+Here we find details about the system which will be included in the
+generated file script.
+
+=end doc
+
+=cut
+
+sub findSystemDetails
+{
+    my ($ref) = (@_);
+
+    #
+    #  Fully Qualified hostname
+    #
+    $ref->{ 'fqdn' } = `hostname`;
+    chomp( $ref->{ 'fqdn' } );
+
+    #
+    #  Get the hostname and domain name as seperate strings.
+    #
+    if ( $ref->{ 'fqdn' } =~ /^([^.]+)\.(.*)$/ )
+    {
+        $ref->{ 'hostname' } = $1;
+        $ref->{ 'domain' }   = $2;
+    }
+    else
+    {
+
+        #
+        #  Better than nothing, right?
+        #
+        $ref->{ 'hostname' } = $ref->{ 'fqdn' };
+        $ref->{ 'domain' }   = $ref->{ 'fqdn' };
+    }
+
+
+    #
+    #  Kernel version.
+    #
+    $ref->{ 'kernel' } = `uname -r`;
+    chomp( $ref->{ 'kernel' } );
+
+    #
+    #  Are we i386/amd64?
+    #
+    my $type = `file /bin/ls`;
+    if ( $type =~ /64-bit/i )
+    {
+        $ref->{ 'arch' } = "amd64";
+        $ref->{ 'bits' } = 64;
+    }
+    else
+    {
+        $ref->{ 'arch' } = "i386";
+        $ref->{ 'bits' } = 32;
+    }
+
+
+    #
+    #  Xen?
+    #
+    $ref->{ 'xen' } = 1 if -d "/proc/xen/capabilities";
+
+    #
+    #  KVM / Qemu?
+    #
+    if ( open( my $cpu, "<", "/proc/cpuinfo" ) )
+    {
+        foreach my $line (<$cpu>)
+        {
+            chomp($line);
+
+            $ref->{ 'kvm' } = 1 if ( $line =~ /model/ && $line =~ /qemu/i );
+        }
+        close($cpu);
+    }
+
+
+    #
+    #  Softare RAID?
+    #
+    if ( ( -e "/proc/mdstat" ) &&
+         ( -x "/sbin/mdadm" ) )
+    {
+        if ( open( my $mdstat, "<", "/proc/mdstat" ) )
+        {
+            foreach my $line (<$mdstat>)
+            {
+                if ( ( $line =~ /^md([0-9]+)/ ) &&
+                     ( $line =~ /active/i ) )
+                {
+                    $ref->{ 'softwareraid' } = 1;
+                    $ref->{ 'raid' }         = "software";
+                }
+            }
+            close($mdstat);
+        }
+    }
+
+
+    #
+    #  TODO: IP address
+    #
+
+    #
+    #  TODO: 3Ware RAID?
+    #
+
+    #
+    #  TODO: HP RAID?
+    #
+
+}
+
+
+
+
+=begin doc
+
+Parse the configuration file.
+
+=end doc
+
+=cut
+
+sub parseConfigurationFile
+{
+    return unless ( -e "/etc/slaughter/slaughter.conf" );
+
+    open my $handle, "<", "/etc/slaughter/slaughter.conf" or
+      return;
+
+    while ( my $line = <$handle> )
+    {
+        chomp $line;
+        if ( $line =~ s/\\$// )
+        {
+            $line .= <$handle>;
+            redo unless eof($handle);
+        }
+
+        # Skip lines beginning with comments
+        next if ( $line =~ /^([ \t]*)\#/ );
+
+        # Skip blank lines
+        next if ( length($line) < 1 );
+
+        # Strip trailing comments.
+        if ( $line =~ /(.*)\#(.*)/ )
+        {
+            $line = $1;
+        }
+
+        # Find variable settings
+        if ( $line =~ /([^=]+)=([^\n]+)/ )
+        {
+            my $key = $1;
+            my $val = $2;
+
+            # Strip leading and trailing whitespace.
+            $key =~ s/^\s+//;
+            $key =~ s/\s+$//;
+            $val =~ s/^\s+//;
+            $val =~ s/\s+$//;
+
+            # Store value.
+            $CONFIG{ $key } = $val;
+        }
+    }
+    close($handle);
+}
+
+
+=begin doc
+
+Parse the command line for options.
+
+=end doc
+
+=cut
+
+sub parseCommandLine
+{
+    my $HELP   = 0;
+    my $MANUAL = 0;
+
+    if (
+        !GetOptions(
+
+            # Help options
+            "help",   \$HELP,
+            "manual", \$MANUAL,
+
+            # General options
+            "server=s", \$CONFIG{ 'server' },
+            "prefix=s", \$CONFIG{ 'prefix' },
+            "policy=s", \$CONFIG{ 'policy' },
+
+            # Flags
+            "dump",       \$CONFIG{ 'dump' },
+            "keep",       \$CONFIG{ 'keep' },
+            "no-execute", \$CONFIG{ 'noexecute' },
+            "verbose",    \$CONFIG{ 'verbose' },
+        ) )
+    {
+        exit 1;
+    }
+
+    pod2usage(1) if $HELP;
+    pod2usage( -verbose => 2 ) if $MANUAL;
+
+}
+
+
+=begin doc
+
+Test the environment.
+
+=end doc
+
+=cut
+
+sub testEnvironment
+{
+    if ( !$CONFIG{ 'server' } )
+    {
+        print <<EOF;
+You need to specify the server which this node will fetch the policies
+from.  You can either do this by running:
+
+   slaughter --server=foo.example.org
+
+Or by:
+
+echo "server = foo.example.org" >> /etc/slaughter/slaughter.conf
+EOF
+        exit 1;
+    }
+
+    if ( $UID != 0 )
+    {
+        print <<EOF;
+You must launch this command as root.
+EOF
+        exit 1;
+    }
+
+}
+
+
+=begin doc
+
+Fetch the remote policy via HTTP or HTTPS.
+
+Any line which matches:
+
+FetchPolicy xxxxx;
+
+Will be replaced with the output of that URL.
+
+=end doc
+
+=cut
+
+sub fetchRemotePolicy
+{
+    my $url =
+      $CONFIG{ 'protocol' } . $CONFIG{ 'server' } . $CONFIG{ 'prefix' } .
+      "policies/" . $CONFIG{ 'policy' };
+
+
+    $CONFIG{ 'verbose' } && print "Starting Policy: $url\n";
+
+    my $contents = fetchURL($url);
+
+    if ( defined $contents )
+    {
+        my $ret = "";
+
+        foreach my $line ( split( /[\r\n]/, $contents ) )
+        {
+            if ( $line =~ /FetchPolicy([ \t]+)(.*)[ \t]*\;/i )
+            {
+                my $inc = $2;
+
+                $CONFIG{ 'verbose' } &&
+                  print "\tFetching include: $inc\n";
+
+                ##
+                ## Fully qualified URL?
+                ##
+                if ( $inc =~ /:\/\// )
+                {
+                    $ret .= fetchURL($inc);
+                }
+                else
+                {
+
+                    #
+                    #  Try to resolve the path.
+                    #
+                    if ( $url =~ /^(.*)\/([^\/]+)$/ )
+                    {
+                        $inc = $1 . "/" . $inc;
+
+                        $ret .= fetchURL($inc);
+                    }
+                }
+            }
+            else
+            {
+                $ret .= $line;
+            }
+
+            $ret .= "\n";
+
+        }
+        return ($ret);
+    }
+    else
+    {
+        print "Failed to fetch: $url\n";
+        exit 1;
+    }
+
+}
+
+
+=begin doc
+
+Fetch the contents of a remote URL.
+
+=end doc
+
+=cut
+
+sub fetchURL
+{
+    my ($url) = (@_);
+
+    my $ua = LWP::UserAgent->new();
+    $ua->env_proxy();
+    my $response = $ua->get($url);
+    if ( $response->is_success() )
+    {
+        return ( $response->decoded_content() );
+    }
+    else
+    {
+        return (undef);
+    }
+}
+
+
+
+
+=begin doc
+
+Write out specified policy content into a form which can be executed,
+and return the name of the file to which it was written.
+
+=end doc
+
+=cut
+
+sub writeoutPolicy
+{
+    my ($txt) = (@_);
+
+    my ( undef, $name ) = File::Temp::tempfile();
+
+    open my $handle, ">", $name or
+      die "Failed to write to file : $!";
+
+    print $handle <<EOF;
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+use Slaughter;
+
+# definitions set with Define
+our %DEFINES;
+
+
+# template variables.
+EOF
+
+    my $line = "my \%template = (";
+
+    foreach my $key ( keys %CONFIG )
+    {
+        my $val = $CONFIG{ $key };
+
+        if ( defined($val) )
+        {
+            print $handle "our \$$key = '$val';\n";
+            $line .= "\n\t$key => '$val',";
+        }
+        else
+        {
+            print $handle "our \$$key = undef;\n";
+            $line .= "\n\t$key => undef,";
+        }
+
+    }
+
+    $line =~ s/, $//g;
+    $line .= "\t);\n";
+    print $handle "\n# template hash\n";
+    print $handle $line . "\n";
+    print $handle "#========\n\n";
+
+    print $handle $txt;
+    close($handle);
+
+    system( "chmod", "755", $name );
+
+    return ($name);
+
+}
+
+
+sub getLogfile
+{
+    if ( !-d "/var/log/slaughter" )
+    {
+        mkpath( "/var/log/slaughter", { verbose => 0 } );
+    }
+
+    my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst ) =
+      localtime(time);
+
+    $year += 1900;
+    $mon  += 1;
+
+    return "/var/log/slaughter/$year-$mon-$mday.$$.log";
+}
