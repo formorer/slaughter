@@ -219,7 +219,7 @@ sub findSystemDetails
     #
     #  Fully Qualified hostname
     #
-    $info{ 'fqdn' } = `hostname --fqdn`;
+    $info{ 'fqdn' } = `hostname`;
     chomp( $info{ 'fqdn' } );
 
     #
@@ -230,6 +230,15 @@ sub findSystemDetails
         $info{ 'hostname' } = $1;
         $info{ 'domain' }   = $2;
     }
+    else
+    {
+        #
+        #  Better than nothing, right?
+        #
+        $info{'hostname'} = $info{'fqdn'};
+        $info{'domain'} = $info{'fqdn'};
+    }
+
 
     #
     #  Kernel
