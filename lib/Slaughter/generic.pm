@@ -121,7 +121,7 @@ sub UserExists
 {
     my (%params) = (@_);
 
-    if ( UserDetails( $params{'User'} ) )
+    if ( UserDetails( $params{ 'User' } ) )
     {
         return 1;
     }
@@ -133,8 +133,8 @@ sub UserDetails
 {
     my (%params) = (@_);
 
-    my ($name,$pwcode,$uid,$gid,$quota,$comment,$gcos,$home,$logprog) =
-      getpwnam( $params{'User'} );
+    my ( $name, $pwcode, $uid, $gid, $quota, $comment, $gcos, $home, $logprog )
+      = getpwnam( $params{ 'User' } );
 
     if ( !defined($name) )
     {
@@ -144,13 +144,14 @@ sub UserDetails
     #
     #  Return the values as a hash
     #
-    return( { Home => $home,
-              UID  => $uid,
-              GID  => $gid,
-              Quota => $quota,
-              Comment => $comment,
-              Shell   => $logprog,
-              Login => $name } );
+    return ( { Home    => $home,
+               UID     => $uid,
+               GID     => $gid,
+               Quota   => $quota,
+               Comment => $comment,
+               Shell   => $logprog,
+               Login   => $name
+             } );
 }
 
 

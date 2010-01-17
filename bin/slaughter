@@ -232,11 +232,12 @@ sub findSystemDetails
     }
     else
     {
+
         #
         #  Better than nothing, right?
         #
-        $info{'hostname'} = $info{'fqdn'};
-        $info{'domain'} = $info{'fqdn'};
+        $info{ 'hostname' } = $info{ 'fqdn' };
+        $info{ 'domain' }   = $info{ 'fqdn' };
     }
 
 
@@ -333,17 +334,18 @@ sub parseCommandLine
     my $MANUAL = 0;
 
     if (
-         !GetOptions(
-                     # Help options
-                     "help",    \$HELP,
-                     "manual",  \$MANUAL,
+        !GetOptions(
 
-                     # General options
-                     "server=s", \$CONFIG{ 'server' },
-                     "policy=s", \$CONFIG{ 'policy' },
-                     "keep",     \$CONFIG{ 'keep' },
-                     "verbose",  \$CONFIG{ 'verbose' },
-                    ) )
+            # Help options
+            "help",   \$HELP,
+            "manual", \$MANUAL,
+
+            # General options
+            "server=s", \$CONFIG{ 'server' },
+            "policy=s", \$CONFIG{ 'policy' },
+            "keep",     \$CONFIG{ 'keep' },
+            "verbose",  \$CONFIG{ 'verbose' },
+        ) )
     {
         exit 1;
     }
