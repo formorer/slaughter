@@ -244,7 +244,7 @@ sub Defined
 ##  Public:  Delete files from a given root directory matching a given pattern.
 ##
 ##  Parameters:
-##       Root      The root directory
+##       Root      The root directory to search within.
 ##       Pattern   The pattern to look for.
 ##
 ##
@@ -313,8 +313,7 @@ sub FetchFile
     #
     #  If we're to expand content do so.
     #
-    if ( !defined( $params{ 'Expand' } ) ||
-         ( defined $params{ 'Expand' } && $params{ 'Expand' } =~ /true/i ) )
+    if ( ( defined $params{ 'Expand' } ) && ( $params{ 'Expand' } =~ /true/i ) )
     {
         my $template =
           Text::Template->new( TYPE   => 'string',
@@ -358,6 +357,10 @@ sub FetchFile
             $replace = 1;
 
             $verbose && print "\tContents don't match - will replace\n";
+        }
+        else
+        {
+            $verbose && print "\tCurrent file equals new one - not replacing\n";
         }
     }
 
@@ -406,6 +409,10 @@ sub FetchFile
         RunCommand("chmod $mode $dst");
     }
 
+    #
+    #  If we didn't replace then we'll remove the temporary file
+    # which would otherwise be orphaned.
+    #
     if ( -e $name )
     {
         unlink($name);
@@ -481,7 +488,21 @@ sub InstallPackage
 {
     my (%params) = (@_);
 
-    RunCommand("apt-get install -q -y $params{'Name'}");
+    #
+    #  TODO:  Delegegate properly to a library helper.
+    #
+    #  For now we'll assume that apt-get is available and bail otherwise.
+    #
+    #
+    if ( -x "/usr/bin/apt-get" &&
+         -e "/etc/apt/sources.list" )
+    {
+        RunCommand("apt-get install -q -y $params{'Name'}");
+    }
+    else
+    {
+        print "TODO: Support other package managers\n";
+    }
 }
 
 
@@ -495,6 +516,20 @@ sub InstallPackage
 sub PackageInstalled
 {
     my (%params) = (@_);
+
+    #
+    #  TODO:  Delegegate properly to a library helper.
+    #
+    #  For now we'll assume that dpkg is available and bail otherwise.
+    #
+    #
+    if ( ( ! -x "/usr/bin/dpkg" ) ||
+         ( ! -e "/etc/apt/sources.list" ) )
+    {
+        print "TODO: Port to other package managers\n";
+        return 0;
+    }
+
 
     my $package = $params{ 'Package' } || return 0;
 
@@ -575,9 +610,10 @@ sub PercentageUsed
     my $perc = 0;
 
     #
-    #  Call df to get the output
+    #  Call df to get the output, use posix mode.
     #
     my $out = `df -P $point`;
+
     foreach my $line ( split( /[\r\n]/, $out ) )
     {
         next unless ( $line =~ /%/ );
