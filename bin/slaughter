@@ -154,9 +154,7 @@ validateEnvironment();
 #  Find the policy to fetch.  This will be "default.policy" unless
 # a different one is specified.
 #
-my $prefix = $CONFIG{'prefix'} || "slaughter/policies/";
-
-my $policy = "http://$CONFIG{'server'}/$prefix";
+my $policy = "http://$SYSTEM{'server'}/$SYSTEM{'prefix'}";
 
 if ( $CONFIG{ 'policy' } )
 {
@@ -352,16 +350,6 @@ sub parseCommandLine
         exit 1;
     }
 
-    if ( $CONFIG{ 'verbose' } )
-    {
-        $SYSTEM{ 'verbose' } = 1;
-    }
-    else
-    {
-        $SYSTEM{ 'verbose' } = 0;
-    }
-
-
     pod2usage(1) if $HELP;
     pod2usage( -verbose => 2 ) if $MANUAL;
 }
@@ -459,6 +447,14 @@ You must launch this command as root.
 EOF
         exit 1;
     }
+
+
+    #
+    #  Save the server
+    #
+    $SYSTEM{ 'server' }  = $CONFIG{ 'server' };
+    $SYSTEM{ 'verbose' } = $CONFIG{ 'verbose' };
+    $SYSTEM{ 'prefix' }  = $CONFIG{ 'prefix' } || "/slaughter/";
 }
 
 
@@ -481,17 +477,6 @@ sub fetchPolicy
     my ($url) = (@_);
 
     $CONFIG{ 'verbose' } && print "Fetching $url\n";
-
-    #
-    #  Save the server
-    #
-    if ( !$SYSTEM{ 'server' } )
-    {
-        if ( $url =~ /:\/\/([^\/]+)\// )
-        {
-            $SYSTEM{ 'server' } = $1;
-        }
-    }
 
 
     my $ua = LWP::UserAgent->new();

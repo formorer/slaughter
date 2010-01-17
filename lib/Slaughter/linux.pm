@@ -302,7 +302,7 @@ sub FetchFile
     #
     #  Fetch the source.
     #
-    my $content = fetchURL( "http://" . $server . "/slaughter/files/" . $src );
+    my $content = fetchURL( "http://" . $server . $prefix . "/files/" . $src );
 
     if ( !defined($content) )
     {
