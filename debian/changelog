@@ -1,6 +1,6 @@
 slaughter (0.2-2) stable; urgency=low
 
-  * Added UserDetails.
+  * Added UserDetails, and updated the variable list.
 
  -- Steve Kemp <steve@steve.org.uk>  Saturday, 16 Jan 2010 23:55:32 +0000
 
