@@ -1,3 +1,4 @@
 syntax: glob
 debian/files
+debian/slaughter-client*
 .version
