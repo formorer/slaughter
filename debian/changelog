@@ -1,3 +1,9 @@
+slaughter (0.4-3) stable; urgency=low
+
+  * Minor cleanup.
+
+ -- Steve Kemp <steve@steve.org.uk>  Sunday, 17 Jan 2010 05:22:50 +0000
+
 slaughter (0.4-2) stable; urgency=low
 
   * Added "PackageInstalled".  TODO decouple the debian packaging
