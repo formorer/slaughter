@@ -218,6 +218,8 @@ sub DeleteFilesMatching
     my $root    = $params{ 'Root' }    || return;
     my $pattern = $params{ 'Pattern' } || return;
 
+    $verbose && print "Removing files matching $pattern from $root\n";
+
     #
     #  Reference to our routine.
     #
@@ -228,7 +230,7 @@ sub DeleteFilesMatching
             unlink($file);
 
             $verbose &&
-              print "Removing $file - pattern: $pattern match in $root\n";
+              print "\tRemoving $file\n";
         }
     };
 
@@ -238,6 +240,52 @@ sub DeleteFilesMatching
     File::Find::find( { wanted => $wanted, no_chdir => 1 }, $root );
 }
 
+
+
+
+##
+##  Public:  Delete files in a given root directory older than N days.
+##
+##  Parameters:
+##       Root    The directory to cleanup.
+##       Age     The age of files above which they should be removed.
+##
+##  NOTE:  This function is not recursive, and ignores directories.
+##
+sub DeleteOldFiles
+{
+    my (%params) = (@_);
+
+    my $root    = $params{ 'Root' }    || return;
+    my $age     = $params{ 'Age' } || return;
+    my $removed = 0;
+
+    $verbose && print "Removing files older than $age days from $root\n";
+
+    #
+    #  Find each file.
+    #
+    foreach my $file ( sort( glob( $root . "/*" ) ) )
+    {
+        # skip directories
+        next if ( -d $file );
+
+        my $fage = -M $file;
+
+        if ( $fage >= $age )
+        {
+            $verbose &&
+              print "\tRemoving $file age $fage is >= $age\n";
+
+            unlink( $file );
+            $removed += 1;
+        }
+    }
+
+    $verbose && print "\tRemoved $removed files\n";
+
+    return $removed;
+}
 
 
 

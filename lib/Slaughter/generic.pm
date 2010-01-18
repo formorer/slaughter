@@ -74,6 +74,12 @@ sub DeleteFilesMatching
 }
 
 
+sub DeleteOldFiles
+{
+    print "DeleteOldFiles - not implemented for $^O\n";
+}
+
+
 sub FetchFile
 {
     print "FetchFile - not implemented for $^O\n";
