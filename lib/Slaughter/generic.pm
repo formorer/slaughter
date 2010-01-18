@@ -68,24 +68,6 @@ sub CommentLinesMatching
 }
 
 
-sub Define
-{
-    my ( $name, $value ) = (@_);
-
-    $value = 1 if ( !defined($value) );
-
-    $DEFINES{ $name } = $value;
-}
-
-
-sub Defined
-{
-    my ($name) = (@_);
-
-    return ( $template{ $name } || $DEFINES{ $name } || undef );
-}
-
-
 sub DeleteFilesMatching
 {
     print "DeleteFilesMatching - not implemented for $^O\n";
@@ -132,9 +114,7 @@ sub PercentageUsed
 
 sub RunCommand
 {
-    my ($cmd) = (@_);
-
-    system($cmd );
+    print "RunCommand - not implemented for $^O\n";
 }
 
 
@@ -173,13 +153,6 @@ sub UserDetails
                Shell   => $logprog,
                Login   => $name
              } );
-}
-
-
-sub Value
-{
-    my ($name) = (@_);
-    return ( Defined($name) );
 }
 
 

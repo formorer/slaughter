@@ -643,9 +643,6 @@ use warnings;
 
 use Slaughter;
 
-# definitions set with Define
-our %DEFINES;
-
 
 # template variables.
 EOF

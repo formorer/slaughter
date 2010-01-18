@@ -203,48 +203,6 @@ sub CommentLinesMatching
 
 
 
-
-##
-##
-##  Public:  Define a value for the given symbol.
-##
-##  Usage:
-##       Define($name, $value);
-##
-##    $name    The symbol to define.
-##    $value   The value of that symbol.
-##
-##
-sub Define
-{
-    my ( $name, $value ) = (@_);
-
-    $value = 1 if ( !defined($value) );
-
-    $DEFINES{ $name } = $value;
-}
-
-
-
-##
-##
-##  Public:  Return the value of a user-defined symbol, or global symbol.
-##
-##  Usage:
-##       Defined($name);
-##
-##    $name    The symbol to test/lookup.
-##
-##
-sub Defined
-{
-    my ($name) = (@_);
-
-    return ( $template{ $name } || $DEFINES{ $name } || undef );
-}
-
-
-
 ##
 ##  Public:  Delete files from a given root directory matching a given pattern.
 ##
@@ -377,7 +335,7 @@ sub FetchFile
         $verbose && print "\tReplacing $dst\n";
         if ( -e $dst )
         {
-            RunCommand("mv $dst $dst.old");
+            RunCommand( Cmd => "mv $dst $dst.old" );
         }
 
         #
@@ -390,7 +348,7 @@ sub FetchFile
         }
 
 
-        RunCommand("mv $name $dst");
+        RunCommand( Cmd => "mv $name $dst" );
 
         $FILES{ $dst } = 1;
     }
@@ -401,17 +359,17 @@ sub FetchFile
     if ( -e $dst && ( $params{ 'Owner' } ) )
     {
         my $owner = $params{ 'Owner' };
-        RunCommand("chown $owner $dst");
+        RunCommand( Cmd => "chown $owner $dst" );
     }
     if ( -e $dst && ( $params{ 'Group' } ) )
     {
         my $group = $params{ 'Group' };
-        RunCommand("chgrp $group $dst");
+        RunCommand( Cmd => "chgrp $group $dst" );
     }
     if ( -e $dst && ( $params{ 'Mode' } ) )
     {
         my $mode = $params{ 'Mode' };
-        RunCommand("chmod $mode $dst");
+        RunCommand( Cmd => "chmod $mode $dst" );
     }
 
     #
@@ -623,7 +581,7 @@ sub PercentageUsed
     #
     #  The mount-point
     #
-    my $point = $params{ 'path' } || "/";
+    my $point = $params{ 'Path' } || "/";
 
     my $perc = 0;
 
@@ -649,14 +607,19 @@ sub PercentageUsed
 
 
 ##
-##  Public
 ##
-##  Run a command, via system.
+##  Public:  Execute a command, via system().
+##
+##  Parameters:
+##       Cmd  The command to execute.
+##
 ##
 ##
 sub RunCommand
 {
-    my ($cmd) = (@_);
+    my (%params) = (@_);
+
+    my $cmd = $params{ 'Cmd' } || return;
 
     $verbose && print "runCommand( $cmd )\n";
 
@@ -726,18 +689,6 @@ sub UserDetails
              } );
 }
 
-
-
-##
-##  Public
-##
-##  Return the value of the named definition.
-##
-sub Value
-{
-    my ($name) = (@_);
-    return ( Defined($name) );
-}
 
 
 
