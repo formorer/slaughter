@@ -258,7 +258,7 @@ sub FetchFile
 
     if ( !$src || !$dst )
     {
-        print "Missing source/dest\n";
+        $verbose && print "\tMissing source or destination.\n";
         return 0;
     }
 
@@ -269,6 +269,7 @@ sub FetchFile
 
     if ( !defined($content) )
     {
+        $verbose && print "\tFailed to fetch.\n";
         return 0;
     }
 
@@ -278,18 +279,24 @@ sub FetchFile
     #
     if ( ( defined $params{ 'Expand' } ) && ( $params{ 'Expand' } =~ /true/i ) )
     {
+        $verbose && print "\tExpanding content with Text::Template\n";
+
         my $template =
           Text::Template->new( TYPE   => 'string',
                                SOURCE => $content );
 
         $content = $template->fill_in( HASH => %template );
     }
+    else
+    {
+        $verbose && print "\tUsing contents literally; no template expansion\n";
+    }
+
 
     #
-    #  OK now we want to write out the content.
+    #  OK now we want to write out the content to a temporary location.
     #
     my ( $handle, $name ) = File::Temp::tempfile();
-
     open my $fh, ">", $name or
       return;
     print $fh $content;
@@ -298,16 +305,15 @@ sub FetchFile
 
     #
     #  We have the file, does it differ from the live filesystem?
-    #
     #  Or is the local copy missing?
     #
-    #  If so we replace
+    #  If so we'll move the new file into place.
     #
     my $replace = 0;
 
     if ( !-e $dst )
     {
-        $verbose && print "\tDestination not present - will move into place\n";
+        $verbose && print "\tDestination not already present.\n";
         $replace = 1;
     }
     else
@@ -332,11 +338,12 @@ sub FetchFile
     #
     if ($replace)
     {
-        $verbose && print "\tReplacing $dst\n";
         if ( -e $dst )
         {
+            $verbose && print "\tMoving existing file out of the way.\n";
             RunCommand( Cmd => "mv $dst $dst.old" );
         }
+
 
         #
         #  Ensure the destination directory exists.
@@ -348,9 +355,8 @@ sub FetchFile
         }
 
 
+        $verbose && print "\tReplacing $dst\n";
         RunCommand( Cmd => "mv $name $dst" );
-
-        $FILES{ $dst } = 1;
     }
 
     #
@@ -359,16 +365,19 @@ sub FetchFile
     if ( -e $dst && ( $params{ 'Owner' } ) )
     {
         my $owner = $params{ 'Owner' };
+        $verbose && print "\tSetting owner to $owner\n";
         RunCommand( Cmd => "chown $owner $dst" );
     }
     if ( -e $dst && ( $params{ 'Group' } ) )
     {
         my $group = $params{ 'Group' };
+        $verbose && print "\tSetting group to $group\n";
         RunCommand( Cmd => "chgrp $group $dst" );
     }
     if ( -e $dst && ( $params{ 'Mode' } ) )
     {
         my $mode = $params{ 'Mode' };
+        $verbose && print "\tSetting mode to $mode\n";
         RunCommand( Cmd => "chmod $mode $dst" );
     }
 
@@ -431,7 +440,6 @@ sub FileMatches
         close($handle);
 
         return ($count);
-
     }
     else
     {
@@ -516,7 +524,6 @@ sub RemovePackage
 ##
 sub PackageInstalled
 {
-
     my (%params) = (@_);
 
     my $package = $params{ 'Package' } || return;
