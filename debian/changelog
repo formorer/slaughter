@@ -1,6 +1,14 @@
 slaughter (0.8-1) stable; urgency=low
 
   * New release:
+    - Added new --no-log parameter to avoid local logging.
+    - Changed DeleteFilesMatching to return the number of files deleted.
+
+ -- Steve Kemp <steve@steve.org.uk>  Sunday, 24 Jan 2010 12:04:04 +0000
+
+slaughter (0.8-1) stable; urgency=low
+
+  * New release:
     - Added "DeleteOldFiles".
     - Added more verbosity in some of the primitives.
 
