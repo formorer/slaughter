@@ -1,4 +1,4 @@
-slaughter (0.8-1) stable; urgency=low
+slaughter (0.9-1) stable; urgency=low
 
   * New release:
     - Added new --no-log parameter to avoid local logging.
