@@ -217,6 +217,7 @@ sub DeleteFilesMatching
 
     my $root    = $params{ 'Root' }    || return;
     my $pattern = $params{ 'Pattern' } || return;
+    my $removed = 0;
 
     $verbose && print "Removing files matching $pattern from $root\n";
 
@@ -229,6 +230,7 @@ sub DeleteFilesMatching
         {
             unlink($file);
 
+            $removed += 1;
             $verbose &&
               print "\tRemoving $file\n";
         }
@@ -238,6 +240,8 @@ sub DeleteFilesMatching
     #
     #
     File::Find::find( { wanted => $wanted, no_chdir => 1 }, $root );
+
+    return( $removed );
 }
 
 
