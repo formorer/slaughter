@@ -241,7 +241,7 @@ sub DeleteFilesMatching
     #
     File::Find::find( { wanted => $wanted, no_chdir => 1 }, $root );
 
-    return( $removed );
+    return ($removed);
 }
 
 
