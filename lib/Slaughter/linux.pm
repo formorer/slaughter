@@ -256,8 +256,8 @@ sub DeleteOldFiles
 {
     my (%params) = (@_);
 
-    my $root    = $params{ 'Root' }    || return;
-    my $age     = $params{ 'Age' } || return;
+    my $root = $params{ 'Root' } || return;
+    my $age  = $params{ 'Age' }  || return;
     my $removed = 0;
 
     $verbose && print "Removing files older than $age days from $root\n";
@@ -267,6 +267,7 @@ sub DeleteOldFiles
     #
     foreach my $file ( sort( glob( $root . "/*" ) ) )
     {
+
         # skip directories
         next if ( -d $file );
 
@@ -277,7 +278,7 @@ sub DeleteOldFiles
             $verbose &&
               print "\tRemoving $file age $fage is >= $age\n";
 
-            unlink( $file );
+            unlink($file);
             $removed += 1;
         }
     }
