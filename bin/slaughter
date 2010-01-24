@@ -19,7 +19,8 @@ slaughter - Perl Automation Tool
    --prefix      The web-prefix beneath which /files and /policies live.
    --protocol    The protocol to use "http" vs "https".
    --server      Specify the file server to fetch policies from.
-
+   --nolog       Don't redirect run output to a log file (Can't be used with --email)
+  
   Help Options:
 
    --help        Show the help information for this script.
@@ -204,10 +205,16 @@ else
     $CONFIG{ 'verbose' } &&
       print "Script starting : " . scalar localtime() . "\n";
 
-    system("$file  2>&1 >> $logfile");
+	my $cmd = $file;
+	unless($CONFIG{ 'nolog' }) 
+	{ 
+		$cmd.= " 2>&1 >> $logfile";
+	}
+    
+	my $return = system("$file");
 
     $CONFIG{ 'verbose' } &&
-      print "Script completed: " . scalar localtime() . "\n";
+      print "Script completed: (return = $return) " . scalar localtime() . "\n";
 
 }
 
@@ -459,6 +466,7 @@ sub parseCommandLine
             "prefix=s",   \$CONFIG{ 'prefix' },
             "protocol=s", \$CONFIG{ 'protocol' },
             "server=s",   \$CONFIG{ 'server' },
+	    "nolog!",	  \$CONFIG{ 'nolog' },
 
             # Flags
             "dump",       \$CONFIG{ 'dump' },
@@ -472,6 +480,10 @@ sub parseCommandLine
 
     pod2usage(1) if $HELP;
     pod2usage( -verbose => 2 ) if $MANUAL;
+
+    if($CONFIG{'nolog'} && $CONFIG{'email'}) { 
+	    die "You cannot use --email and --nolog at the same time.\n";
+    };
 
 }
 
@@ -692,6 +704,7 @@ Find and return the name of the file to log this run to.
 
 sub getLogfile
 {
+    return undef if $CONFIG{'nolog'};
 
     #
     #  Ensure we have a log directory.
