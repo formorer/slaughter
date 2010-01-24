@@ -212,7 +212,7 @@ else
         $cmd .= " 2>&1 >> $logfile";
     }
 
-    my $return = system("$file");
+    my $return = system( $cmd );
 
     $CONFIG{ 'verbose' } &&
       print "Script completed: (return = $return) " . scalar localtime() . "\n";
