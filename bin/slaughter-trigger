@@ -63,7 +63,7 @@ if ( $UID != 0 )
 #
 if ( -e "/etc/slaughter/secret" )
 {
-    $secret = readFile( "/etc/slaughter/secret" );
+    $secret = readFile("/etc/slaughter/secret");
 }
 else
 {
@@ -75,7 +75,7 @@ else
 #
 #  For each host, make the request
 #
-foreach my $host ( @ARGV )
+foreach my $host (@ARGV)
 {
     print "\t$host: ";
     callHost( $secret, $host );
@@ -89,18 +89,17 @@ exit 0;
 
 
 
-
 sub readFile
 {
-    my( $file ) = ( @_);
+    my ($file) = (@_);
 
-    open my $handle, "<", $file
-      or die "Failed to open $file - $!";
+    open my $handle, "<", $file or
+      die "Failed to open $file - $!";
 
     my $secret = <$handle>;
-    chomp( $secret ) if ( defined( $secret ) );
+    chomp($secret) if ( defined($secret) );
 
-    close( $handle );
+    close($handle);
 
     return $secret;
 }
@@ -109,7 +108,7 @@ sub readFile
 
 sub callHost
 {
-    my ( $secret, $host ) = ( @_ );
+    my ( $secret, $host ) = (@_);
 
     my $ua = LWP::UserAgent->new;
     $ua->timeout(10);
