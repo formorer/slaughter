@@ -100,6 +100,43 @@ be compiled into the policy prior to execution.
 
 =cut
 
+=head1 CONFIGURATION
+
+Most of the configuration of this tool may be carried out via the
+command line, however some options may be more naturally supplied
+in the system-wide configuration file B</etc/slaughter/slaughter.conf>.
+
+A fully-featured file will look like this:
+
+=for example begin
+
+  #
+  #  Comments start with "#"
+  #
+
+  #  Email address to send non-empty results to
+  ##
+  email = sysadmin@example.com
+
+  #  Sender address for the mails
+  ##
+  sender = root@example.com
+
+  #  Sendmail path/args
+  ##
+  sendmail = /usr/lib/sendmail -t
+
+  #  Be quiet
+  ##
+  verbose = 0
+
+  # Server details: http://example.com/slaughter/policies/default.policy
+  ##
+  protocol = http://
+  server   = example.com
+  prefix   = /slaughter/
+
+=for example end
 
 =head1 AUTHOR
 
@@ -212,7 +249,7 @@ else
         $cmd .= " 2>&1 >> $logfile";
     }
 
-    my $return = system( $cmd );
+    my $return = system($cmd );
 
     $CONFIG{ 'verbose' } &&
       print "Script completed: (return = $return) " . scalar localtime() . "\n";
@@ -743,13 +780,32 @@ sub emailLogfile
 {
     my ( $to, $file ) = (@_);
 
-    my $sendmail = "/usr/lib/sendmail -t";
+    #
+    #  If the logfile doesn't exist we're in trouble.
+    #
+    return unless ( -e $file );
 
-    open( SENDMAIL, "|$sendmail -f root" ) or
+    #
+    #  If the logfile is empty then there's no need to mail it.
+    #
+    return if ( -z $file );
+
+
+    #
+    #  Otherwise continue - with the path to sendmail.
+    #
+    my $sendmail = $CONFIG{ 'sendmail' } || "/usr/lib/sendmail -t";
+
+    #
+    #  The sender of the mail.
+    #
+    my $from = $CONFIG{ 'sender' } || "root";
+
+    open( SENDMAIL, "|$sendmail -f $from" ) or
       return;
     print SENDMAIL <<EOF;
 To: $to
-From: root
+From: $from
 Subject: slaughter run on $CONFIG{'fqdn'}
 
 EOF
