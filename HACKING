@@ -26,9 +26,8 @@ module, via the use of the perl $^O variable.
 "use Slaughter::linux".
 
  If no specific file may be found then the fall-back module
-Slaughter::generic is loaded.  This has some support written but is
-essentially full of methods which just print "Not implemented".
-
+Slaughter::generic is loaded.  This module just print "Not implemented"
+for each primitive - see the TODO file for details of this.
 
 
 Directions
