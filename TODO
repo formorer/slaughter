@@ -1,0 +1,67 @@
+
+TODO
+----
+
+
+Primitives
+----------
+
+  * We use system() when we could use chmod/chown directly.  This is bad.
+
+  * Our primitives are mostly written in pure-perl.  If we made them
+    entirely pure-perl we'd be able to drop Slaughter/linux, and
+    Slaughter/generic - just merging things together.
+
+    NOTE:  We could and should do this, but the package handling is going to
+    be non-portable regardless.
+
+  * Make Slaughter::generic a base-class?
+
+
+Wrapper
+-------
+
+  * Add GPG validation for policy download?
+
+       e.g. when fetching /default.policy also fetch /default.policy.sig
+            and only accept if signature is valid.
+
+
+Server-Driver
+-------------
+
+  * Each client node downloads and schedules itself.  It might be useful
+    to accept a request from a location, not necessarily the central policy
+    server, to initiate a run.
+
+       e.g. Write a simple service that listens on 1.2.3.4:8888 and when
+            a correctly validated request comes in just run "system( slaughter)"
+
+    NOTE:  We then need to think about keys.
+
+
+Transport
+---------
+
+  * Fetching files via HTTP or HTTPS is simple, clean, and easy to understand.
+    Perhaps we might also allow rsync?
+
+    That immediately makes recursive file copies possible, in a way that is
+    tricky otherwise.
+
+    Perhaps expect a share:
+
+# rsync.conf
+[slaughter]
+    path = /path/to/root
+    ip acl ..
+
+    Copy this to /var/log/slaughter, and concatenate the policies instead
+    of doing the HTTP expansion?
+
+
+
+Steve
+--
+
+
