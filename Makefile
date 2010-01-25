@@ -35,7 +35,8 @@ install: clean
 	mkdir -p $(prefix)/usr/share/perl5/Slaughter/linux/ || true
 	cp lib/Slaughter/linux/*.pm  $(prefix)/usr/share/perl5/Slaughter/linux/
 	mkdir $(prefix)/sbin/ || true
-	cp ./bin/slaughter $(prefix)/sbin/
+	cp ./bin/slaughter         $(prefix)/sbin/
+	cp ./bin/slaughter-trigger $(prefix)/sbin/
 	mkdir -p $(prefix)/etc/slaughter || true
 
 

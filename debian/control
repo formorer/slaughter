@@ -11,6 +11,7 @@ Package: slaughter-client
 Provides: slaughter
 Architecture: all
 Depends: ${misc:Depends}, libdigest-sha1-perl, libwww-perl, libtext-template-perl, perl-modules
+Suggests: httpd
 Description: Automation tool to perform system administration remotely
  This package contains a client which will connect to a Slaughter server
  and fetch policies to execute.
@@ -26,5 +27,6 @@ Description: Automation tool to perform system administration remotely
  .
   * Sending alerts.
  .
- (There is no need for a seperate server package, all files and policies
- are transferred over HTTP.)
+ Unless you wish to initiate execution from the a central location you
+ don't need to install the slaughter-server package.
+

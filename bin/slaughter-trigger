@@ -1,0 +1,128 @@
+#!/usr/bin/perl -w
+
+=head1 NAME
+
+slaughter-run - Perl Automation Tool, remote trigger.
+
+=cut
+
+=head1 ABOUT
+
+This binary allows the remote triggering of a slaughter run.
+
+Typically the slaughter client will be installed upon a number of machines,
+and each of those machines will be responsible for scheduling.
+
+This command will allow you to trigger a remote run of the slaughter
+client, via the supplied server - if it has been enabled.
+
+=cut
+
+=head1 AUTHOR
+
+ Steve
+ --
+ http://www.steve.org.uk/
+
+=cut
+
+=head1 LICENSE
+
+Copyright (c) 2010 by Steve Kemp.  All rights reserved.
+
+This module is free software;
+you can redistribute it and/or modify it under
+the same terms as Perl itself.
+The LICENSE file contains the full text of the license.
+
+=cut
+
+
+
+use strict;
+use warnings;
+
+use LWP::UserAgent;
+use English;
+
+
+my $secret = undef;
+
+
+#
+#  Ensure we're launched as root
+#
+if ( $UID != 0 )
+{
+    print "Please launch this command as root.\n";
+    exit 1;
+}
+
+#
+#  Ensure we have a secret
+#
+if ( -e "/etc/slaughter/secret" )
+{
+    $secret = readFile( "/etc/slaughter/secret" );
+}
+else
+{
+    print "Missing secret file: /etc/slaughter/secret\n";
+    exit 1;
+}
+
+
+#
+#  For each host, make the request
+#
+foreach my $host ( @ARGV )
+{
+    print "\t$host: ";
+    callHost( $secret, $host );
+}
+
+#
+#  All done.
+#
+exit 0;
+
+
+
+
+
+sub readFile
+{
+    my( $file ) = ( @_);
+
+    open my $handle, "<", $file
+      or die "Failed to open $file - $!";
+
+    my $secret = <$handle>;
+    chomp( $secret ) if ( defined( $secret ) );
+
+    close( $handle );
+
+    return $secret;
+}
+
+
+
+sub callHost
+{
+    my ( $secret, $host ) = ( @_ );
+
+    my $ua = LWP::UserAgent->new;
+    $ua->timeout(10);
+    $ua->env_proxy;
+
+    my $response = $ua->get('http://$host:3303/secret=?');
+    if ( $response->is_success() )
+    {
+        print " OK\n";
+    }
+    else
+    {
+        print " FAIL\n";
+    }
+
+}
