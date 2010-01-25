@@ -37,6 +37,7 @@ install: clean
 	mkdir $(prefix)/sbin/ || true
 	cp ./bin/slaughter         $(prefix)/sbin/
 	cp ./bin/slaughter-trigger $(prefix)/sbin/
+	cp ./bin/slaughter-server  $(prefix)/sbin/
 	mkdir -p $(prefix)/etc/slaughter || true
 
 

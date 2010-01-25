@@ -1,0 +1,4 @@
+sbin/slaughter            sbin/slaughter
+sbin/slaughter-trigger    sbin/slaughter-trigger
+lib/*                    usr/share/perl5/
+

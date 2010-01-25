@@ -26,9 +26,14 @@ install: build
 	dh_testroot
 	dh_clean -k
 	dh_installdirs
-	make install prefix=`pwd`/debian/slaughter-client
-	mkdir -p `pwd`/debian/slaughter-client/usr/share/man/man8/
-	pod2man ./bin/slaughter --official --section=8 `pwd`/debian/slaughter-client/usr/share/man/man8/slaughter.8
+	make install prefix=`pwd`/debian/tmp
+
+	mkdir -p `pwd`/debian/tmp/usr/share/man/man8/
+	pod2man ./bin/slaughter --official --section=8 `pwd`/debian/tmp/usr/share/man/man8/slaughter.8
+	pod2man ./bin/slaughter-trigger --official --section=8 `pwd`/debian/tmp/usr/share/man/man8/slaughter-trigger.8
+
+	dh_movefiles -p slaughter-client
+	dh_movefiles -p slaughter-server
 
 # Build architecture-independent files here.
 binary-indep: build install

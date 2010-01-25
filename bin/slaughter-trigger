@@ -13,8 +13,9 @@ This binary allows the remote triggering of a slaughter run.
 Typically the slaughter client will be installed upon a number of machines,
 and each of those machines will be responsible for scheduling.
 
-This command will allow you to trigger a remote run of the slaughter
-client, via the supplied server - if it has been enabled.
+If the slaughter-server package is installed upon a host then it will
+listen upon port 3306 and permit the slaughter client to be triggered
+via this script.
 
 =cut
 
@@ -114,14 +115,16 @@ sub callHost
     $ua->timeout(10);
     $ua->env_proxy;
 
-    my $response = $ua->get('http://$host:3303/secret=?');
+    my $url = "http://$host:3303/secret/$secret";
+
+    my $response = $ua->get($url );
     if ( $response->is_success() )
     {
         print " OK\n";
     }
     else
     {
-        print " FAIL\n";
+        print " FAIL: " . $response->status_line() . "\n";
     }
 
 }
