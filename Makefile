@@ -24,7 +24,7 @@ clean:
 
 
 tidy:
-	perltidy ./bin/slaughter ./bin/slaughter-trigger $$(find . -name '*.pm' -print) || true
+	perltidy ./bin/slaughter $$(find . -name '*.pm' -print) || true
 
 
 install: clean
