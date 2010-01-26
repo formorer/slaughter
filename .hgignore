@@ -1,6 +1,7 @@
 syntax: glob
 debian/files
 debian/tmp/
+debian/slaughter-client/
 debian/*.log
 debian/*.debhelper
 .version
