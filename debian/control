@@ -31,10 +31,3 @@ Description: Automation tool to perform system administration remotely
  don't need to install the slaughter-server package.
 
 
-Package: slaughter-server
-Architecture: all
-Depends: ${misc:Depends}, libhttp-daemon-perl, perl, perl-modules
-Description: Automation tool to perform system administration remotely
- This package contains a simple server which allows slaughter to be
- triggered remotely, rather than based upon any local scheduling.
- .
