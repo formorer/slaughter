@@ -1,3 +1,10 @@
+slaughter (1.0-1) stable; urgency=low
+
+  * Fixed file download to correctly compare existing contents.
+    - Thanks to Kristian Lyngstol.
+
+ -- Steve Kemp <steve@steve.org.uk>  Sunday, 18 Apr 2010 11:22:11 +0000
+
 slaughter (0.9-2) stable; urgency=low
 
  * Experimentation.
