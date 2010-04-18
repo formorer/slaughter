@@ -374,7 +374,7 @@ sub FetchFile
         my $cur = checksumFile($dst);
         my $new = checksumFile($name);
 
-        if ( $new != $cur )
+        if ( $new ne $cur )
         {
             $replace = 1;
 
@@ -555,7 +555,7 @@ sub RemovePackage
     my $helper = Slaughter::linux::packages->new();
 
     #
-    #  If we recognise the system, install the package
+    #  If we recognise the system, remove the package
     #
     if ( $helper->recognised() )
     {
@@ -587,7 +587,7 @@ sub PackageInstalled
     my $helper = Slaughter::linux::packages->new();
 
     #
-    #  If we recognise the system, install the package
+    #  If we recognise the system, test the package installation state.
     #
     if ( $helper->recognised() )
     {
