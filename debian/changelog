@@ -1,3 +1,14 @@
+slaughter (1.1-1) stable; urgency=low
+
+  * Suggestions implemented from Raphael Daum:
+    - Expose IP address of client in "ip0, ip1, ip..., ipN".
+    - IP count available in "ipcount".
+    - Read /etc/hostname if available, and only then revert to
+      `hostname` and `hostname --fqdn` to find FQDN.
+    - Honour comments when fetching policies.
+
+ -- Steve Kemp <steve@steve.org.uk>  Monday, 22 Nov 2010 20:30:40 +0000
+
 slaughter (1.0-1) stable; urgency=low
 
   * Fixed file download to correctly compare existing contents.
