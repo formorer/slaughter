@@ -47,16 +47,16 @@ will attempt to download and execute the contents of:
 
 =for example begin
 
-   http://server/slaughter/policies/default.policy
+   http://server.example.org/slaughter/policies/default.policy
 
 =for example end
 
 This simple policy file may in turn include other policy files, or it
 might contain perl code to execute.
 
-The path to the policies will always be /slaughter/policies/, and similarly
-file-fetches will come from /slaughter/files/ - but you may change the
-/slaughter/ section of that with the B<--prefix> argument.
+The path to the policies will default to /slaughter/policies/, and
+file-fetches will be pulled from /slaughter/files/ - you may change
+the /slaughter/ prefix with the B<--prefix> command-line argument.
 
 =cut
 
@@ -319,8 +319,36 @@ sub findSystemDetails
     #
     #  Fully Qualified hostname
     #
-    $ref->{ 'fqdn' } = `hostname`;
-    chomp( $ref->{ 'fqdn' } );
+    #  1.  If we can find /etc/hostname, then use that.
+    #
+    if ( -e "/etc/hostname" )
+    {
+        open( my $file, "<", "/etc/hostname" ) or
+          die "Failed to read /etc/hostname - $!";
+        $ref->{ 'fqdn' } = <$file>;
+        chomp( $ref->{ 'fqdn' } );
+        close($file);
+    }
+    else
+    {
+
+        #
+        #  Ok /etc/hostname is missing.
+        #
+        #  Call "hostname".
+        #
+        $ref->{ 'fqdn' } = `hostname`;
+        chomp( $ref->{ 'fqdn' } );
+
+        #
+        # If it is unqualified retry with --fqdn.
+        #
+        if ( $ref->{ 'fqdn' } !~ /\./ )
+        {
+            $ref->{ 'fqdn' } = `hostname --fqdn`;
+            chomp( $ref->{ 'fqdn' } );
+        }
+    }
 
     #
     #  Get the hostname and domain name as seperate strings.
@@ -408,6 +436,40 @@ sub findSystemDetails
     #
     #  TODO: IP address
     #
+    if ( -x "/bin/ip" )
+    {
+        my $count = 0;
+
+        foreach my $line (
+               split( /[\r\n]/, `/bin/ip -o -f inet  addr show scope global` ) )
+        {
+            next if ( !defined($line) || !length($line) );
+            chomp($line);
+
+            #
+            #  This matches something like:
+            #
+            #  2: eth0    inet 192.168.1.9/24 brd 192.168.1.255 scope global eth0
+            #
+            #
+            if ( $line =~ /^([0-9]+):[ \t]+([^ ]+)[ \t]*inet[ \t]+([0-9\.]+)/ )
+            {
+                my $eth = $2;
+                my $ip  = $3;
+
+                #
+                # Save away the IP address in "ip0", "ip1", "ip2" .. etc.
+                #
+                $ref->{ "ip" . $count } = $ip;
+                $count += 1;
+            }
+        }
+
+        if ( $count > 0 )
+        {
+            $ref->{ 'ipcount' } = $count;
+        }
+    }
 
     #
     #  TODO: 3Ware RAID?
@@ -594,6 +656,13 @@ sub fetchRemotePolicy
 
         foreach my $line ( split( /[\r\n]/, $contents ) )
         {
+
+            # Skip lines beginning with comments
+            next if ( $line =~ /^([ \t]*)\#/ );
+
+            # Skip blank lines
+            next if ( length($line) < 1 );
+
             if ( $line =~ /FetchPolicy([ \t]+)(.*)[ \t]*\;/i )
             {
                 my $inc = $2;
