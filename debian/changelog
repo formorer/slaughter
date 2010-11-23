@@ -1,3 +1,10 @@
+slaughter (1.2-1) stable; urgency=low
+
+  * Update the IP-address detection to cope with "ip" being located
+    in either /sbin or /bin.
+
+ -- Steve Kemp <steve@steve.org.uk>  Tuesday, 23 Nov 2010 21:11:12 +0000
+
 slaughter (1.1-1) stable; urgency=low
 
   * Suggestions implemented from Raphael Daum:
