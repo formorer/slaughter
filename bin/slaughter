@@ -15,7 +15,7 @@ slaughter - Perl Automation Tool
    --email       Output the logfile via email to the specified address.
    --keep        Don't delete the compiled perl post-execution.
    --no-execute  Don't actually execute the downloaded policy.
-   --no-log      Don't redirect run output to a log file
+   --no-log      Don't redirect run output to a log file.
                  (Can't be used with --email)
    --policy      Specify the policy file to load; default is "default.policy".
    --prefix      The web-prefix beneath which /files and /policies live.
@@ -434,14 +434,19 @@ sub findSystemDetails
 
 
     #
-    #  TODO: IP address
+    #  IP address(es).
     #
-    if ( -x "/bin/ip" )
+    my $ip = undef;
+
+    $ip = "/sbin/ip" if ( -x "/sbin/ip" );
+    $ip = "/bin/ip"  if ( -x "/bin/ip" );
+
+    if ( defined($ip) )
     {
-        my $count = 0;
+        my $count = 1;
 
         foreach my $line (
-               split( /[\r\n]/, `/bin/ip -o -f inet  addr show scope global` ) )
+                   split( /[\r\n]/, `$ip -o -f inet  addr show scope global` ) )
         {
             next if ( !defined($line) || !length($line) );
             chomp($line);
@@ -467,7 +472,7 @@ sub findSystemDetails
 
         if ( $count > 0 )
         {
-            $ref->{ 'ipcount' } = $count;
+            $ref->{ 'ipcount' } = ( $count - 1 );
         }
     }
 
@@ -597,7 +602,7 @@ sub testEnvironment
     if ( !$CONFIG{ 'server' } )
     {
         print <<EOF;
-You need to specify the server which this node will fetch the policies
+You need to specify the server which this client will fetch the policies
 from.  You can either do this by running:
 
    slaughter --server=foo.example.org
