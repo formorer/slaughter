@@ -476,6 +476,23 @@ sub findSystemDetails
         }
     }
 
+
+    #
+    #  Find the name of our release
+    #
+    my $release = "unknown";
+    if ( -x "/usr/bin/lsb_release" )
+    {
+        my $output = `/usr/bin/lsb_release --short --code`;
+        if ( defined($output) )
+        {
+            chomp($output);
+            $release = $output if ( length($output) );
+        }
+    }
+    $ref->{ 'release' } = $release;
+
+
     #
     #  TODO: 3Ware RAID?
     #
