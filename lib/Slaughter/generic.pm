@@ -88,9 +88,14 @@ sub FetchFile
 
 sub FileMatches
 {
-    print "FIleMatches - not implemented for $^O\n";
+    print "FileMatches - not implemented for $^O\n";
 }
 
+
+sub FindBinary
+{
+    print "FindBinary - not implemented for $^O\n";
+}
 
 sub InstallPackage
 {

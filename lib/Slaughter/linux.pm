@@ -500,6 +500,40 @@ sub FileMatches
     }
 }
 
+##
+##
+##  Public:  Find a binary upon the system, or specified, path.
+##
+##  Parameters:
+##       binary  The name of the binary to locate.  Mandatory.
+##       path    The path to search.  Optional
+##
+##
+sub FindBinary
+{
+    my (%params) = (@_);
+
+    my $binary = $params{ 'binary' } || return;
+    my $path   = $params{ 'path' } ||
+      $ENV{'PATH'} ||
+        "/bin:/sbin:/usr/bin:/usr/sbin" ;
+
+    $verbose && print "Looking for '$binary' in '$path'\n";
+
+    foreach my $dir ( split( /:/, $path ) )
+    {
+        if ( -d $dir && ( -x $path . "/" . $binary ) )
+        {
+            $verbose && print "\t$dir/$binary\n";
+
+            return $dir . "/" . $binary;
+        }
+    }
+
+    $verbose && print "\tFailed to find\n";
+    return undef;
+}
+
 
 ##
 ##
