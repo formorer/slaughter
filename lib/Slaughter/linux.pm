@@ -516,21 +516,16 @@ sub FindBinary
     my $binary = $params{ 'binary' } || return;
     my $path   = $params{ 'path' } ||
       $ENV{'PATH'} ||
-        "/bin:/sbin:/usr/bin:/usr/sbin" ;
-
-    $verbose && print "Looking for '$binary' in '$path'\n";
+        "/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin" ;
 
     foreach my $dir ( split( /:/, $path ) )
     {
-        if ( -d $dir && ( -x $path . "/" . $binary ) )
+        if ( ( -d $dir ) && ( -x ( $dir . "/" . $binary ) ) )
         {
-            $verbose && print "\t$dir/$binary\n";
-
             return $dir . "/" . $binary;
         }
     }
 
-    $verbose && print "\tFailed to find\n";
     return undef;
 }
 
