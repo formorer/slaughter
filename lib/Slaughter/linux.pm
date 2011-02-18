@@ -514,9 +514,9 @@ sub FindBinary
     my (%params) = (@_);
 
     my $binary = $params{ 'binary' } || return;
-    my $path   = $params{ 'path' } ||
-      $ENV{'PATH'} ||
-        "/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin" ;
+    my $path = $params{ 'path' } ||
+      $ENV{ 'PATH' } ||
+      "/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin";
 
     foreach my $dir ( split( /:/, $path ) )
     {
