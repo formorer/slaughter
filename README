@@ -11,7 +11,7 @@ The task we support are pretty basic, but they include:
    2.  Replacing a file, expanding content within it.
    3.  Appending to files, commenting out lines in files.
    4.  Running system commands commands.
-   5.  Testing for the existance of local users, and fetching their details.
+   5.  Testing for the existence of local users, and fetching their details.
    6.  Checking disk space, and mount-points.
    7.  Sending alerts via email.
 
@@ -108,7 +108,7 @@ content will be wrapped up a little such that it becomes a locally
 executable file, making use of the Slaughter.pm module (this module
 is where the primitives are implemented and exported to the perl script).
 
- Finally the locally writen script will be made executable and
+ Finally the locally written script will be made executable and
 directly executed, before being removed.
 
  The output of the script will be saved to a logfile.
