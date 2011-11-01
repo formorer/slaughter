@@ -74,9 +74,9 @@ sub fetchURL
     push( @urls, $url );
 
 
-    foreach my $attempt ( @urls )
+    foreach my $attempt (@urls)
     {
-        my $response = $ua->get( $attempt );
+        my $response = $ua->get($attempt);
 
         if ( $response->is_success() )
         {
