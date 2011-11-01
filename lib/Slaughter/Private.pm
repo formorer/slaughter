@@ -50,7 +50,7 @@ sub fetchURL
 {
     my ($url) = (@_);
 
-    $verbose && print "\tfetchURL( $url) \n";
+    $verbose && print "\tfetchURL( $url ) \n";
 
     my $ua = LWP::UserAgent->new();
     $ua->env_proxy();
@@ -61,34 +61,38 @@ sub fetchURL
     #
     #  url.$fqdn
     #  url.$hostname
+    #  url.$arch
     #  url
     #
     #  Return the first one that matches, if any do.
     #
-    my $response = $ua->get( $url . "." . $fqdn );
-    if ( $response->is_success() )
-    {
-        $verbose && print "\t$url.$fqdn OK\n";
-        return ( $response->decoded_content() );
-    }
-    $response = $ua->get( $url . "." . $hostname );
-    if ( $response->is_success() )
-    {
-        $verbose && print "\t$url.$hostname OK\n";
-        return ( $response->decoded_content() );
-    }
+    my @urls;
 
-    $response = $ua->get($url);
-    if ( $response->is_success() )
+    push( @urls, $url . "." . $fqdn );
+    push( @urls, $url . "." . $hostname );
+    push( @urls, $url . "." . $arch );
+    push( @urls, $url );
+
+
+    foreach my $attempt ( @urls )
     {
-        $verbose && print "\t$url OK\n";
-        return ( $response->decoded_content() );
+        my $response = $ua->get( $attempt );
+
+        if ( $response->is_success() )
+        {
+            $verbose && print "\t$attempt OK\n";
+            return ( $response->decoded_content() );
+        }
+        else
+        {
+            $verbose && print "\t$attempt failed - continuing\n";
+        }
     }
 
     #
     #  Failed
     #
-    $verbose && print "\tFailed to find content\n";
+    $verbose && print "\tFailed to fetch any of our attempts for $url\n";
     return undef;
 }
 
