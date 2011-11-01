@@ -79,8 +79,8 @@ These primitives are more fully described online:
 
 =head1 LOGGING
 
-The output of any given run will be appended to the file
-/var/log/slaughter.log
+The output of any given run will saved to a file beneath the directory
+B</var/log/slaughter>.  (This directory will be created if it is missing.)
 
 =cut
 
@@ -148,7 +148,7 @@ A fully-featured file will look like this:
 
 =head1 LICENSE
 
-Copyright (c) 2010 by Steve Kemp.  All rights reserved.
+Copyright (c) 2010-2011 by Steve Kemp.  All rights reserved.
 
 This module is free software;
 you can redistribute it and/or modify it under
