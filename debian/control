@@ -3,7 +3,7 @@ Section: admin
 Priority: optional
 Maintainer: Steve Kemp <steve@steve.org.uk>
 Build-Depends: debhelper (>> 5.0.0)
-Standards-Version: 3.8.0
+Standards-Version: 3.9.1
 Homepage: http://www.steve.org.uk/Software/slaughter/
 
 
@@ -27,7 +27,5 @@ Description: Automation tool to perform system administration remotely
  .
   * Sending alerts.
  .
- Unless you wish to initiate execution from the a central location you
- don't need to install the slaughter-server package.
-
-
+ There is no need for a centralised slaughter-server, as all policy
+ files are served via HTTP (or HTTPS).
