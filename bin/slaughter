@@ -689,15 +689,17 @@ sub fetchRemotePolicy
             {
                 my $inc = $2;
 
-                $CONFIG{ 'verbose' } &&
-                  print "\tFetching include: $inc\n";
-
                 ##
                 ## Fully qualified URL?
                 ##
                 if ( $inc =~ /:\/\// )
                 {
-                    $ret .= fetchURL($inc);
+                    my $tmp = fetchURL($inc);
+
+                    if ( defined($tmp) )
+                    {
+                        $ret .= $tmp;
+                    }
                 }
                 else
                 {
@@ -709,7 +711,12 @@ sub fetchRemotePolicy
                     {
                         $inc = $1 . "/" . $inc;
 
-                        $ret .= fetchURL($inc);
+                        my $tmp = fetchURL($inc);
+
+                        if ( defined($tmp) )
+                        {
+                            $ret .= $tmp;
+                        }
                     }
                 }
             }
@@ -744,15 +751,32 @@ sub fetchURL
 {
     my ($url) = (@_);
 
+    $CONFIG{ 'verbose' } && print "Fetching remote URL: $url\n";
+
+    #
+    #  Create the helper
+    #
     my $ua = LWP::UserAgent->new();
     $ua->env_proxy();
+
+    #
+    #  Fetch the named URL.
+    #
     my $response = $ua->get($url);
     if ( $response->is_success() )
     {
+        $CONFIG{ 'verbose' } && print "\tSuccess.\n";
+
         return ( $response->decoded_content() );
     }
     else
     {
+
+        #
+        #  Error..
+        #
+        $CONFIG{ 'verbose' } &&
+          print "\tFailed: " . $response->status_line . ".\n";
         return (undef);
     }
 }
