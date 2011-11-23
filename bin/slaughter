@@ -802,8 +802,9 @@ sub parseCommandLine
         !GetOptions(
 
             # Help options
-            "help",   \$SHOW_HELP,
-            "manual", \$SHOW_MANUAL,
+            "help",    \$SHOW_HELP,
+            "manual",  \$SHOW_MANUAL,
+            "version", \$SHOW_VERSION,
 
             # General options
             "email=s",    \$CONFIG{ 'email' },
@@ -818,7 +819,6 @@ sub parseCommandLine
             "no-execute", \$CONFIG{ 'noexecute' },
             "no-log",     \$CONFIG{ 'nolog' },
             "verbose",    \$CONFIG{ 'verbose' },
-            "version",    \$SHOW_VERSION,
         ) )
     {
         exit 1;
