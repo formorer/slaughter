@@ -5,7 +5,7 @@ Slaughter
 The goal of this project is to have a lightweight system which will
 allow the control and manipulation of multiple systems.
 
-The task we support are pretty basic, but they include:
+The tasks we support are pretty basic, but they include:
 
    1.  Replacing a file, literally.
    2.  Replacing a file, expanding content within it.
@@ -29,6 +29,10 @@ will connect to it to download their policies - this means the management
 isn't pushed from the central source, instead each client node makes
 pull requests.
 
+The attaction of client-pull is that there is no need to maintain state
+on the central server, and each client can be trusted to schedule itself
+via a cron-like system.  The potential downside is that you might fail to
+notice if a client suddenly stops making appropriate requests.
 
 
 Policies
@@ -91,8 +95,9 @@ The root directory might look like like this:
 e.g. The request for http://$master/slaughter/policies/default.policy should
 succeed.
 
-In the interests of security it is probably wise to ACL access to the
-/slaughter/ location addresses which aren't clients you're managing.
+In the interests of security it is probably wise to limit access to the
+/slaughter/ location, denying access to clients you're not expecting to
+pull from it.
 
 
 
