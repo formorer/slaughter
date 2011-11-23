@@ -187,6 +187,10 @@ my $VERSION = '1.4';
 my %CONFIG = defaultOptions();
 
 
+
+
+
+
 #
 #  Parse configuration file.
 #
@@ -197,7 +201,6 @@ parseConfigurationFile();
 #  Parse command line.
 #
 parseCommandLine();
-
 
 
 #
@@ -226,7 +229,8 @@ $CONFIG{ 'verbose' } && print "Policy written to $file\n";
 #  Test at this point that we have the modules required for this particular
 # operating system.
 #
-
+#  TODO
+#
 
 #
 #  Find the logfile to write our run to.
@@ -547,6 +551,19 @@ sub findSystemDetails
 
 }
 
+
+
+=begin doc
+
+Here we find details about the system which will be included in the
+generated file script.  This is largely a duplicate of the previous
+version but includes some Microsoft Windows-specific code.
+
+TODO: We should merge this in the future.
+
+=end doc
+
+=cut
 
 sub findSystemDetailsWin32
 {
