@@ -61,6 +61,7 @@ sub fetchURL
     #
     #  url.$fqdn
     #  url.$hostname
+    #  url.$os
     #  url.$arch
     #  url
     #
@@ -70,6 +71,7 @@ sub fetchURL
 
     push( @urls, $url . "." . $fqdn );
     push( @urls, $url . "." . $hostname );
+    push( @urls, $url . "." . $os );
     push( @urls, $url . "." . $arch );
     push( @urls, $url );
 

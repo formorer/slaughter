@@ -168,7 +168,7 @@ use Getopt::Long;
 use LWP::UserAgent;
 use Pod::Usage;
 
-
+my $slaughter_version = '1.4';
 
 #
 #  Setup default options.
@@ -187,6 +187,11 @@ parseConfigurationFile();
 #
 parseCommandLine();
 
+if ( $CONFIG{ 'slaughter_version' } )
+{
+    print $slaughter_version."\n";
+    exit;
+}
 
 #
 #  If we're dumping, do that.
@@ -208,7 +213,8 @@ testEnvironment();
 #
 #  Fetch the remote policy via http/https
 #
-my $policy = fetchRemotePolicy();
+my $policy = fetchRemotePolicy($CONFIG{ 'protocol' } . $CONFIG{ 'server' } . $CONFIG{ 'prefix' } .
+      "policies/" . $CONFIG{ 'policy' });
 
 
 #
@@ -249,7 +255,15 @@ else
         $cmd .= " 2>&1 >> $logfile";
     }
 
-    my $return = system($cmd );
+    my $return = 0;
+    if ( $^O eq "MSWin32" )
+    {
+        $return = system("perl ".$cmd );
+    }
+    else
+    {
+        $return = system($cmd );
+    }
 
     $CONFIG{ 'verbose' } &&
       print "Script completed: (return = $return) " . scalar localtime() . "\n";
@@ -287,6 +301,7 @@ Configure the default options, and return these as a hash.
 sub defaultOptions
 {
     my %defs = (
+        version  => 0,
         verbose  => 0,
         prefix   => "/slaughter/",
         policy   => "default.policy",
@@ -297,7 +312,14 @@ sub defaultOptions
     #
     #  Find the system information.
     #
-    findSystemDetails( \%defs );
+	if ($^O eq "MSWin32")
+	{
+		findSystemDetailsWin32( \%defs );
+	}
+	else
+	{
+		findSystemDetails( \%defs );
+	}
 
     return (%defs);
 }
@@ -390,6 +412,10 @@ sub findSystemDetails
         $ref->{ 'bits' } = 32;
     }
 
+    #
+    # Platform/OS (linux or MSWin32)
+    #
+    $ref->{ 'os' } = $^O;
 
     #
     #  Xen?
@@ -480,16 +506,31 @@ sub findSystemDetails
     #
     #  Find the name of our release
     #
+
+    my $version = "unknown";
+    my $distrib = "unknown";
     my $release = "unknown";
     if ( -x "/usr/bin/lsb_release" )
     {
-        my $output = `/usr/bin/lsb_release --short --code`;
-        if ( defined($output) )
+        foreach my $line (split( /[\r\n]/, `/usr/bin/lsb_release -a 2>/dev/null`))
         {
-            chomp($output);
-            $release = $output if ( length($output) );
+            chomp $line;
+            if ( $line =~ /Distributor ID:\s*(.*)/ )
+            {
+                $distrib = $1;
+            }
+            if ( $line =~ /Release:\s*(.*)/ )
+            {
+                $version = $1;
+            }
+            if ( $line =~ /Codename:\s*(.*)/ )
+            {
+                $release = $1;
+            }
         }
     }
+    $ref->{ 'version' } = $version;
+    $ref->{ 'distribution' } = $distrib;
     $ref->{ 'release' } = $release;
 
 
@@ -504,6 +545,168 @@ sub findSystemDetails
 }
 
 
+sub findSystemDetailsWin32
+{
+    my ($ref) = (@_);
+
+    #
+    #  Fully Qualified hostname
+    #
+    #
+    #  Call "hostname".
+    #
+    $ref->{ 'fqdn' } = `hostname`;
+    chomp( $ref->{ 'fqdn' } );
+
+    #
+    #  Get the hostname and domain name as seperate strings.
+    #
+    if ( $ref->{ 'fqdn' } =~ /^([^.]+)\.(.*)$/ )
+    {
+        $ref->{ 'hostname' } = $1;
+        $ref->{ 'domain' }   = $2;
+    }
+    else
+    {
+
+        #
+        #  Better than nothing, right?
+        #
+        $ref->{ 'hostname' } = $ref->{ 'fqdn' };
+        $ref->{ 'domain' }   = $ref->{ 'fqdn' };
+    }
+
+
+    #
+    #  Kernel version.
+    #
+    $ref->{ 'kernel' } = $ENV{'OS'};
+    chomp( $ref->{ 'kernel' } );
+
+    #
+    #  Are we i386/amd64?
+    #
+    my $type = $ENV{'PROCESSOR_ARCHITECTURE'};
+    if ( $type =~ /x86/i )
+    {
+        $ref->{ 'arch' } = "i386";
+        $ref->{ 'bits' } = 32;
+    }
+    else
+    {
+        $ref->{ 'arch' } = "amd64";
+        $ref->{ 'bits' } = 64;
+    }
+
+    #
+    # Platform/OS (linux or MSWin32)
+    #
+    $ref->{ 'os' } = $^O;
+	
+    #
+    #  Xen?
+    #
+    $ref->{ 'xen' } = 1 if -d "/proc/xen/capabilities";
+
+    #
+    #  KVM / Qemu?
+    #
+    if ( open( my $cpu, "<", "/proc/cpuinfo" ) )
+    {
+        foreach my $line (<$cpu>)
+        {
+            chomp($line);
+
+            $ref->{ 'kvm' } = 1 if ( $line =~ /model/ && $line =~ /qemu/i );
+        }
+        close($cpu);
+    }
+
+
+    #
+    #  Softare RAID?
+    #
+    if ( ( -e "/proc/mdstat" ) &&
+         ( -x "/sbin/mdadm" ) )
+    {
+        if ( open( my $mdstat, "<", "/proc/mdstat" ) )
+        {
+            foreach my $line (<$mdstat>)
+            {
+                if ( ( $line =~ /^md([0-9]+)/ ) &&
+                     ( $line =~ /active/i ) )
+                {
+                    $ref->{ 'softwareraid' } = 1;
+                    $ref->{ 'raid' }         = "software";
+                }
+            }
+            close($mdstat);
+        }
+    }
+
+
+    #
+    #  IP address(es).
+    #
+    my $ip = undef;
+
+    $ip = "ipconfig";
+
+    if ( defined($ip) )
+    {
+        my $count = 1;
+
+        foreach my $line (
+                   split( /[\r\n]/, `$ip` ) )
+        {
+            next if ( !defined($line) || !length($line) );
+            chomp($line);
+
+            #
+            #  This matches something like:
+            #
+            #  IP Address. . . . . . . . . . . . : 10.6.11.138
+            #
+            #
+            if ( $line =~ /IP Address.* : (.*)/ )
+            {
+                my $ip  = $1;
+
+                #
+                # Save away the IP address in "ip0", "ip1", "ip2" .. etc.
+                #
+                $ref->{ "ip" . $count } = $ip;
+                $count += 1;
+            }
+        }
+
+        if ( $count > 0 )
+        {
+            $ref->{ 'ipcount' } = ( $count - 1 );
+        }
+    }
+
+
+    #
+    #  Find the name of our release
+    #
+    my @win_info = Win32::GetOSVersion();
+    my $version = $win_info[0];
+    my $distrib = Win32::GetOSName();
+    # work around for historical reasons
+    $distrib = 'WinXP' if $distrib =~ /^WinXP/;
+    $ref->{ 'version' } = $version;
+    $ref->{ 'distribution' } = $distrib;
+
+    #
+    #  TODO: 3Ware RAID?
+    #
+
+    #
+    #  TODO: HP RAID?
+    #
+
+}
 
 
 =begin doc
@@ -516,9 +719,15 @@ Parse the configuration file.
 
 sub parseConfigurationFile
 {
-    return unless ( -e "/etc/slaughter/slaughter.conf" );
+	my $conf = "/etc/slaughter/slaughter.conf";
+	
+    if (not -e $conf)
+	{
+		$conf = "C:/slaughter.conf";
+		return unless ( -e $conf);	
+	}
 
-    open my $handle, "<", "/etc/slaughter/slaughter.conf" or
+    open my $handle, "<", $conf or
       return;
 
     while ( my $line = <$handle> )
@@ -595,6 +804,7 @@ sub parseCommandLine
             "no-execute", \$CONFIG{ 'noexecute' },
             "no-log",     \$CONFIG{ 'nolog' },
             "verbose",    \$CONFIG{ 'verbose' },
+            "version",    \$CONFIG{ 'slaughter_version' },
         ) )
     {
         exit 1;
@@ -663,10 +873,7 @@ Will be replaced with the output of that URL.
 
 sub fetchRemotePolicy
 {
-    my $url =
-      $CONFIG{ 'protocol' } . $CONFIG{ 'server' } . $CONFIG{ 'prefix' } .
-      "policies/" . $CONFIG{ 'policy' };
-
+    my $url = shift;    
 
     $CONFIG{ 'verbose' } && print "Starting Policy: $url\n";
 
@@ -688,18 +895,15 @@ sub fetchRemotePolicy
             if ( $line =~ /FetchPolicy([ \t]+)(.*)[ \t]*\;/i )
             {
                 my $inc = $2;
+                $CONFIG{ 'verbose' } &&
+                  print "\tFetching include: $inc\n";
 
                 ##
                 ## Fully qualified URL?
                 ##
                 if ( $inc =~ /:\/\// )
                 {
-                    my $tmp = fetchURL($inc);
-
-                    if ( defined($tmp) )
-                    {
-                        $ret .= $tmp;
-                    }
+                    $ret .= fetchRemotePolicy($inc);
                 }
                 else
                 {
@@ -710,13 +914,7 @@ sub fetchRemotePolicy
                     if ( $url =~ /^(.*)\/([^\/]+)$/ )
                     {
                         $inc = $1 . "/" . $inc;
-
-                        my $tmp = fetchURL($inc);
-
-                        if ( defined($tmp) )
-                        {
-                            $ret .= $tmp;
-                        }
+                        $ret .= fetchRemotePolicy($inc);
                     }
                 }
             }
@@ -751,34 +949,55 @@ sub fetchURL
 {
     my ($url) = (@_);
 
-    $CONFIG{ 'verbose' } && print "Fetching remote URL: $url\n";
+    $CONFIG{ 'verbose' } &&
+		print "\tfetchURL( $url ) \n";
 
-    #
-    #  Create the helper
-    #
     my $ua = LWP::UserAgent->new();
     $ua->env_proxy();
 
     #
-    #  Fetch the named URL.
+    #  Make requests for:
     #
-    my $response = $ua->get($url);
-    if ( $response->is_success() )
-    {
-        $CONFIG{ 'verbose' } && print "\tSuccess.\n";
+    #  url.$fqdn
+    #  url.$hostname
+    #  url.$os
+    #  url.$arch
+    #  url
+    #
+    #  Return the first one that matches, if any do.
+    #
+    my @urls;
 
-        return ( $response->decoded_content() );
-    }
-    else
-    {
+    push( @urls, $url . "." . $CONFIG{ 'fqdn' } );
+    push( @urls, $url . "." . $CONFIG{ 'hostname' } );
+    push( @urls, $url . "." . $CONFIG{ 'os' } );
+    push( @urls, $url . "." . $CONFIG{ 'arch' } );
+    push( @urls, $url );
 
-        #
-        #  Error..
-        #
-        $CONFIG{ 'verbose' } &&
-          print "\tFailed: " . $response->status_line . ".\n";
-        return (undef);
+
+    foreach my $attempt (@urls)
+    {
+        my $response = $ua->get($attempt);
+
+        if ( $response->is_success() )
+        {
+			$CONFIG{ 'verbose' } &&
+				print "\t$attempt OK\n";
+            return ( $response->decoded_content() );
+        }
+        else
+        {
+			$CONFIG{ 'verbose' } &&
+				print "\t$attempt failed - continuing\n";
+        }
     }
+
+    #
+    #  Failed
+    #
+	$CONFIG{ 'verbose' } &&
+		print "\tFailed to fetch any of our attempts for $url\n";
+    return undef;
 }
 
 
@@ -841,7 +1060,10 @@ EOF
     print $handle $txt;
     close($handle);
 
-    system( "chmod", "755", $name );
+	if ( $^O ne "MSWin32")
+	{
+		system( "chmod", "755", $name );
+	}
 
     return ($name);
 
