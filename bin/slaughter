@@ -180,6 +180,7 @@ use Pod::Usage;
 #
 my $VERSION = '1.4';
 
+
 #
 #  Setup default options.
 #
@@ -716,15 +717,30 @@ Parse the configuration file.
 
 sub parseConfigurationFile
 {
-    my $conf = "/etc/slaughter/slaughter.conf";
+    my $config = undef;
 
-    if ( not -e $conf )
+    #
+    #  Try each of the configuration files in turn.
+    #
+    foreach my $conf (qw! /etc/slaughter/slaughter.conf C:/slaughter.conf !)
     {
-        $conf = "C:/slaughter.conf";
-        return unless ( -e $conf );
+        $config = $conf if ( -e $conf );
     }
 
-    open my $handle, "<", $conf or
+    #
+    #  Failed to find a configuration file.
+    #
+    return if ( !defined($config) );
+
+    #
+    #  Show what we used.
+    #
+    $CONFIG{ 'verbose' } && print "Reading configuration file: $config\n";
+
+    #
+    #  Failed to open?  Return
+    #
+    open my $handle, "<", $config or
       return;
 
     while ( my $line = <$handle> )
