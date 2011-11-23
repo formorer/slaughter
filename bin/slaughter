@@ -282,6 +282,11 @@ if ( $CONFIG{ 'email' } )
 #  Cleanup.
 #
 unlink($file) unless ( $CONFIG{ 'keep' } );
+
+
+#
+#  We're all done
+#
 exit;
 
 
