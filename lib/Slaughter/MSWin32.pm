@@ -294,7 +294,7 @@ sub FetchFile
 
         my $template =
           Slaughter::Template->new( TYPE   => 'string',
-                               SOURCE => $content );
+                                    SOURCE => $content );
 
         $content = $template->fill_in( HASH => %template );
     }
@@ -310,7 +310,7 @@ sub FetchFile
     my ( $handle, $name ) = File::Temp::tempfile();
     open my $fh, ">", $name or
       return;
-	binmode($fh);
+    binmode($fh);
     print $fh $content;
     close($fh);
 
@@ -352,8 +352,8 @@ sub FetchFile
         if ( -e $dst )
         {
             $verbose && print "\tMoving existing file out of the way.\n";
-			copy($dst, $dst.".old");
-			unlink($dst);
+            copy( $dst, $dst . ".old" );
+            unlink($dst);
             RunCommand( Cmd => "move $dst $dst.old" );
         }
 
@@ -369,8 +369,8 @@ sub FetchFile
 
 
         $verbose && print "\tReplacing $dst\n";
-		copy($name, $dst);
-		unlink($name);
+        copy( $name, $dst );
+        unlink($name);
     }
 
     #
