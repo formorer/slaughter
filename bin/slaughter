@@ -27,6 +27,7 @@ slaughter - Perl Automation Tool
    --help        Show the help information for this script.
    --manual      Read the manual for this script.
    --verbose     Show useful debugging information.
+   --version     Show the version number of the slaughter client.
 
 =cut
 
@@ -104,9 +105,13 @@ be compiled into the policy prior to execution.
 
 Most of the configuration of this tool may be carried out via the
 command line, however some options may be more naturally supplied
-in the system-wide configuration file B</etc/slaughter/slaughter.conf>.
+in the system-wide configuration file.
 
-A fully-featured file will look like this:
+For Unix platforms the globalc configuration file is located at
+B</etc/slaughter/slaughter.conf>, and it may be found at B<C:/slaughter.conf>
+for Microsoft Windows systems.
+
+A fully-featured file might look something like this:
 
 =for example begin
 
@@ -168,7 +173,12 @@ use Getopt::Long;
 use LWP::UserAgent;
 use Pod::Usage;
 
-my $slaughter_version = '1.4';
+
+
+#
+# The version of our release.
+#
+my $VERSION = '1.4';
 
 #
 #  Setup default options.
@@ -187,9 +197,13 @@ parseConfigurationFile();
 #
 parseCommandLine();
 
-if ( $CONFIG{ 'slaughter_version' } )
+
+#
+#  Showing the version number only?
+#
+if ( $CONFIG{ 'version' } )
 {
-    print $slaughter_version."\n";
+    print $VERSION . "\n";
     exit;
 }
 
@@ -804,7 +818,7 @@ sub parseCommandLine
             "no-execute", \$CONFIG{ 'noexecute' },
             "no-log",     \$CONFIG{ 'nolog' },
             "verbose",    \$CONFIG{ 'verbose' },
-            "version",    \$CONFIG{ 'slaughter_version' },
+            "version",    \$CONFIG{ 'version' },
         ) )
     {
         exit 1;
