@@ -198,25 +198,6 @@ parseConfigurationFile();
 parseCommandLine();
 
 
-#
-#  Showing the version number only?
-#
-if ( $CONFIG{ 'version' } )
-{
-    print $VERSION . "\n";
-    exit;
-}
-
-#
-#  If we're dumping, do that.
-#
-if ( $CONFIG{ 'dump' } )
-{
-    use Data::Dumper;
-    print Dumper( \%CONFIG );
-    exit;
-}
-
 
 #
 #  Ensure we're root, and ensure that we have the options setup that we need.
@@ -797,15 +778,16 @@ Parse the command line for options.
 
 sub parseCommandLine
 {
-    my $HELP   = 0;
-    my $MANUAL = 0;
+    my $SHOW_HELP    = 0;
+    my $SHOW_MANUAL  = 0;
+    my $SHOW_VERSION = 0;
 
     if (
         !GetOptions(
 
             # Help options
-            "help",   \$HELP,
-            "manual", \$MANUAL,
+            "help",   \$SHOW_HELP,
+            "manual", \$SHOW_MANUAL,
 
             # General options
             "email=s",    \$CONFIG{ 'email' },
@@ -820,14 +802,34 @@ sub parseCommandLine
             "no-execute", \$CONFIG{ 'noexecute' },
             "no-log",     \$CONFIG{ 'nolog' },
             "verbose",    \$CONFIG{ 'verbose' },
-            "version",    \$CONFIG{ 'version' },
+            "version",    \$SHOW_VERSION,
         ) )
     {
         exit 1;
     }
 
-    pod2usage(1) if $HELP;
-    pod2usage( -verbose => 2 ) if $MANUAL;
+    pod2usage(1) if $SHOW_HELP;
+    pod2usage( -verbose => 2 ) if $SHOW_MANUAL;
+
+
+    #
+    #  Showing the version number only?
+    #
+    if ($SHOW_VERSION)
+    {
+        print $VERSION . "\n";
+        exit;
+    }
+
+    #
+    #  If we're dumping, do that.
+    #
+    if ( $CONFIG{ 'dump' } )
+    {
+        use Data::Dumper;
+        print Dumper( \%CONFIG );
+        exit;
+    }
 
 }
 
