@@ -971,6 +971,31 @@ sub fetchRemotePolicy
                 }
 
                 #
+                #  OK this is an icky thing ..
+                #
+                if ( $inc =~ /\$/ )
+                {
+                    $CONFIG{ 'verbose' } &&
+                      print "\tTemplate expanding URL: $inc\n";
+
+                    #
+                    #  Looks like the policy has a template variable in
+                    # it.  We might be wrong.
+                    #
+                    foreach my $key ( sort keys %CONFIG )
+                    {
+                        while ( $inc =~ /(.*)\$\Q$key\E(.*)/ )
+                        {
+                            $inc = $1 . $CONFIG{ $key } . $2;
+
+                            $CONFIG{ 'verbose' } &&
+                              print
+                              "\tExpanded '\$$key' into '$CONFIG{$key}' giving: $inc\n";
+                        }
+                    }
+                }
+
+                #
                 #  Now fetch it, resolved or relative.
                 #
                 my $policy = fetchRemotePolicy($inc);
@@ -992,11 +1017,6 @@ sub fetchRemotePolicy
 
         }
         return ($ret);
-    }
-    else
-    {
-        print "Failed to fetch: $url\n";
-        exit 1;
     }
 
 }
