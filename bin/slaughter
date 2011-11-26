@@ -881,10 +881,10 @@ sub getLogfile
     #
     #  The logfile will have a name of the form YEAR-MON-DAY-HR:MN:SS
     #
-    my $date = sprintf( "%04d-%02d-%02d-%2d:%2d:%2d",
+    my $date = sprintf( "%04d-%02d-%02d-%02d:%02d:%02d",
                         $year, $mon, $mday, $hour, $min, $sec );
 
-    my $file = "/var/log/slaughter/$date.log";
+    my $file = "/var/log/slaughter/" . $date . ".log";
 
     $CONFIG{ 'verbose' } && print "Logfile: $file\n";
 
