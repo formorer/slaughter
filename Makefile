@@ -53,6 +53,7 @@ release: tidy clean
 	rm -rf $(DIST_PREFIX)/$(BASE)-$(VERSION)/debian
 #	perl -pi -e "s/UNRELEASED/$(VERSION)/g" $(DIST_PREFIX)/$(BASE)-$(VERSION)/bin/slaughter
 	rm -rf $(DIST_PREFIX)/$(BASE)-$(VERSION)/.hg*
+	perl -pi -e "s/__UNRELEASED__/$(VERSION)/g" $(DIST_PREFIX)/$(BASE)-$(VERSION)/bin/slaughter
 	cd $(DIST_PREFIX) && tar -cvf $(DIST_PREFIX)/$(BASE)-$(VERSION).tar $(BASE)-$(VERSION)/
 	gzip $(DIST_PREFIX)/$(BASE)-$(VERSION).tar
 	mv $(DIST_PREFIX)/$(BASE)-$(VERSION).tar.gz .

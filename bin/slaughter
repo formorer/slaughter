@@ -178,7 +178,7 @@ use Pod::Usage;
 #
 # The version of our release.
 #
-my $VERSION = '1.4';
+my $VERSION = '__UNRELEASED__';
 
 
 #
