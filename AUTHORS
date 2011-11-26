@@ -1,0 +1,26 @@
+Primary Author
+--------------
+
+  Steve Kemp <steve [at] steve.org.uk>
+
+
+Contributions
+-------------
+
+  Listed alphabetically by surname.
+
+  Jean Baptiste
+   - Contributed Microsoft Windows support, under Strawberry Perl.
+   - Added --version option.
+   - Added OS-name to meta-info for a host.
+   - Useful feedback :)
+
+  Raphael Daum
+   - Reported issue with `hostname` not outputing FQDN in all cases.
+   - Added IP address(es) to the meta-info for a host.
+
+  Kristian Lyngstol
+   - Diagnosed issue with template expansion causing file comparisions to always fail.
+
+  Jason J. Rodrigues
+   - Added --no-log option.
