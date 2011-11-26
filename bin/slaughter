@@ -189,8 +189,6 @@ my %CONFIG = defaultOptions();
 
 
 
-
-
 #
 #  Parse configuration file.
 #
@@ -929,11 +927,11 @@ Will be replaced with the output of that URL.
 
 sub fetchRemotePolicy
 {
-    my $url = shift;
+    my ($url) = (@_);
 
     $CONFIG{ 'verbose' } && print "Starting Policy: $url\n";
 
-    my $contents = fetchURL($url);
+    my $contents = fetchPolicy($url);
 
     if ( defined $contents )
     {
@@ -955,13 +953,9 @@ sub fetchRemotePolicy
                   print "\tFetching include: $inc\n";
 
                 ##
-                ## Fully qualified URL?
+                ## If this doesn't look like a fully qualified URL ..
                 ##
-                if ( $inc =~ /:\/\// )
-                {
-                    $ret .= fetchRemotePolicy($inc);
-                }
-                else
+                if ( $inc !~ /^https?:\/\//i )
                 {
 
                     #
@@ -970,8 +964,23 @@ sub fetchRemotePolicy
                     if ( $url =~ /^(.*)\/([^\/]+)$/ )
                     {
                         $inc = $1 . "/" . $inc;
-                        $ret .= fetchRemotePolicy($inc);
+
+                        $CONFIG{ 'verbose' } &&
+                          print "\tTurned relative URL into: $inc\n";
                     }
+                }
+
+                #
+                #  Now fetch it, resolved or relative.
+                #
+                my $policy = fetchRemotePolicy($inc);
+                if ( defined($policy) )
+                {
+                    $ret .= $policy;
+                }
+                else
+                {
+                    $CONFIG{ 'verbose' } && print "Policy inclusion failed\n";
                 }
             }
             else
@@ -1001,7 +1010,7 @@ Fetch the contents of a remote URL.
 
 =cut
 
-sub fetchURL
+sub fetchPolicy
 {
     my ($url) = (@_);
 
@@ -1011,48 +1020,20 @@ sub fetchURL
     my $ua = LWP::UserAgent->new();
     $ua->env_proxy();
 
-    #
-    #  Make requests for:
-    #
-    #  url.$fqdn
-    #  url.$hostname
-    #  url.$os
-    #  url.$arch
-    #  url
-    #
-    #  Return the first one that matches, if any do.
-    #
-    my @urls;
+    my $response = $ua->get($url);
 
-    push( @urls, $url . "." . $CONFIG{ 'fqdn' } );
-    push( @urls, $url . "." . $CONFIG{ 'hostname' } );
-    push( @urls, $url . "." . $CONFIG{ 'os' } );
-    push( @urls, $url . "." . $CONFIG{ 'arch' } );
-    push( @urls, $url );
-
-
-    foreach my $attempt (@urls)
+    if ( $response->is_success() )
     {
-        my $response = $ua->get($attempt);
-
-        if ( $response->is_success() )
-        {
-            $CONFIG{ 'verbose' } &&
-              print "\t$attempt OK\n";
-            return ( $response->decoded_content() );
-        }
-        else
-        {
-            $CONFIG{ 'verbose' } &&
-              print "\t$attempt failed - continuing\n";
-        }
+        $CONFIG{ 'verbose' } &&
+          print "\tOK\n";
+        return ( $response->decoded_content() );
     }
 
     #
     #  Failed
     #
     $CONFIG{ 'verbose' } &&
-      print "\tFailed to fetch any of our attempts for $url\n";
+      print "\tFailed to fetch: $url\n";
     return undef;
 }
 
