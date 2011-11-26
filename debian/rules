@@ -16,7 +16,7 @@ build-stamp:
 clean:
 	dh_testdir
 	dh_testroot
-	rm -f build-stamp 
+	rm -f build-stamp
 
 	# Add here commands to clean up after the build process.
 	dh_clean
@@ -29,7 +29,7 @@ install: build
 	make install prefix=`pwd`/debian/tmp
 
 	mkdir -p `pwd`/debian/tmp/usr/share/man/man8/
-	pod2man ./bin/slaughter --official --section=8 `pwd`/debian/tmp/usr/share/man/man8/slaughter.8
+	pod2man ./bin/slaughter --official --section=8 > slaughter.1
 
 	dh_movefiles -p slaughter-client
 
@@ -39,7 +39,7 @@ binary-indep: build install
 	dh_testroot
 	dh_installdebconf
 	dh_installdocs
-	dh_installexamples
+	dh_installman ./slaughter.1
 	dh_installchangelogs
 	dh_installinit
 	dh_compress

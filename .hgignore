@@ -6,3 +6,4 @@ debian/*.log
 debian/*.debhelper
 debian/*.substvars
 .version
+slaughter.1
