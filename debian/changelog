@@ -1,3 +1,15 @@
+slaughter (1.5-1) stable; urgency=low
+
+  * Abstract away the meta-information collection into a series of modules.
+  * Renamed the Linux package-helping library.
+  * Updated to use more obvious logfile names.
+  * Added support for Microsoft Windows clients, via Strawberry Perl.
+  * Allow template expansion in policy filenames.
+  * Included manpage for "slaughter".
+  * New command line flag: --version
+
+ -- Steve Kemp <steve@steve.org.uk>  Sat, 26 Nov 2011 14:44:41 +0000
+
 slaughter (1.4-1) stable; urgency=low
 
   * Updated to fetch $URL.$ARCH for each file fetch operation,
