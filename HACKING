@@ -30,6 +30,35 @@ Slaughter::generic is loaded.  This module just print "Not implemented"
 for each primitive - see the TODO file for details of this.
 
 
+
+
+System Information
+------------------
+
+ When the slaughter client runs it gathers some meta-information about
+ the host it is executing upon.
+
+ All the meta-information is gleaned at runtime, by loading a specific
+module.  The module must define the single method "MetaInformation" which
+will populate a hash-reference.
+
+ You can find sample code in lib/Slaughter/Info/*.pm
+
+
+Package Installation
+--------------------
+
+  TODO:  Move this from:
+
+    ./lib/Slaughter/linux/packages.pm
+
+  to
+
+   ./lib/Slaughter/Packages/linux.pm
+
+
+
+
 Directions
 ----------
 

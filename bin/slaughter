@@ -182,11 +182,9 @@ my $VERSION = '__UNRELEASED__';
 
 
 #
-#  Setup default options.
+#  Setup default options - include meta-data about the current host.
 #
 my %CONFIG = defaultOptions();
-
-
 
 
 #
@@ -196,7 +194,7 @@ parseConfigurationFile();
 
 
 #
-#  Parse command line.
+#  Parse command line, this takes precedence over the configuration file.
 #
 parseCommandLine();
 
@@ -314,417 +312,36 @@ sub defaultOptions
                );
 
     #
-    #  Find the system information.
+    #  Attempt to load a module which will determine the meta-information
+    # about this host.
     #
-    if ( $^O eq "MSWin32" )
+    my $generic  = "use Slaughter::Info::generic";
+    my $specific = "use Slaughter::Info::$^O";
+
+    ## no critic (Eval)
+    eval($specific);
+    ## use critic
+
+    # if there were errors then we'll use the generic
+    # handler
+    if ($@)
     {
-        findSystemDetailsWin32( \%defs );
-    }
-    else
-    {
-        findSystemDetails( \%defs );
+        print $@;
+        eval($generic);
     }
 
+    #
+    #  Now we're going to populate the information via our module...
+    #
+    MetaInformation( \%defs );
+
+    #
+    #  Return the (hopefully updated) meta-information
+    #
     return (%defs);
 }
 
 
-=begin doc
-
-Here we find details about the system which will be included in the
-generated file script.
-
-=end doc
-
-=cut
-
-sub findSystemDetails
-{
-    my ($ref) = (@_);
-
-    #
-    #  Fully Qualified hostname
-    #
-    #  1.  If we can find /etc/hostname, then use that.
-    #
-    if ( -e "/etc/hostname" )
-    {
-        open( my $file, "<", "/etc/hostname" ) or
-          die "Failed to read /etc/hostname - $!";
-        $ref->{ 'fqdn' } = <$file>;
-        chomp( $ref->{ 'fqdn' } );
-        close($file);
-    }
-    else
-    {
-
-        #
-        #  Ok /etc/hostname is missing.
-        #
-        #  Call "hostname".
-        #
-        $ref->{ 'fqdn' } = `hostname`;
-        chomp( $ref->{ 'fqdn' } );
-
-        #
-        # If it is unqualified retry with --fqdn.
-        #
-        if ( $ref->{ 'fqdn' } !~ /\./ )
-        {
-            $ref->{ 'fqdn' } = `hostname --fqdn`;
-            chomp( $ref->{ 'fqdn' } );
-        }
-    }
-
-    #
-    #  Get the hostname and domain name as seperate strings.
-    #
-    if ( $ref->{ 'fqdn' } =~ /^([^.]+)\.(.*)$/ )
-    {
-        $ref->{ 'hostname' } = $1;
-        $ref->{ 'domain' }   = $2;
-    }
-    else
-    {
-
-        #
-        #  Better than nothing, right?
-        #
-        $ref->{ 'hostname' } = $ref->{ 'fqdn' };
-        $ref->{ 'domain' }   = $ref->{ 'fqdn' };
-    }
-
-
-    #
-    #  Kernel version.
-    #
-    $ref->{ 'kernel' } = `uname -r`;
-    chomp( $ref->{ 'kernel' } );
-
-    #
-    #  Are we i386/amd64?
-    #
-    my $type = `file /bin/ls`;
-    if ( $type =~ /64-bit/i )
-    {
-        $ref->{ 'arch' } = "amd64";
-        $ref->{ 'bits' } = 64;
-    }
-    else
-    {
-        $ref->{ 'arch' } = "i386";
-        $ref->{ 'bits' } = 32;
-    }
-
-    #
-    # Platform/OS (linux or MSWin32)
-    #
-    $ref->{ 'os' } = $^O;
-
-    #
-    #  Xen?
-    #
-    $ref->{ 'xen' } = 1 if -d "/proc/xen/capabilities";
-
-    #
-    #  KVM / Qemu?
-    #
-    if ( open( my $cpu, "<", "/proc/cpuinfo" ) )
-    {
-        foreach my $line (<$cpu>)
-        {
-            chomp($line);
-
-            $ref->{ 'kvm' } = 1 if ( $line =~ /model/ && $line =~ /qemu/i );
-        }
-        close($cpu);
-    }
-
-
-    #
-    #  Softare RAID?
-    #
-    if ( ( -e "/proc/mdstat" ) &&
-         ( -x "/sbin/mdadm" ) )
-    {
-        if ( open( my $mdstat, "<", "/proc/mdstat" ) )
-        {
-            foreach my $line (<$mdstat>)
-            {
-                if ( ( $line =~ /^md([0-9]+)/ ) &&
-                     ( $line =~ /active/i ) )
-                {
-                    $ref->{ 'softwareraid' } = 1;
-                    $ref->{ 'raid' }         = "software";
-                }
-            }
-            close($mdstat);
-        }
-    }
-
-
-    #
-    #  IP address(es).
-    #
-    my $ip = undef;
-
-    $ip = "/sbin/ip" if ( -x "/sbin/ip" );
-    $ip = "/bin/ip"  if ( -x "/bin/ip" );
-
-    if ( defined($ip) )
-    {
-        my $count = 1;
-
-        foreach my $line (
-                   split( /[\r\n]/, `$ip -o -f inet  addr show scope global` ) )
-        {
-            next if ( !defined($line) || !length($line) );
-            chomp($line);
-
-            #
-            #  This matches something like:
-            #
-            #  2: eth0    inet 192.168.1.9/24 brd 192.168.1.255 scope global eth0
-            #
-            #
-            if ( $line =~ /^([0-9]+):[ \t]+([^ ]+)[ \t]*inet[ \t]+([0-9\.]+)/ )
-            {
-                my $eth = $2;
-                my $ip  = $3;
-
-                #
-                # Save away the IP address in "ip0", "ip1", "ip2" .. etc.
-                #
-                $ref->{ "ip" . $count } = $ip;
-                $count += 1;
-            }
-        }
-
-        if ( $count > 0 )
-        {
-            $ref->{ 'ipcount' } = ( $count - 1 );
-        }
-    }
-
-
-    #
-    #  Find the name of our release
-    #
-
-    my $version = "unknown";
-    my $distrib = "unknown";
-    my $release = "unknown";
-    if ( -x "/usr/bin/lsb_release" )
-    {
-        foreach
-          my $line ( split( /[\r\n]/, `/usr/bin/lsb_release -a 2>/dev/null` ) )
-        {
-            chomp $line;
-            if ( $line =~ /Distributor ID:\s*(.*)/ )
-            {
-                $distrib = $1;
-            }
-            if ( $line =~ /Release:\s*(.*)/ )
-            {
-                $version = $1;
-            }
-            if ( $line =~ /Codename:\s*(.*)/ )
-            {
-                $release = $1;
-            }
-        }
-    }
-    $ref->{ 'version' }      = $version;
-    $ref->{ 'distribution' } = $distrib;
-    $ref->{ 'release' }      = $release;
-
-
-    #
-    #  TODO: 3Ware RAID?
-    #
-
-    #
-    #  TODO: HP RAID?
-    #
-
-}
-
-
-
-=begin doc
-
-Here we find details about the system which will be included in the
-generated file script.  This is largely a duplicate of the previous
-version but includes some Microsoft Windows-specific code.
-
-TODO: We should merge this in the future.
-
-=end doc
-
-=cut
-
-sub findSystemDetailsWin32
-{
-    my ($ref) = (@_);
-
-    #
-    #  Fully Qualified hostname
-    #
-    #
-    #  Call "hostname".
-    #
-    $ref->{ 'fqdn' } = `hostname`;
-    chomp( $ref->{ 'fqdn' } );
-
-    #
-    #  Get the hostname and domain name as seperate strings.
-    #
-    if ( $ref->{ 'fqdn' } =~ /^([^.]+)\.(.*)$/ )
-    {
-        $ref->{ 'hostname' } = $1;
-        $ref->{ 'domain' }   = $2;
-    }
-    else
-    {
-
-        #
-        #  Better than nothing, right?
-        #
-        $ref->{ 'hostname' } = $ref->{ 'fqdn' };
-        $ref->{ 'domain' }   = $ref->{ 'fqdn' };
-    }
-
-
-    #
-    #  Kernel version.
-    #
-    $ref->{ 'kernel' } = $ENV{ 'OS' };
-    chomp( $ref->{ 'kernel' } );
-
-    #
-    #  Are we i386/amd64?
-    #
-    my $type = $ENV{ 'PROCESSOR_ARCHITECTURE' };
-    if ( $type =~ /x86/i )
-    {
-        $ref->{ 'arch' } = "i386";
-        $ref->{ 'bits' } = 32;
-    }
-    else
-    {
-        $ref->{ 'arch' } = "amd64";
-        $ref->{ 'bits' } = 64;
-    }
-
-    #
-    # Platform/OS (linux or MSWin32)
-    #
-    $ref->{ 'os' } = $^O;
-
-    #
-    #  Xen?
-    #
-    $ref->{ 'xen' } = 1 if -d "/proc/xen/capabilities";
-
-    #
-    #  KVM / Qemu?
-    #
-    if ( open( my $cpu, "<", "/proc/cpuinfo" ) )
-    {
-        foreach my $line (<$cpu>)
-        {
-            chomp($line);
-
-            $ref->{ 'kvm' } = 1 if ( $line =~ /model/ && $line =~ /qemu/i );
-        }
-        close($cpu);
-    }
-
-
-    #
-    #  Softare RAID?
-    #
-    if ( ( -e "/proc/mdstat" ) &&
-         ( -x "/sbin/mdadm" ) )
-    {
-        if ( open( my $mdstat, "<", "/proc/mdstat" ) )
-        {
-            foreach my $line (<$mdstat>)
-            {
-                if ( ( $line =~ /^md([0-9]+)/ ) &&
-                     ( $line =~ /active/i ) )
-                {
-                    $ref->{ 'softwareraid' } = 1;
-                    $ref->{ 'raid' }         = "software";
-                }
-            }
-            close($mdstat);
-        }
-    }
-
-
-    #
-    #  IP address(es).
-    #
-    my $ip = undef;
-
-    $ip = "ipconfig";
-
-    if ( defined($ip) )
-    {
-        my $count = 1;
-
-        foreach my $line ( split( /[\r\n]/, `$ip` ) )
-        {
-            next if ( !defined($line) || !length($line) );
-            chomp($line);
-
-            #
-            #  This matches something like:
-            #
-            #  IP Address. . . . . . . . . . . . : 10.6.11.138
-            #
-            #
-            if ( $line =~ /IP Address.* : (.*)/ )
-            {
-                my $ip = $1;
-
-                #
-                # Save away the IP address in "ip0", "ip1", "ip2" .. etc.
-                #
-                $ref->{ "ip" . $count } = $ip;
-                $count += 1;
-            }
-        }
-
-        if ( $count > 0 )
-        {
-            $ref->{ 'ipcount' } = ( $count - 1 );
-        }
-    }
-
-
-    #
-    #  Find the name of our release
-    #
-    my @win_info = Win32::GetOSVersion();
-    my $version  = $win_info[0];
-    my $distrib  = Win32::GetOSName();
-
-    # work around for historical reasons
-    $distrib = 'WinXP' if $distrib =~ /^WinXP/;
-    $ref->{ 'version' }      = $version;
-    $ref->{ 'distribution' } = $distrib;
-
-    #
-    #  TODO: 3Ware RAID?
-    #
-
-    #
-    #  TODO: HP RAID?
-    #
-
-}
 
 
 =begin doc
