@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-Slaughter::linux::packages - Abstractions for GNU/Linux package management.
+Slaughter::Packages::linux - Abstractions for GNU/Linux package management.
 
 =cut
 
@@ -17,7 +17,7 @@ distributions this should be the only place you need to touch.
 
 
 
-package Slaughter::linux::packages;
+package Slaughter::Packages::linux;
 
 
 

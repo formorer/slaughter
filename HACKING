@@ -45,33 +45,40 @@ will populate a hash-reference.
  You can find sample code in lib/Slaughter/Info/*.pm
 
 
+
+
 Package Installation
 --------------------
 
-  TODO:  Move this from:
+ Package installation is also abstracted into a library of its own:
 
-    ./lib/Slaughter/linux/packages.pm
+    Slaughter::Packages::linux
 
-  to
+ This is sufficient for the moment, as there is no non-Linux package
+management support present in slaughter.  If that changes there is
+obvious scope to add it into a new library - and that will be invoked
+by the environment-specific lib/Slaughter/foo.pm helper.
 
-   ./lib/Slaughter/Packages/linux.pm
 
 
 
+Hacking Directions
+------------------
 
-Directions
-----------
+If you'd like to make a new variable available to running scripts you'll
+need to investigate the slaughter code if it is common to all environments
+(see the function "defaultOptions"), otherwise if you're in a new
+environment you'll need to createe a new library - modelled after
+lib/Slaughter/Info/*.pm.
 
- If you'd like to make a new variable available to running scripts you'll
-need to investigate the slaughter code - see "findSystemDetails".
 
- If you'd like to make a new support function available implement it in
-lib/Slaughter/linux.pm, and lib/Slaughter/generic.pm and you should be
-good to go.
+If you'd like to make a new support function available implement it in
+lib/Slaughter/generic.pm to give an error - then in each of the available
+environment-specific libraries in that same directory.
 
- The interface to the system's packaging is currently only implemented
-for GNU/Linux, via lib/Slaughter/linux/packages.pm.  I'd suggest if you
-add support for another platform you follow a similar pattern.
+The interface to the system's packaging is currently only implemented
+for GNU/Linux, via lib/Slaughter/Packages/linux.pm.  I'd suggest if you
+add support for another platform you follow a similar naming scheme.
 
 
 

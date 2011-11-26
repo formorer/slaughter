@@ -44,7 +44,7 @@ use Slaughter::Private;
 #
 #  Package abstraction helpers.
 #
-use Slaughter::linux::packages;
+use Slaughter::Packages::linux;
 
 
 
@@ -547,7 +547,7 @@ sub InstallPackage
     #
     #  Gain access to the Linux package helper.
     #
-    my $helper = Slaughter::linux::packages->new();
+    my $helper = Slaughter::Packages::linux->new();
 
     #
     #  If we recognise the system, install the package
@@ -581,7 +581,7 @@ sub RemovePackage
     #
     #  Gain access to the Linux package helper.
     #
-    my $helper = Slaughter::linux::packages->new();
+    my $helper = Slaughter::Packages::linux->new();
 
     #
     #  If we recognise the system, remove the package
@@ -613,7 +613,7 @@ sub PackageInstalled
     #
     #  Gain access to the Linux package helper.
     #
-    my $helper = Slaughter::linux::packages->new();
+    my $helper = Slaughter::Packages::linux->new();
 
     #
     #  If we recognise the system, test the package installation state.
