@@ -32,8 +32,10 @@ install: clean
 	cp lib/Slaughter.pm $(prefix)/usr/share/perl5/
 	mkdir -p $(prefix)/usr/share/perl5/Slaughter || true
 	cp lib/Slaughter/*.pm  $(prefix)/usr/share/perl5/Slaughter/
-	mkdir -p $(prefix)/usr/share/perl5/Slaughter/linux/ || true
-	cp lib/Slaughter/linux/*.pm  $(prefix)/usr/share/perl5/Slaughter/linux/
+	mkdir -p $(prefix)/usr/share/perl5/Slaughter/Info || true
+	cp lib/Slaughter/Info/*.pm  $(prefix)/usr/share/perl5/Slaughter/Info/
+	mkdir -p $(prefix)/usr/share/perl5/Slaughter/Packages/ || true
+	cp lib/Slaughter/Packages/*.pm  $(prefix)/usr/share/perl5/Slaughter/Packages/
 	mkdir $(prefix)/sbin/ || true
 	cp ./bin/slaughter         $(prefix)/sbin/
 	mkdir -p $(prefix)/etc/slaughter || true
