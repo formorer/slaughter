@@ -9,34 +9,6 @@ sub MetaInformation()
     my ($ref) = (@_);
 
     #
-    #  Fully Qualified hostname
-    #
-    #
-    #  Call "hostname".
-    #
-    $ref->{ 'fqdn' } = `hostname`;
-    chomp( $ref->{ 'fqdn' } );
-
-    #
-    #  Get the hostname and domain name as seperate strings.
-    #
-    if ( $ref->{ 'fqdn' } =~ /^([^.]+)\.(.*)$/ )
-    {
-        $ref->{ 'hostname' } = $1;
-        $ref->{ 'domain' }   = $2;
-    }
-    else
-    {
-
-        #
-        #  Better than nothing, right?
-        #
-        $ref->{ 'hostname' } = $ref->{ 'fqdn' };
-        $ref->{ 'domain' }   = $ref->{ 'fqdn' };
-    }
-
-
-    #
     #  Kernel version.
     #
     $ref->{ 'kernel' } = $ENV{ 'OS' };
@@ -55,52 +27,6 @@ sub MetaInformation()
     {
         $ref->{ 'arch' } = "amd64";
         $ref->{ 'bits' } = 64;
-    }
-
-    #
-    # Platform/OS (linux or MSWin32)
-    #
-    $ref->{ 'os' } = $^O;
-
-    #
-    #  Xen?
-    #
-    $ref->{ 'xen' } = 1 if -d "/proc/xen/capabilities";
-
-    #
-    #  KVM / Qemu?
-    #
-    if ( open( my $cpu, "<", "/proc/cpuinfo" ) )
-    {
-        foreach my $line (<$cpu>)
-        {
-            chomp($line);
-
-            $ref->{ 'kvm' } = 1 if ( $line =~ /model/ && $line =~ /qemu/i );
-        }
-        close($cpu);
-    }
-
-
-    #
-    #  Softare RAID?
-    #
-    if ( ( -e "/proc/mdstat" ) &&
-         ( -x "/sbin/mdadm" ) )
-    {
-        if ( open( my $mdstat, "<", "/proc/mdstat" ) )
-        {
-            foreach my $line (<$mdstat>)
-            {
-                if ( ( $line =~ /^md([0-9]+)/ ) &&
-                     ( $line =~ /active/i ) )
-                {
-                    $ref->{ 'softwareraid' } = 1;
-                    $ref->{ 'raid' }         = "software";
-                }
-            }
-            close($mdstat);
-        }
     }
 
 
@@ -157,13 +83,6 @@ sub MetaInformation()
     $ref->{ 'version' }      = $version;
     $ref->{ 'distribution' } = $distrib;
 
-    #
-    #  TODO: 3Ware RAID?
-    #
-
-    #
-    #  TODO: HP RAID?
-    #
 }
 
 1;

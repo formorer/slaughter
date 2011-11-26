@@ -296,24 +296,132 @@ exit;
 
 Configure the default options, and return these as a hash.
 
+As much as can be determined on "all systems" is defined here, the rest comes
+from the "MetaInformation" method of a module loaded dynamically from the
+Slaughter::Info namespace.
+
 =end doc
 
 =cut
 
 sub defaultOptions
 {
-    my %defs = (
-        version  => 0,
-        verbose  => 0,
-        prefix   => "/slaughter/",
-        policy   => "default.policy",
-        protocol => "http://",
-
+    my %defs = ( version  => 0,
+                 verbose  => 0,
+                 prefix   => "/slaughter/",
+                 policy   => "default.policy",
+                 protocol => "http://",
                );
 
+
+
     #
-    #  Attempt to load a module which will determine the meta-information
-    # about this host.
+    # Platform/OS (linux or MSWin32)
+    #
+    $defs{ 'os' } = $^O;
+
+    #
+    #  Fully Qualified hostname
+    #
+    #  1.  If we can find /etc/hostname, then use that.
+    #
+    if ( -e "/etc/hostname" )
+    {
+        open( my $file, "<", "/etc/hostname" ) or
+          die "Failed to read /etc/hostname - $!";
+        $defs{ 'fqdn' } = <$file>;
+        chomp( $defs{ 'fqdn' } );
+        close($file);
+    }
+    else
+    {
+
+        #
+        #  Ok /etc/hostname is missing.
+        #
+        #  Call "hostname".
+        #
+        $defs{ 'fqdn' } = `hostname`;
+        chomp( $defs{ 'fqdn' } );
+
+        #
+        # If it is unqualified retry with --fqdn.
+        #
+        if ( $defs{ 'fqdn' } !~ /\./ )
+        {
+            $defs{ 'fqdn' } = `hostname --fqdn`;
+            chomp( $defs{ 'fqdn' } );
+        }
+    }
+
+
+    #
+    #  Get the hostname and domain name as seperate strings.
+    #
+    if ( $defs{ 'fqdn' } =~ /^([^.]+)\.(.*)$/ )
+    {
+        $defs{ 'hostname' } = $1;
+        $defs{ 'domain' }   = $2;
+    }
+    else
+    {
+
+        #
+        #  Better than nothing, right?
+        #
+        $defs{ 'hostname' } = $defs{ 'fqdn' };
+        $defs{ 'domain' }   = $defs{ 'fqdn' };
+    }
+
+
+    #
+    #  Xen?
+    #
+    $defs{ 'xen' } = 1 if -d "/proc/xen/capabilities";
+
+    #
+    #  KVM / Qemu?
+    #
+    if ( open( my $cpu, "<", "/proc/cpuinfo" ) )
+    {
+        foreach my $line (<$cpu>)
+        {
+            chomp($line);
+            $defs{ 'kvm' } = 1 if ( $line =~ /model/ && $line =~ /qemu/i );
+        }
+        close($cpu);
+    }
+
+
+    #
+    #  Softare RAID?
+    #
+    if ( ( -e "/proc/mdstat" ) &&
+         ( -x "/sbin/mdadm" ) )
+    {
+        if ( open( my $mdstat, "<", "/proc/mdstat" ) )
+        {
+            foreach my $line (<$mdstat>)
+            {
+                if ( ( $line =~ /^md([0-9]+)/ ) &&
+                     ( $line =~ /active/i ) )
+                {
+                    $defs{ 'softwareraid' } = 1;
+                    $defs{ 'raid' }         = "software";
+                }
+            }
+            close($mdstat);
+        }
+    }
+
+
+
+    #
+    #  Attempt to load a module which will add to the meta-information
+    # we've already collected about this host.
+    #
+    #  Mostly this will be architecture-specific information and things
+    # like the IP addresses.
     #
     my $generic  = "use Slaughter::Info::generic";
     my $specific = "use Slaughter::Info::$^O";
