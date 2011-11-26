@@ -252,16 +252,16 @@ else
         $cmd .= " 2>&1 >> $logfile";
     }
 
-    my $return = 0;
-    if ( $^O eq "MSWin32" )
-    {
-        $return = system( "perl " . $cmd );
-    }
-    else
-    {
-        $return = system($cmd );
-    }
+    #
+    #  Execute the compiled code explicitly via the Perl intepreter
+    # this is redundent for operating systems that honour the shebang
+    # line, but useful for Microsoft Windows.
+    #
+    my $return = system( "perl " . $cmd );
 
+    #
+    #  Show the result?
+    #
     $CONFIG{ 'verbose' } &&
       print "Script completed: (return = $return) " . scalar localtime() . "\n";
 
@@ -314,7 +314,6 @@ sub defaultOptions
                );
 
 
-
     #
     # Platform/OS (linux or MSWin32)
     #
@@ -336,8 +335,6 @@ sub defaultOptions
     else
     {
 
-        #
-        #  Ok /etc/hostname is missing.
         #
         #  Call "hostname".
         #
@@ -375,7 +372,7 @@ sub defaultOptions
 
 
     #
-    #  Xen?
+    #  Is this a xen host, or guest?
     #
     $defs{ 'xen' } = 1 if -d "/proc/xen/capabilities";
 
@@ -616,6 +613,9 @@ from.  You can either do this by running:
 Or by:
 
 echo "server = foo.example.org" >> /etc/slaughter/slaughter.conf
+
+For Microsoft Windows clients you should use C:/slaughter.conf
+
 EOF
         exit 1;
     }
@@ -878,7 +878,13 @@ sub getLogfile
     $year += 1900;
     $mon  += 1;
 
-    my $file = "/var/log/slaughter/$year-$mon-$mday.$$.log";
+    #
+    #  The logfile will have a name of the form YEAR-MON-DAY-HR:MN:SS
+    #
+    my $date = sprintf( "%04d-%02d-%02d-%2d:%2d:%2d",
+                        $year, $mon, $mday, $hour, $min, $sec );
+
+    my $file = "/var/log/slaughter/$date.log";
 
     $CONFIG{ 'verbose' } && print "Logfile: $file\n";
 
