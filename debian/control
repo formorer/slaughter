@@ -13,11 +13,11 @@ Architecture: all
 Depends: ${misc:Depends}, libdigest-sha1-perl, libwww-perl, libtext-template-perl, perl-modules
 Suggests: httpd
 Description: Automation tool to perform system administration remotely
- This package contains a client which will connect to a Slaughter server
+ This package contains a client which will connect to a central (HTTP) server
  and fetch policies to execute.
  .
- The policies which are executed locally are expressive perl scripts
- with an additional set of helper primitives which allow:
+ The locally-executed policies are expressive perl scripts with an additional
+ set of helper primitives which allow:
  .
   * Copying files.
  .
