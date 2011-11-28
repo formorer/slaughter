@@ -15,7 +15,7 @@ Primitives
     NOTE:  We could and should do this, but the package handling is going to
     be non-portable regardless.
 
-  * Make Slaughter::generic a base-class?
+  * Make Slaughter::API::generic a base-class?
 
 
 Wrapper
