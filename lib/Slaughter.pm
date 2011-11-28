@@ -39,8 +39,8 @@ The LICENSE file contains the full text of the license.
 BEGIN
 {
 
-    my $generic  = "use Slaughter::generic";
-    my $specific = "use Slaughter::$^O;";
+    my $generic  = "use Slaughter::API::generic";
+    my $specific = "use Slaughter::API::$^O;";
 
     ## no critic (Eval)
     eval($specific);

@@ -23,10 +23,10 @@ platform-specific implementations of the subroutines from another
 module, via the use of the perl $^O variable.
 
  So, for example, on a GNU/Linux system "use Slaughter" actually becomes
-"use Slaughter::linux".
+"use Slaughter::API::linux".
 
  If no specific file may be found then the fall-back module
-Slaughter::generic is loaded.  This module just print "Not implemented"
+Slaughter::API::generic is loaded.  This module just print "Not implemented"
 for each primitive - see the TODO file for details of this.
 
 
@@ -73,7 +73,7 @@ lib/Slaughter/Info/*.pm.
 
 
 If you'd like to make a new support function available implement it in
-lib/Slaughter/generic.pm to give an error - then in each of the available
+lib/Slaughter/API/generic.pm to give an error - then in each of the available
 environment-specific libraries in that same directory.
 
 The interface to the system's packaging is currently only implemented
