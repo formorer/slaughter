@@ -59,6 +59,20 @@ Transport
     Copy this to /var/log/slaughter, and concatenate the policies instead
     of doing the HTTP expansion?
 
+  (Right now a recursive fetch is possible if you were to fetch and unpack
+ a .tar file - but that doesn't work well if you want template expansion.)
+
+
+
+Logging
+-------
+
+  * Logging is simple as the log output from each run is sent to a different
+    file, that makes it simple to handle emailing as it reduces the problem
+    to mailing the contents of a new file.  However logfiles like this are nasty.
+
+  * Log to a single file, appending, on each run.  Either drop the mailing of
+    logfiles or remember where we started to append from?
 
 
 Steve
