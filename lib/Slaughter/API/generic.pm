@@ -104,15 +104,15 @@ sub InstallPackage
 }
 
 
-sub PackageInstalled
-{
-    print "PackageInstalled - not implemented for $^O\n";
-}
-
-
 sub RemovePackage
 {
     print "RemovePackage - not implemented for $^O\n";
+}
+
+
+sub PackageInstalled
+{
+    print "PackageInstalled - not implemented for $^O\n";
 }
 
 
