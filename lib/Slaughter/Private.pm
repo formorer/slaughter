@@ -52,7 +52,7 @@ sub fetchURL
 
     $verbose && print "\tfetchURL( $url ) \n";
 
-    my $ua = LWP::UserAgent->new();
+    my $ua = LWP::UserAgent->new( agent => $agent );
     $ua->env_proxy();
 
 
