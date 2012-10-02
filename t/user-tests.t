@@ -17,8 +17,13 @@ use strict;
 use Test::More;
 
 
-plan skip_all => "The USER environmental variable is not set"
-  if ( !$ENV{ 'USER' } );
+if ( !$ENV{ 'USER' } )
+{
+    plan skip_all => "The USER environmental variable is not set";
+    exit(0);
+}
+
+plan qw! no_plan !;
 
 #
 #  Ensure we have a user we're running as.
