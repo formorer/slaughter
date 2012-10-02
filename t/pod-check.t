@@ -10,23 +10,26 @@
 use strict;
 use Test::More qw( no_plan );
 
-foreach my $file ( qw! ./bin/slaughter ! )
+foreach my $file (qw! ./bin/slaughter !)
 {
-    ok( -e $file, "$file" );
-    ok( -x $file, " File is executable: $file" );
-    ok( ! -d $file, " File is not a directory: $file" );
+    ok( -e $file,  "$file" );
+    ok( -x $file,  " File is executable: $file" );
+    ok( !-d $file, " File is not a directory: $file" );
 
-    if ( ( -x $file ) && ( ! -d $file ) )
+    if ( ( -x $file ) && ( !-d $file ) )
     {
+
         #
         #  Execute the command giving STDERR to STDOUT where we
         # can capture it.
         #
-        my $cmd           = "podchecker $file";
+        my $cmd    = "podchecker $file";
         my $output = `$cmd 2>&1`;
-        chomp( $output );
+        chomp($output);
 
-        is( $output, "$file pod syntax OK.", " File has correct POD syntax: $file" );
+        is( $output,
+            "$file pod syntax OK.",
+            " File has correct POD syntax: $file" );
     }
 }
 
