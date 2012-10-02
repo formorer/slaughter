@@ -15,6 +15,7 @@ slaughter - Perl Automation Tool
    --dump        Dump details of the local environment.
    --email       Output the logfile via email to the specified address.
    --keep        Don't delete the compiled perl post-execution.
+   --mitmok      Allow insecure SSL-usage.
    --no-execute  Don't actually execute the downloaded policy.
    --no-log      Don't redirect run output to a log file.
                  (Can't be used with --email)
@@ -556,6 +557,7 @@ sub parseCommandLine
             "policy=s",   \$CONFIG{ 'policy' },
             "prefix=s",   \$CONFIG{ 'prefix' },
             "protocol=s", \$CONFIG{ 'protocol' },
+            "mitmok=s",   \$CONFIG{ 'mitmok' },
             "server=s",   \$CONFIG{ 'server' },
 
             # Flags
