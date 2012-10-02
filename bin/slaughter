@@ -11,6 +11,7 @@ slaughter - Perl Automation Tool
 
   General Options:
 
+   --agent       Specify the User-Agent to use for HTTP-fetches.
    --dump        Dump details of the local environment.
    --email       Output the logfile via email to the specified address.
    --keep        Don't delete the compiled perl post-execution.
@@ -153,7 +154,7 @@ A fully-featured file might look something like this:
 
 =head1 LICENSE
 
-Copyright (c) 2010-2011 by Steve Kemp.  All rights reserved.
+Copyright (c) 2010-2012 by Steve Kemp.  All rights reserved.
 
 This module is free software;
 you can redistribute it and/or modify it under
@@ -311,6 +312,7 @@ sub defaultOptions
                  prefix   => "/slaughter/",
                  policy   => "default.policy",
                  protocol => "http://",
+                 agent    => "slaughter/$VERSION",
                );
 
 
@@ -549,6 +551,7 @@ sub parseCommandLine
             "version", \$SHOW_VERSION,
 
             # General options
+            "agent=s",    \$CONFIG{ 'agent' },
             "email=s",    \$CONFIG{ 'email' },
             "policy=s",   \$CONFIG{ 'policy' },
             "prefix=s",   \$CONFIG{ 'prefix' },
@@ -762,7 +765,27 @@ sub fetchPolicy
     $CONFIG{ 'verbose' } &&
       print "\tfetchURL( $url ) \n";
 
-    my $ua = LWP::UserAgent->new();
+    my $ua;
+
+    if ( $LWP::UserAgent::VERSION < 6.00 )
+    {
+        if ( $CONFIG{ 'protocol' } eq 'https://' )
+        {
+            $CONFIG{ 'verbose' } &&
+              print
+              "\told LWP::UserAgent $LWP::UserAgent::VERSION MITM-attack possible\n";
+            $CONFIG{ 'mitmok' } ||
+              die "enable 'mitmok' if you really want this\n";
+        }
+
+        $ua = LWP::UserAgent->new( agent => $CONFIG{ 'agent' } );
+    }
+    else
+    {
+        $ua = LWP::UserAgent->new( ssl_opts => { verify_hostname => 1 },
+                                   agent    => $CONFIG{ 'agent' }, );
+    }
+
     $ua->env_proxy();
 
     my $response = $ua->get($url);
