@@ -34,7 +34,6 @@ The LICENSE file contains the full text of the license.
 =cut
 
 
-
 #
 #  The modules we use, and the internal functions are defined
 # in this module.
@@ -42,6 +41,13 @@ The LICENSE file contains the full text of the license.
 use Slaughter::Private;
 
 use File::Copy;
+
+
+sub Alert
+{
+    print "Alert - not implemented for $^O\n";
+}
+
 
 ##
 ##
@@ -501,6 +507,45 @@ sub RunCommand
 }
 
 
+sub InstallPackage
+{
+    print "InstallPackage - not implemented for $^O\n";
+}
+
+
+sub RemovePackage
+{
+    print "RemovePackage - not implemented for $^O\n";
+}
+
+
+sub PackageInstalled
+{
+    print "PackageInstalled - not implemented for $^O\n";
+}
+
+
+sub Mounts
+{
+    print "Mounts - not implemented for $^O\n";
+}
+
+
+sub PercentageUsed
+{
+    print "PercentageUsed - not implemented for $^O\n";
+}
+
+sub UserExists
+{
+    print "UserExists - not implemented for $^O\n";
+}
+
+
+sub UserDetails
+{
+    print "UserDetails - not implemented for $^O\n";
+}
 
 
 1;
