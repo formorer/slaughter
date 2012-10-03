@@ -26,6 +26,7 @@ install: build
 	dh_testroot
 	dh_clean -k
 	dh_installdirs
+	make test
 	make install prefix=`pwd`/debian/tmp
 
 	mkdir -p `pwd`/debian/tmp/usr/share/man/man8/
