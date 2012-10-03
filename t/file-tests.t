@@ -18,11 +18,6 @@ use Test::More qw! no_plan !;
 use File::Temp qw/ tempfile /;
 
 #
-#  Ensure we have a user we're running as.
-#
-ok( length( $ENV{ 'USER' } ) > 0, "We have a user" );
-
-#
 #  Load the Slaughter module
 #
 BEGIN {use_ok('Slaughter');}
