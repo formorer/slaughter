@@ -2,7 +2,7 @@ Source: slaughter
 Section: admin
 Priority: optional
 Maintainer: Steve Kemp <steve@steve.org.uk>
-Build-Depends: debhelper (>> 5.0.0), libwww-perl, libdigest-sha1-perl, perl-modules
+Build-Depends: debhelper (>> 5.0.0), libwww-perl, libdigest-sha-perl | libdigest-sha1-perl, perl-modules
 Standards-Version: 3.9.1
 Homepage: http://www.steve.org.uk/Software/slaughter/
 
@@ -10,7 +10,7 @@ Homepage: http://www.steve.org.uk/Software/slaughter/
 Package: slaughter-client
 Provides: slaughter
 Architecture: all
-Depends: ${misc:Depends}, libdigest-sha1-perl, libwww-perl, libtext-template-perl, perl-modules
+Depends: ${misc:Depends}, libdigest-sha-perl | ibdigest-sha1-perl, libwww-perl, libtext-template-perl, perl-modules
 Suggests: httpd
 Description: Automation tool to perform system administration remotely
  This package contains a client which will connect to a central (HTTP) server
