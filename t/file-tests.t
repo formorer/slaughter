@@ -2,11 +2,14 @@
 #
 #  Some simple tests that validate the Slaughter code is correct.
 #
-#  Here we use the two API methods:
+#  Here we use the three API methods:
 #
+#    AppendIfMissing      +
 #    CommentLinesMatching +
-#    AppendIfMissing
+#    FileMatches
 #
+# Steve
+# --
 #
 
 
@@ -52,6 +55,19 @@ close(FILE);
 #
 is( -s $filename, 32, "The file has our test data present" );
 
+#
+#  Does the file match our simple pattern?
+#
+is( FileMatches( File => $filename, Pattern => '^[0-9]*$' ),
+    1,
+    "File matches a simple regular expression" );
+
+#
+#  And the file should now contain a comment.
+#
+is( FileMatches( File => $filename, Pattern => '^#' ),
+    0,
+    "File does not contain a comment." );
 
 #
 #  Now we'll comment lines containing numeric code.
@@ -64,8 +80,18 @@ CommentLinesMatching( File => $filename, Pattern => '^[0-9]*$' );
 is( -s $filename, 33, "The file has grown, as expected" );
 
 #
-#  TODO test there is "^#" in exactly one line.
+#  And the file no longer should match our simple pattern?
 #
+is( FileMatches( File => $filename, Pattern => '^[0-9]*$' ),
+    0,
+    "File no longer matches our simple regular expression" );
+
+#
+#  And the file should now contain a comment.
+#
+is( FileMatches( File => $filename, Pattern => '^#' ),
+    1,
+    "File contains a comment." );
 
 #
 #  Append a new line
