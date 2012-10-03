@@ -14,21 +14,15 @@
 
 
 use strict;
-use Test::More;
+use Test::More qw! no_plan !;
 
 
-if ( !$ENV{ 'USER' } )
-{
-    plan skip_all => "The USER environmental variable is not set";
-    exit(0);
-}
-
-plan qw! no_plan !;
+my $SELF = getlogin || getpwuid($<) || $ENV{'USER'};
 
 #
 #  Ensure we have a user we're running as.
 #
-ok( length( $ENV{ 'USER' } ) > 0, "We have a user" );
+ok( length( $SELF ) > 0, "We have a user" );
 
 #
 #  Load the Slaughter module
@@ -40,13 +34,13 @@ require_ok('Slaughter');
 #  Ensure the user exists
 #
 my $user = undef;
-$user = UserExists( User => $ENV{ 'USER' } );
+$user = UserExists( User => $SELF );
 ok( $user, "We found a username" );
 
 #
 #  Get the details
 #
-$user = UserDetails( User => $ENV{ 'USER' } );
-is( $user->{ 'Login' }, $ENV{ 'USER' },
+$user = UserDetails( User => $SELF );
+is( $user->{ 'Login' }, $SELF,
     "The username matches the environment" );
 ok( -d $user->{ 'Home' }, "The username has a home directory that exists" );
