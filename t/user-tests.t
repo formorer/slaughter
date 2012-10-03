@@ -17,12 +17,12 @@ use strict;
 use Test::More qw! no_plan !;
 
 
-my $SELF = getlogin || getpwuid($<) || $ENV{'USER'};
+my $SELF = getlogin || getpwuid($<) || $ENV{ 'USER' };
 
 #
 #  Ensure we have a user we're running as.
 #
-ok( length( $SELF ) > 0, "We have a user" );
+ok( length($SELF) > 0, "We have a user" );
 
 #
 #  Load the Slaughter module
@@ -41,6 +41,5 @@ ok( $user, "We found a username" );
 #  Get the details
 #
 $user = UserDetails( User => $SELF );
-is( $user->{ 'Login' }, $SELF,
-    "The username matches the environment" );
+is( $user->{ 'Login' }, $SELF, "The username matches the environment" );
 ok( -d $user->{ 'Home' }, "The username has a home directory that exists" );

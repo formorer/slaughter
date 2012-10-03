@@ -45,7 +45,7 @@ is( countFiles($dir), 4, "The temporary directory has now been populated" );
 #  Remove files matching the pattern "*.kemp".
 #
 my $removed = DeleteFilesMatching( Root => $dir, Pattern => "\.kemp\$" );
-is( $removed, 1, "We removed one file" );
+is( $removed,         1, "We removed one file" );
 is( countFiles($dir), 3, "The temporary directory now has one fewer files" );
 
 
@@ -53,15 +53,15 @@ is( countFiles($dir), 3, "The temporary directory now has one fewer files" );
 #  Remove "b*"
 #
 $removed = DeleteFilesMatching( Root => $dir, Pattern => "^b.*" );
-is( $removed, 2, "We removed two file" );
+is( $removed,         2, "We removed two file" );
 is( countFiles($dir), 1, "The temporary directory now has one  file left" );
 
 
 #
 #  Unlink the last file manually
 #
-unlink( "$dir/foo.txt" );
-is( countFiles( $dir ), 0, "Post-test we have zero files.");
+unlink("$dir/foo.txt");
+is( countFiles($dir), 0, "Post-test we have zero files." );
 
 
 
@@ -72,7 +72,7 @@ sub createFile
 {
     my ( $dir, $file, $contents ) = (@_);
 
-    $contents = "OK\n" if ( !defined( $contents ) );
+    $contents = "OK\n" if ( !defined($contents) );
 
     open( FILE, ">", "$dir/$file" );
     print FILE $contents;
