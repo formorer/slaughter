@@ -34,12 +34,11 @@ The LICENSE file contains the full text of the license.
 
 
 
-use LWP::UserAgent;
-use Digest::SHA1;
 use File::Basename qw/ dirname basename /;
 use File::Find;
-use File::Temp qw/ tempfile /;
 use File::Path qw/ mkpath /;
+use File::Temp qw/ tempfile /;
+use LWP::UserAgent;
 use Text::Template;
 
 
@@ -103,17 +102,47 @@ sub fetchURL
 ##
 ##  Private
 ##
+##  Produce the SHA1 hash of the named files contents.
+##
+## Notes:
+##
+## Attempt to use both of the modules Digest::SHA & Digest::SHA1
+## stopping the first time one succeeds.
+##
 sub checksumFile
 {
     my ($file) = (@_);
 
-    my $sha1 = Digest::SHA1->new;
-    open my $handle, "<", $file;
-    $sha1->addfile($handle);
-    close($handle);
+    my $hash = undef;
 
-    return ( $sha1->hexdigest() );
+    foreach my $module (qw! Digest::SHA Digest::SHA1 !)
+    {
 
+        # If we succeeded in calculating the hash we're done.
+        next if ( defined($hash) );
+
+        # Attempt to load the module
+        my $eval = "use $module;";
+        eval($eval);
+
+        #
+        #  Loaded module, with no errors.
+        #
+        if ( !$@ )
+        {
+            my $object = $module->new;
+
+            open my $handle, "<", $filename or
+              die "Failed to read $filename to hash contents with $module - $!";
+            $object->addfile($handle);
+            close($handle);
+
+            $hash = $object->hexdigest();
+        }
+
+    }
+
+    return ($digest);
 }
 
 
