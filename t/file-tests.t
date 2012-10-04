@@ -2,9 +2,11 @@
 #
 #  Some simple tests that validate the Slaughter code is correct.
 #
-#  Here we use the single API method:
+#  Here we use the API methods:
 #
-#    DeleteFilesMatching
+#    DeleteFilesMatching +
+#    FindBinary +
+#    SetPermissions
 #
 # Steve
 # --
@@ -47,18 +49,38 @@ foreach my $name( qw! foo.txt bar.txt baz.txt ! )
 {
     my $file = $dir . "/" . $name;
 
+    #
+    #  The file is not executable.
+    #
     ok( ! -x $file , "The file is not executable: $file" );
+    is( FindBinary( binary => $name, path => $dir ), undef, "So finding it as a binary fails" );
+
+    #
+    #  Set it to be executable.
+    #
     is( SetPermissions( File => $file, Mode => "0755" ),
         1,
         "Changing permissions succeeded" );
 
+    #
+    #  That should succeed.
+    #
     ok(  -x $file , "The file is now executable: $file" );
+
+    #
+    #  Which mean we should have a "binary" now - as a binary is executable.
+    #
+    is( FindBinary( binary => $name, path => $dir ),
+        $dir . "/" . $name,
+        "So finding it as a binary now succeeds" );
+
 
     # Function returns -2 on invalid group/owner
     is( SetPermissions( File => $file,
                         Owner => "fsjlsdkfjlj"),
         -2,
         "Setting to invalid owner fails as expected" );
+
     is( SetPermissions( File => $file,
                         Group => "fsjlsdkfjlj"),
         -2,
