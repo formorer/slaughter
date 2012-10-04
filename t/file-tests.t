@@ -40,6 +40,20 @@ createFile( $dir, "baz.txt" );
 createFile( $dir, "steve.kemp" );
 is( countFiles($dir), 4, "The temporary directory has now been populated" );
 
+#
+#  Set the permissions to be executable
+#
+foreach my $name( qw! foo.txt bar.txt baz.txt ! )
+{
+    my $file = $dir . "/" . $name;
+
+    ok( ! -x $file , "The file is not executable: $file" );
+    is( SetPermissions( File => $file, Mode => "755" ),
+        1,
+        "Changing permissions succeeded" );
+
+    ok(  -x $file , "The file is now executable: $file" );
+}
 
 #
 #  Remove files matching the pattern "*.kemp".
