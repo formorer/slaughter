@@ -45,27 +45,27 @@ is( countFiles($dir), 4, "The temporary directory has now been populated" );
 #
 #  Set the permissions to be executable
 #
-foreach my $name( qw! foo.txt bar.txt baz.txt ! )
+foreach my $name (qw! foo.txt bar.txt baz.txt !)
 {
     my $file = $dir . "/" . $name;
 
     #
     #  The file is not executable.
     #
-    ok( ! -x $file , "The file is not executable: $file" );
-    is( FindBinary( binary => $name, path => $dir ), undef, "So finding it as a binary fails" );
+    ok( !-x $file, "The file is not executable: $file" );
+    is( FindBinary( Binary => $name, Path => $dir ),
+        undef, "So finding it as a binary fails" );
 
     #
     #  Set it to be executable.
     #
     is( SetPermissions( File => $file, Mode => "0755" ),
-        1,
-        "Changing permissions succeeded" );
+        1, "Changing permissions succeeded" );
 
     #
     #  That should succeed.
     #
-    ok(  -x $file , "The file is now executable: $file" );
+    ok( -x $file, "The file is now executable: $file" );
 
     #
     #  Which mean we should have a "binary" now - as a binary is executable.
@@ -76,15 +76,21 @@ foreach my $name( qw! foo.txt bar.txt baz.txt ! )
 
 
     # Function returns -2 on invalid group/owner
-    is( SetPermissions( File => $file,
-                        Owner => "fsjlsdkfjlj"),
+    is(
+        SetPermissions( File  => $file,
+                        Owner => "fsjlsdkfjlj"
+                      ),
         -2,
-        "Setting to invalid owner fails as expected" );
+        "Setting to invalid owner fails as expected"
+      );
 
-    is( SetPermissions( File => $file,
-                        Group => "fsjlsdkfjlj"),
+    is(
+        SetPermissions( File  => $file,
+                        Group => "fsjlsdkfjlj"
+                      ),
         -2,
-        "Setting to invalid group fails as expected" );
+        "Setting to invalid group fails as expected"
+      );
 }
 
 #
