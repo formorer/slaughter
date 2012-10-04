@@ -13,6 +13,9 @@ Primitives
 ----------
 
   * We use system() when we could use chmod/chown directly.  This is bad.
+  NOTE: We now have SetPermissions which has at least one test.
+ We can move to using that globally and remove system() at the
+ same time.
 
   * Our primitives are mostly written in pure-perl.  If we made them
     entirely pure-perl we'd be able to drop Slaughter/linux, and
