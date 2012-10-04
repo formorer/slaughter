@@ -592,16 +592,17 @@ sub FileMatches
 ##  Public:  Find a binary upon the system, or specified, path.
 ##
 ##  Parameters:
-##       binary  The name of the binary to locate.  Mandatory.
-##       path    The path to search.  Optional
+##       Binary  The name of the binary to locate.  Mandatory.
+##       Path    The path to search.  Optional
 ##
 ##
 sub FindBinary
 {
     my (%params) = (@_);
 
-    my $binary = $params{ 'binary' } || return;
-    my $path = $params{ 'path' } ||
+    my $binary = $params{ 'Binary' } || $params{ 'binary' } || return;
+    my $path = $params{ 'Path' } ||
+      $params{ 'path' } ||
       $ENV{ 'PATH' } ||
       "/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin";
 

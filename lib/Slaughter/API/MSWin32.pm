@@ -458,8 +458,9 @@ sub FindBinary
 {
     my (%params) = (@_);
 
-    my $binary = $params{ 'binary' } || return;
-    my $path = $params{ 'path' } ||
+    my $binary = $params{ 'Binary' } || $params{ 'binary' } || return;
+    my $path = $params{ 'Path' } ||
+      $params{ 'path' } ||
       $ENV{ 'PATH' };
 
     foreach my $dir ( split( /;/, $path ) )
