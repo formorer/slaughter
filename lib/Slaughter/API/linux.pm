@@ -460,28 +460,38 @@ sub SetPermissions
     # file missing is an error
     return (-1) if ( !-e $file );
 
+    # Numeric values
+    my $uid = undef;
+    my $gid = undef;
+
     # invalid user?
-    if ( defined( $owner ) )
+    if ( defined($owner) )
     {
-        return -2 if ( ! defined( getpwnam( $owner ) ) );
+        $uid = getpwnam($owner);
+        return -2 if ( !defined($uid) );
+
+        $verbose && print "Owner:$owner -> UID:$uid\n";
     }
+
     # invalid group?
-    if ( defined( $group ) )
+    if ( defined($group) )
     {
-        return -2 if ( ! defined ( getgrnam( $group ) ) );
+        $gid = getgrnam($group);
+        return -2 if ( !defined($gid) );
+        $verbose && print "Group:$group -> GID:$gid\n";
     }
 
     my $changed = 0;
 
     if ( $params{ 'Owner' } )
     {
-        $verbose && print "\tSetting owner to $owner\n";
+        $verbose && print "\tSetting owner to $owner/$uid\n";
         RunCommand( Cmd => "chown $owner $file" );
         $changed += 1;
     }
     if ( $params{ 'Group' } )
     {
-        $verbose && print "\tSetting group to $group\n";
+        $verbose && print "\tSetting group to $group/$gid\n";
         RunCommand( Cmd => "chgrp $group $file" );
         $changed += 1;
     }
