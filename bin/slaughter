@@ -765,7 +765,7 @@ sub fetchPolicy
     my ($url) = (@_);
 
     $CONFIG{ 'verbose' } &&
-      print "\tfetchURL( $url ) \n";
+      print "\tfetchPolicy( $url ) \n";
 
     my $ua;
 
@@ -869,7 +869,7 @@ EOF
 
     if ( $^O ne "MSWin32" )
     {
-        system( "chmod", "755", $name );
+        chmod( 0755, $name );
     }
 
     return ($name);
