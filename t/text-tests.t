@@ -51,10 +51,12 @@ close(FILE);
 is( -s $filename, 32, "The file has our test data present" );
 
 #
-#  Does the file match our simple pattern?
+#  Does the file-matching succeed?
 #
 is( FileMatches( File => $filename, Pattern => '^[0-9]*$' ),
     1, "File matches a simple regular expression" );
+is( FileMatches( File => $filename, Line => '1234567890' ),
+    1, "File matches literally." );
 
 #
 #  And the file should now contain a comment.
@@ -77,12 +79,16 @@ is( -s $filename, 33, "The file has grown, as expected" );
 #
 is( FileMatches( File => $filename, Pattern => '^[0-9]*$' ),
     0, "File no longer matches our simple regular expression" );
+is( FileMatches( File => $filename, Line => '1234567890' ),
+    0, "File no longer matches literally." );
 
 #
 #  And the file should now contain a comment.
 #
 is( FileMatches( File => $filename, Pattern => '^#' ),
     1, "File contains a comment." );
+is( FileMatches( File => $filename, Line => '#1234567890' ),
+    1, "File match, with comment, succeeds." );
 
 #
 #  Append a new line
