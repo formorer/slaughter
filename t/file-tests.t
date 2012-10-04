@@ -53,6 +53,16 @@ foreach my $name( qw! foo.txt bar.txt baz.txt ! )
         "Changing permissions succeeded" );
 
     ok(  -x $file , "The file is now executable: $file" );
+
+    # Function returns -2 on invalid group/owner
+    is( SetPermissions( File => $file,
+                        Owner => "fsjlsdkfjlj"),
+        -2,
+        "Setting to invalid owner fails as expected" );
+    is( SetPermissions( File => $file,
+                        Group => "fsjlsdkfjlj"),
+        -2,
+        "Setting to invalid group fails as expected" );
 }
 
 #

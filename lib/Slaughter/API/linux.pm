@@ -445,7 +445,8 @@ sub FetchFile
 ##
 ##  Returns 0 if no changes, otherwise count of changes.
 ##
-##  Returns -1 if file not found.
+##  Returns -1 if file not found.  Returns -2 if Owner/Group
+## cannot be found.
 ##
 sub SetPermissions
 {
@@ -456,7 +457,19 @@ sub SetPermissions
     my $owner = $params{ 'Owner' } || undef;
     my $mode  = $params{ 'Mode' }  || undef;
 
+    # file missing is an error
     return (-1) if ( !-e $file );
+
+    # invalid user?
+    if ( defined( $owner ) )
+    {
+        return -2 if ( ! defined( getpwnam( $owner ) ) );
+    }
+    # invalid group?
+    if ( defined( $group ) )
+    {
+        return -2 if ( ! defined ( getgrnam( $group ) ) );
+    }
 
     my $changed = 0;
 
