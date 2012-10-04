@@ -128,6 +128,12 @@ sub PercentageUsed
 }
 
 
+sub SetPermissions
+{
+    print "SetPermissions - not implemented for $^O\n";
+}
+
+
 sub RunCommand
 {
     print "RunCommand - not implemented for $^O\n";

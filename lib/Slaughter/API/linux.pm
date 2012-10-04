@@ -415,24 +415,10 @@ sub FetchFile
     #
     #  Change Owner/Group/Mode if we should
     #
-    if ( -e $dst && ( $params{ 'Owner' } ) )
-    {
-        my $owner = $params{ 'Owner' };
-        $verbose && print "\tSetting owner to $owner\n";
-        RunCommand( Cmd => "chown $owner $dst" );
-    }
-    if ( -e $dst && ( $params{ 'Group' } ) )
-    {
-        my $group = $params{ 'Group' };
-        $verbose && print "\tSetting group to $group\n";
-        RunCommand( Cmd => "chgrp $group $dst" );
-    }
-    if ( -e $dst && ( $params{ 'Mode' } ) )
-    {
-        my $mode = $params{ 'Mode' };
-        $verbose && print "\tSetting mode to $mode\n";
-        RunCommand( Cmd => "chmod $mode $dst" );
-    }
+    SetPermissions( File  => $dst,
+                    Owner => $params{ 'Owner' },
+                    Group => $params{ 'Group' },
+                    Mode  => $params{ 'Mode' } );
 
     #
     #  If we didn't replace then we'll remove the temporary file
@@ -444,6 +430,56 @@ sub FetchFile
     }
 
     return ($replace);
+}
+
+
+
+##
+## Public: Set owner/uid/mode of a file
+##
+## Parameters:
+##     File:   Name of file.
+##     Group:  Group to own file
+##     Owner:  User to own file.
+##     Mode:   File mode.
+##
+##  Returns 0 if no changes, otherwise count of changes.
+##
+##  Returns -1 if file not found.
+##
+sub SetPermissions
+{
+    my (%params) = (@_);
+
+    my $file  = $params{ 'File' }  || return;
+    my $group = $params{ 'Group' } || undef;
+    my $owner = $params{ 'Owner' } || undef;
+    my $mode  = $params{ 'Mode' }  || undef;
+
+    return (-1) if ( !-e $file );
+
+    my $changed = 0;
+
+    if ( $params{ 'Owner' } )
+    {
+        $verbose && print "\tSetting owner to $owner\n";
+        RunCommand( Cmd => "chown $owner $file" );
+        $changed += 1;
+    }
+    if ( $params{ 'Group' } )
+    {
+        $verbose && print "\tSetting group to $group\n";
+        RunCommand( Cmd => "chgrp $group $file" );
+        $changed += 1;
+    }
+    if ( $params{ 'Mode' } )
+    {
+        $verbose && print "\tSetting mode to $mode\n";
+        RunCommand( Cmd => "chmod $mode $file" );
+        $changed += 1;
+    }
+
+    return ($changed);
 }
 
 

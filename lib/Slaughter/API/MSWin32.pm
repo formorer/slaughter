@@ -536,6 +536,13 @@ sub PercentageUsed
     print "PercentageUsed - not implemented for $^O\n";
 }
 
+
+sub SetPermissions
+{
+    print "SetPermissions - not implemented for $^O\n";
+}
+
+
 sub UserExists
 {
     print "UserExists - not implemented for $^O\n";
