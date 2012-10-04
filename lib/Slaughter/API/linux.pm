@@ -485,20 +485,48 @@ sub SetPermissions
 
     if ( $params{ 'Owner' } )
     {
+
+        #
+        #  Find the current UID/GID of the file, so we
+        # can change just the owner.
+        #
+        my ( $dev,      $ino,     $mode, $nlink, $orig_uid,
+             $orig_gid, $rdev,    $size, $atime, $mtime,
+             $ctime,    $blksize, $blocks
+           ) = stat($file);
+
         $verbose && print "\tSetting owner to $owner/$uid\n";
-        RunCommand( Cmd => "chown $owner $file" );
+        chown( $uid, $orig_gid, $file );
+
         $changed += 1;
     }
     if ( $params{ 'Group' } )
     {
+
+        #
+        #  Find the current UID/GID of the file, so we
+        # can change just the group.
+        #
+        my ( $dev,      $ino,     $mode, $nlink, $orig_uid,
+             $orig_gid, $rdev,    $size, $atime, $mtime,
+             $ctime,    $blksize, $blocks
+           ) = stat($file);
+
         $verbose && print "\tSetting group to $group/$gid\n";
-        RunCommand( Cmd => "chgrp $group $file" );
+        chown( $orig_uid, $gid, $file );
+
         $changed += 1;
     }
     if ( $params{ 'Mode' } )
     {
         $verbose && print "\tSetting mode to $mode\n";
-        RunCommand( Cmd => "chmod $mode $file" );
+        my $mode = $params{ 'Mode' };
+        if ( $mode !~ /^0/ )
+        {
+            $mode = oct("0$mode");
+            $verbose && print "\tOctal mode is now $mode\n";
+        }
+        chmod( $mode, $file );
         $changed += 1;
     }
 

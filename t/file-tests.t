@@ -48,7 +48,7 @@ foreach my $name( qw! foo.txt bar.txt baz.txt ! )
     my $file = $dir . "/" . $name;
 
     ok( ! -x $file , "The file is not executable: $file" );
-    is( SetPermissions( File => $file, Mode => "755" ),
+    is( SetPermissions( File => $file, Mode => "0755" ),
         1,
         "Changing permissions succeeded" );
 
