@@ -21,11 +21,7 @@ Primitives
 
   * Make Slaughter::API::generic a base-class?
 
-
-Wrapper
--------
-
-  * Add GPG validation for policy download?
+  * Add GPG validation for file downloads?
 
        e.g. when fetching /default.policy also fetch /default.policy.sig
             and only accept if signature is valid.
