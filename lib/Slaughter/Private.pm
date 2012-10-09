@@ -117,7 +117,6 @@ sub checksumFile
 
     foreach my $module (qw! Digest::SHA Digest::SHA1 !)
     {
-
         # If we succeeded in calculating the hash we're done.
         next if ( defined($hash) );
 
@@ -132,8 +131,8 @@ sub checksumFile
         {
             my $object = $module->new;
 
-            open my $handle, "<", $filename or
-              die "Failed to read $filename to hash contents with $module - $!";
+            open my $handle, "<", $file or
+              die "Failed to read $file to hash contents with $module - $!";
             $object->addfile($handle);
             close($handle);
 
