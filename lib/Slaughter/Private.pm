@@ -142,7 +142,7 @@ sub checksumFile
 
     }
 
-    return ($digest);
+    return ($hash);
 }
 
 
