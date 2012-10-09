@@ -117,6 +117,7 @@ sub checksumFile
 
     foreach my $module (qw! Digest::SHA Digest::SHA1 !)
     {
+
         # If we succeeded in calculating the hash we're done.
         next if ( defined($hash) );
 
