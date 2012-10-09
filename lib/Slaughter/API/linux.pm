@@ -800,7 +800,7 @@ sub RunCommand
 
     $verbose && print "runCommand( $cmd )\n";
 
-    system($cmd );
+    return ( system($cmd ) );
 }
 
 
