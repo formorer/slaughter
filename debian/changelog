@@ -1,3 +1,10 @@
+slaughter (1.7-1) stable; urgency=low
+
+  * BUGFIX Release:
+    - SHA1 sum comparisons succeed as expected.
+
+ -- Steve Kemp <steve@steve.org.uk>  Tue, 09 Oct 2012 18:27:18 +0000
+
 slaughter (1.6-1) stable; urgency=low
 
   * New release containing integrated test suite.
