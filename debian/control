@@ -2,7 +2,7 @@ Source: slaughter
 Section: admin
 Priority: optional
 Maintainer: Steve Kemp <steve@steve.org.uk>
-Build-Depends: debhelper (>> 5.0.0), libwww-perl, libdigest-sha-perl | libdigest-sha1-perl, perl-modules
+Build-Depends: debhelper (>> 5.0.0), libwww-perl, libdigest-sha-perl | libdigest-sha1-perl, perl-modules, libtext-template-perl
 Standards-Version: 3.9.1
 Homepage: http://www.steve.org.uk/Software/slaughter/
 
