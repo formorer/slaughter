@@ -1,3 +1,12 @@
+slaughter (1.6-1) stable; urgency=low
+
+  * New release containing integrated test suite.
+  * New primitive SetPermissions.
+  * Bugfixes.
+  * SSL validation of https:// based fetches & slaughter-specific user-agent.
+
+ -- Steve Kemp <steve@steve.org.uk>  Tue, 09 Oct 2012 08:30:08 +0000
+
 slaughter (1.5-1) stable; urgency=low
 
   * Abstract away the meta-information collection into a series of modules.
