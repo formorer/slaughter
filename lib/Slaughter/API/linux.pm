@@ -798,6 +798,14 @@ sub RunCommand
 
     my $cmd = $params{ 'Cmd' } || return;
 
+    #
+    # Capture STDERR as well as STDOUT.
+    #
+    if ( $cmd !~ />/ )
+    {
+        $cmd .= "  1>&2";
+    }
+
     $verbose && print "runCommand( $cmd )\n";
 
     return ( system($cmd ) );
