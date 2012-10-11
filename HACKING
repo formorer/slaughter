@@ -68,7 +68,7 @@ Hacking Directions
 If you'd like to make a new variable available to running scripts you'll
 need to investigate the slaughter code if it is common to all environments
 (see the function "defaultOptions"), otherwise if you're in a new
-environment you'll need to createe a new library - modelled after
+environment you'll need to create a new library - modelled after
 lib/Slaughter/Info/*.pm.
 
 
