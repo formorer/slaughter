@@ -204,6 +204,12 @@ parseCommandLine();
 
 
 #
+#  Create a temporary directory, some transports need such a thing.
+#
+createTransportDir();
+
+
+#
 #  Ensure we're root, and ensure that we have the options setup that we need.
 #
 testEnvironment();
@@ -329,16 +335,10 @@ sub defaultOptions
     my %defs = ( version       => 0,
                  verbose       => 0,
                  transportargs => '',
+                 nodelete      => 0,
+                 noexecute     => 0,
                );
 
-
-    #
-    #  Temporary directory for transports to use
-    #
-    $defs{ 'transportDir' } = tempdir( CLEANUP => 0 );
-
-    #  The temporary directory should not be world-readable
-    chmod 0700, $defs{ 'transportDir' };
 
     #
     # Platform/OS (linux or MSWin32)
@@ -620,6 +620,32 @@ sub parseCommandLine
     }
 
 }
+
+
+
+=begin doc
+
+Create a temporary directory for holding files, some transports need this.
+
+Note this directory will be removed when this process terminates unless
+it was invoked with --no-delete.
+
+=end doc
+
+=cut
+
+sub createTransportDir
+{
+
+    #
+    #  Temporary directory for transports to use
+    #
+    $CONFIG{ 'transportDir' } = tempdir( CLEANUP => !$CONFIG{ 'nodelete' } );
+
+    #  The temporary directory should not be world-readable
+    chmod 0700, $CONFIG{ 'transportDir' };
+}
+
 
 
 =begin doc
