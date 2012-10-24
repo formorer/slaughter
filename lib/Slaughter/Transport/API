@@ -1,0 +1,29 @@
+
+  initialize( prefix => "http://steve.org.uk/private"    ||
+                        "rsync://example.com/foo/"       ||
+                        "ftp://ftp.example.com/pub/blah" ||
+                        "hg://foo.mercurial.com/path/to.repo.hg" )
+
+
+  #
+  #  This will read from the local store, if the
+  # transport has fetched the remote store locally
+  #
+  #  In the case of HTTP it will do a fetch against
+  # the local prefix.
+  #
+  getFile( file => "/global-keys" );
+
+  #
+  # Return 0 for HTTP
+  # return 1 for everythign that did a fetch to /var/cache/slaughter
+  #
+  isLocal();
+
+  #
+  # Get local directory
+  #
+  getLocal()  -> "/var/cache/slaughter" || undef.
+
+
+
