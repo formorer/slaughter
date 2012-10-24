@@ -25,7 +25,7 @@ clean:
 
 
 tidy:
-	perltidy ./bin/slaughter $$(find . -name '*.pm' -print) || true
+	perltidy ./bin/slaughter ./bin/slaughter-2 $$(find . -name '*.pm' -print) || true
 
 
 install: clean
