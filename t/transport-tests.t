@@ -57,7 +57,7 @@ foreach my $name ( sort( glob( $dir . "/*.pm" ) ) )
                    qw! error isAvailable fetchContents fetchPolicies name new !)
         {
             ok( UNIVERSAL::can( $handle, $method ),
-                "required method available in Slaughter::Transport::$module - $method"
+                "required method available in $module - $method"
               );
         }
 
