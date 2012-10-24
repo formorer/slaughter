@@ -21,7 +21,7 @@ clean:
 	-find . -name '*.log' -delete
 	-rm -f ./debian/files ./debian/*.substvars
 	-if [ -d ./debian/slaughter-client ] ; then rm -rf ./debian/slaughter-client; fi
-	rm ./slaughter.1 || true
+	-rm ./slaughter.1 || true
 
 
 tidy:
