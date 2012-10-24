@@ -45,15 +45,11 @@ use Text::Template;
 ##
 ##  PRIVATE
 ##
-sub fetchURL
+sub fetchFromTransport
 {
     my ($url) = (@_);
 
-    $verbose && print "\tfetchURL( $url ) \n";
-
-    my $ua = LWP::UserAgent->new( agent => $agent );
-    $ua->env_proxy();
-
+    $verbose && print "\tfetchFromTransport( $url ) \n";
 
     #
     #  Make requests for:
@@ -77,12 +73,12 @@ sub fetchURL
 
     foreach my $attempt (@urls)
     {
-        my $response = $ua->get($attempt);
+        my $content = $TRANSPORT->fetchContents($attempt);
 
-        if ( $response->is_success() )
+        if ( defined($content) )
         {
             $verbose && print "\t$attempt OK\n";
-            return ( $response->decoded_content() );
+            return ($content);
         }
         else
         {
