@@ -351,6 +351,9 @@ sub defaultOptions
     #
     $defs{ 'transportDir' } = tempdir( CLEANUP => 0 );
 
+    #  The temporary directory should not be world-readable
+    chmod 0700, $defs{ 'transportDir' };
+
     #
     # Platform/OS (linux or MSWin32)
     #
