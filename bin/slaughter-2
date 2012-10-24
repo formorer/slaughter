@@ -11,19 +11,20 @@ slaughter-2 - Perl Automation Tool
 
   General Options:
 
-   --agent       Specify the User-Agent to use for HTTP-fetches.
    --dump        Dump details of the local environment.
    --email       Output the logfile via email to the specified address.
-   --mitmok      Allow insecure SSL-usage.
    --no-delete   Don't delete the compiled perl post-execution.
    --no-execute  Don't actually execute the downloaded policy.
    --no-log      Don't redirect run output to a log file.
                  (Can't be used with --email)
-   --policy      Specify the policy file to load; default is "default.policy".
-   --prefix      The web-prefix beneath which /files and /policies live.
-   --protocol    The protocol to use "http" vs "https".
-   --server      Specify the file server to fetch policies from.
+
+  File/Policy Fetching:
+
+   --prefix      The prefix for the transport we're using.
    --transport   The transport to use for policy/file-fetching
+   --username    The username for the policy-fetch, if appropriate.
+   --password    The password for the policy-fetch, if appropriate.
+
 
   Help Options:
 
@@ -170,7 +171,7 @@ use strict;
 use warnings;
 
 use English;
-use File::Temp qw/ tempfile /;
+use File::Temp qw/ tempfile tempdir /;
 use File::Path qw/ mkpath /;
 use Getopt::Long;
 use LWP::UserAgent;
@@ -223,13 +224,25 @@ testEnvironment();
 #     should have a method which will allow us to fetch a file
 #     this will be used by Private.pm
 #
+my $module = "Slaughter::Transport::$CONFIG{'transport'}";
+my $object = $module->new(%CONFIG);
 
 #
-#  Fetch the remote policy via http/https
+# Test the dependencies for the module are present.
 #
-my $policy = fetchRemotePolicy(
-             $CONFIG{ 'protocol' } . $CONFIG{ 'server' } . $CONFIG{ 'prefix' } .
-               "policies/" . $CONFIG{ 'policy' } );
+if ( !$object->isAvailable() )
+{
+    print
+      "The transport module you've chosen - $module - doesn't seem to be available:\n";
+
+    print $object->error() . "\n";
+    exit(0);
+}
+
+#
+#  Now fetch the policies, expanding and recursing where appropriate
+#
+my $policy = $object->fetchPolicies();
 
 
 #
@@ -239,6 +252,8 @@ my $policy = fetchRemotePolicy(
 my $file = writeoutPolicy($policy);
 $CONFIG{ 'verbose' } && print "Policy written to $file\n";
 
+
+exit;
 
 #
 #  Test at this point that we have the modules required for this particular
@@ -300,7 +315,7 @@ if ( $CONFIG{ 'email' } )
 #
 #  Cleanup.
 #
-unlink($file) unless ( $CONFIG{ 'no-delete' } );
+unlink($file) unless ( $CONFIG{ 'nodelete' } );
 
 
 #
@@ -325,14 +340,14 @@ Slaughter::Info namespace.
 
 sub defaultOptions
 {
-    my %defs = ( version  => 0,
-                 verbose  => 0,
-                 prefix   => "/slaughter/",
-                 policy   => "default.policy",
-                 protocol => "http://",
-                 agent    => "slaughter/$VERSION",
-               );
+    my %defs = ( version => 0,
+                 verbose => 0, );
 
+
+    #
+    #  Temporary directory for transports to use
+    #
+    $defs{ 'transportDir' } = tempdir( CLEANUP => 1 );
 
     #
     # Platform/OS (linux or MSWin32)
@@ -569,18 +584,17 @@ sub parseCommandLine
             "version", \$SHOW_VERSION,
 
             # General options
-            "agent=s",    \$CONFIG{ 'agent' },
-            "email=s",    \$CONFIG{ 'email' },
-            "policy=s",   \$CONFIG{ 'policy' },
-            "prefix=s",   \$CONFIG{ 'prefix' },
-            "protocol=s", \$CONFIG{ 'protocol' },
-            "mitmok=s",   \$CONFIG{ 'mitmok' },
-            "server=s",   \$CONFIG{ 'server' },
-            "transport=s",   \$CONFIG{ 'transport' },
+            "email=s", \$CONFIG{ 'email' },
+
+            # For fetching policies.
+            "transport=s", \$CONFIG{ 'transport' },
+            "prefix=s",    \$CONFIG{ 'prefix' },
+            "username=s",  \$CONFIG{ 'username' },
+            "password=s",  \$CONFIG{ 'password' },
 
             # Flags
             "dump",       \$CONFIG{ 'dump' },
-            "no-delete",  \$CONFIG{ 'no-delete' },
+            "no-delete",  \$CONFIG{ 'nodelete' },
             "no-execute", \$CONFIG{ 'noexecute' },
             "no-log",     \$CONFIG{ 'nolog' },
             "verbose",    \$CONFIG{ 'verbose' },
@@ -625,24 +639,6 @@ Test the environment.
 
 sub testEnvironment
 {
-    if ( !$CONFIG{ 'server' } )
-    {
-        print <<EOF;
-You need to specify the server which this client will fetch the policies
-from.  You can either do this by running:
-
-   slaughter --server=foo.example.org
-
-Or by:
-
-echo "server = foo.example.org" >> /etc/slaughter/slaughter.conf
-
-For Microsoft Windows clients you should use C:/slaughter.conf
-
-EOF
-        exit 1;
-    }
-
     if ( $UID != 0 )
     {
         print <<EOF;
@@ -656,6 +652,22 @@ EOF
         die "You cannot use --email and --no-log at the same time!\n";
     }
 
+    #
+    #  Attempt to load the transport module the user has specified
+    #
+    my $transport = "use Slaughter::Transport::$CONFIG{'transport'}";
+
+    ## no critic (Eval)
+    eval($transport);
+    ## use critic
+
+    if ($@)
+    {
+        print "The transport method you've chosen doesn't seem to exist\n";
+        print $@;
+
+        exit(0);
+    }
 }
 
 
@@ -789,21 +801,12 @@ sub fetchPolicy
 
     if ( $LWP::UserAgent::VERSION < 6.00 )
     {
-        if ( $CONFIG{ 'protocol' } eq 'https://' )
-        {
-            $CONFIG{ 'verbose' } &&
-              print
-              "\told LWP::UserAgent $LWP::UserAgent::VERSION MITM-attack possible\n";
-            $CONFIG{ 'mitmok' } ||
-              die "enable 'mitmok' if you really want this\n";
-        }
-
-        $ua = LWP::UserAgent->new( agent => $CONFIG{ 'agent' } );
+        $ua = LWP::UserAgent->new();
     }
     else
     {
-        $ua = LWP::UserAgent->new( ssl_opts => { verify_hostname => 1 },
-                                   agent    => $CONFIG{ 'agent' }, );
+        $ua = LWP::UserAgent->new( ssl_opts => { verify_hostname => 1 } );
+
     }
 
     $ua->env_proxy();
@@ -882,12 +885,22 @@ EOF
     print $handle $line . "\n";
     print $handle "#========\n\n";
 
+    print $handle <<EOF;
+
+#
+# TRANSPORT SETUP
+#
+use Slaughter::Transport::$CONFIG{'transport'};
+our \$TRANSPORT = Slaughter::Transport::$CONFIG{'transport'}->new( \%template );
+
+EOF
+
     print $handle $txt;
     close($handle);
 
     if ( $^O ne "MSWin32" )
     {
-        chmod( 0755, $name );
+        chmod( 0700, $name );
     }
 
     return ($name);
