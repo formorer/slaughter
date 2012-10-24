@@ -56,7 +56,7 @@ Transport
     path = /path/to/root
     ip acl ..
 
-    Copy this to /var/log/slaughter, and concatenate the policies instead
+    Copy this to /var/cache/slaughter, and concatenate the policies instead
     of doing the HTTP expansion?
 
   (Right now a recursive fetch is possible if you were to fetch and unpack
