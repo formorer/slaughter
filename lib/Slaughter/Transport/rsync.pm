@@ -1,3 +1,4 @@
+
 =head1 NAME
 
 Slaughter::Transport::rsync - Transport class.
@@ -65,3 +66,7 @@ sub new
 
 
 
+sub name
+{
+    return "rsync";
+}

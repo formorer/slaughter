@@ -1,3 +1,4 @@
+
 =head1 NAME
 
 Slaughter::Transport::ftp - Transport class.
@@ -64,4 +65,7 @@ sub new
 
 
 
-
+sub name
+{
+    return "ftp";
+}
