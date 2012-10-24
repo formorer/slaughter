@@ -50,8 +50,19 @@ foreach my $name ( sort( glob( $dir . "/*.pm" ) ) )
         $module = "Slaughter::Transport::$module";
         my $handle = $module->new();
 
+        #
+        # Test that our required methods are present
+        #
         ok( UNIVERSAL::can( $handle, 'name' ),
             "The module Slaughter::Transport::$module implements 'name'" );
+        ok( UNIVERSAL::can( $handle, 'error' ),
+            "The module Slaughter::Transport::$module implements 'error'" );
+        ok( UNIVERSAL::can( $handle, 'isAvailable' ),
+            "The module Slaughter::Transport::$module implements 'isAvailable'"
+          );
+
+
+
 
     }
 }
