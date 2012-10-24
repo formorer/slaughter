@@ -347,7 +347,7 @@ sub defaultOptions
     #
     #  Temporary directory for transports to use
     #
-    $defs{ 'transportDir' } = tempdir( CLEANUP => 1 );
+    $defs{ 'transportDir' } = tempdir( CLEANUP => 0 );
 
     #
     # Platform/OS (linux or MSWin32)
