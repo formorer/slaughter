@@ -1,0 +1,84 @@
+
+TODO - Write nmore neatly
+
+
+
+http transport
+--------------
+
+  Have apache serve:
+
+    /var/www/slaughter/
+    /var/www/slaughter/files/
+    /var/www/slaughter/policies/
+
+  Then the client will be invoked:
+
+   slaughter --transport=http --prefix=http://example.com/slaughter/
+
+
+rsync transport
+---------------
+
+  Store the files as per the previous example.  Have the followign rsync configuration
+ file:
+
+[slaughter]
+        path = /var/www/slaughter/
+        comment = slaughter policy files
+        read only = true
+
+
+  The client will be invoked:
+
+    slaughter --transport=rsync --prefix=rsync://example.com/slaughter/
+
+  The client will invoke:
+      rsync -qazr rsync://example.com/slaughter /tmp/foo
+
+  Additional arguments may be passed to rsync vai the "--transport-args" flag.
+
+
+
+
+hg transport
+------------
+
+  Create a repository which contains the top-level directories "files/" &
+"policies/".  Host this repository somewhere that mercurial can poll from,
+ideally via http/https.
+
+  The client will be invoked:
+
+    slaughter --transport=hg --prefix=http://example.com/path/to/repo.hg
+
+  The client will invoke:
+      hg clone http://example.com/path/to/repo.hg /tmp/foo
+
+  Additional arguments may be passed to mercurial via the "--transport-args" flag.
+
+
+
+
+
+
+
+git transport
+-------------
+
+  Create a repository which contains the top-level directories "files/" &
+"policies/".  Host this repository somewhere that mercurial can poll from,
+ideally via http/https.
+
+  The client will be invoked:
+
+    slaughter --transport=git --prefix=http://example.com/path/to/repo.git
+
+  The client will invoke:
+      git clone http://example.com/path/to/repo.hg /tmp/foo
+
+  Additional arguments may be passed to the git command line via the "--transport-args" flag.
+
+
+
+
