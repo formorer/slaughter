@@ -8,7 +8,6 @@ slaughter-2 - Perl Automation Tool
 
 =head1 SYNOPSIS
 
-
   General Options:
 
    --dump          Dump details of the local environment, and immediately exit.
@@ -36,16 +35,51 @@ slaughter-2 - Perl Automation Tool
 =head1 ABOUT
 
 slaughter is a simple system administration and server automation tool,
-which is designed to download policy files from a remote server via
-HTTP.
+which is designed to download policy files from a central server and
+execute them locally.
 
 The remote files which are downloaded are actually perl scripts which
 are executed with the help of a simple wrapper module - this module
 provides several new language functions (or primitives) which can be
 useful to manage systems.
 
-When this tool is invoked, with an appropriate server configured, it
-will attempt to download and execute the contents of:
+=cut
+
+
+=head1 TRANSPORTS
+
+When this tool is invoked it will attempt to fetch a file called
+"policies/default.policy".  This policy may include others, which
+are fetched in turn and inserted.
+
+The policies, and any associated files, may be fetched via one of
+several mechanisms:
+
+=over 8
+
+=item git
+
+=item http
+
+=item mercurial
+
+=item rsync
+
+=back
+
+The simplest mechanism is HTTP, which can be configured by specifying the
+URL of the server from which to download the files, and the transport of
+'http'.
+
+Given the configuration:
+
+=for example begin
+
+   --transport=http --prefix=http://server.example.org/slaughter/
+
+=for example end
+
+The client will download the file:
 
 =for example begin
 
@@ -53,12 +87,18 @@ will attempt to download and execute the contents of:
 
 =for example end
 
-This simple policy file may in turn include other policy files, or it
-might contain perl code to execute.
+The path "/policies/" is automatically appended to the first fetch,
+and to all subsequent policies.  Similarly all files will be assumed
+to be beneath the common root of:
 
-The path to the policies will default to /slaughter/policies/, and
-file-fetches will be pulled from /slaughter/files/ - you may change
-the /slaughter/ prefix with the B<--prefix> command-line argument.
+=for example begin
+
+   http://server.example.org/slaughter/files/
+
+=for example end
+
+There are examples of other transports, including server-setup, in the
+included file TRANSPORTS.
 
 =cut
 
@@ -79,14 +119,6 @@ These primitives are more fully described online:
 =cut
 
 
-=head1 LOGGING
-
-The output of any given run will saved to a file beneath the directory
-B</var/log/slaughter>.  (This directory will be created if it is missing.)
-
-=cut
-
-
 =head1 DEBUGGING
 
 The simplest way to debug a potential problem is to execute slaughter
@@ -101,6 +133,7 @@ it to display the environmental details it has discovered, and which will
 be compiled into the policy prior to execution.
 
 =cut
+
 
 =head1 CONFIGURATION
 
@@ -120,29 +153,21 @@ A fully-featured file might look something like this:
   #  Comments start with "#"
   #
 
-  #  Email address to send non-empty results to
-  ##
-  email = sysadmin@example.com
-
-  #  Sender address for the mails
-  ##
-  sender = root@example.com
-
-  #  Sendmail path/args
-  ##
-  sendmail = /usr/lib/sendmail -t
-
+  #
   #  Be quiet
   ##
   verbose = 0
 
-  # Server details: http://example.com/slaughter/policies/default.policy
+  #
+  # Fetch the default policy from: http://example.com/slaughter/policies/default.policy
+  #
+  # NOTE: "policies/default.policy" is automatically appended.
   ##
-  protocol = http://
-  server   = example.com
-  prefix   = /slaughter/
+  transport = http
+  prefix    = http://example.com/slaughter/
 
 =for example end
+
 
 =head1 AUTHOR
 
@@ -151,6 +176,7 @@ A fully-featured file might look something like this:
  http://www.steve.org.uk/
 
 =cut
+
 
 =head1 LICENSE
 
