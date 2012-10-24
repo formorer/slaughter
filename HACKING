@@ -1,33 +1,31 @@
 
 
- There are several phases to an execution of slaughter upon a client
-machine:
+ There are several phases to the execution of slaughter upon a client machine:
 
   - Determine system information.
-  - Read configuration file.
-  - Parse command line options.
-  - Download remote policy.
-  - Wrap the policy in a header to make it valid Perl.
-  - Execute that wrapped code.
+  - Reading configuration file.
+  - Parsing the command line options.
+  - Fetching the remote policy/policies.
+  - Wrapping policy-code in a header to make it valid Perl.
+  - Executing the wrapped code.
   - Cleanup
 
- Because the code is wrapped in a little magic the primitives we've provided
+Because the code is wrapped in a little magic the primitives we've provided
 are available.  These primitives are nothing more than exported subroutines
 which become available due to this in the wrapped file:
 
-
     use Slaughter;
 
- The Slaughter module is a stub which attempts to load the
+The Slaughter module is a stub which attempts to load the
 platform-specific implementations of the subroutines from another
 module, via the use of the perl $^O variable.
 
- So, for example, on a GNU/Linux system "use Slaughter" actually becomes
+So, for example, on a GNU/Linux system "use Slaughter" actually becomes
 "use Slaughter::API::linux".
 
- If no specific file may be found then the fall-back module
+If no specific file may be found then the fall-back module
 Slaughter::API::generic is loaded.  This module just print "Not implemented"
-for each primitive - see the TODO file for details of this.
+for each primitive.
 
 
 
@@ -35,14 +33,14 @@ for each primitive - see the TODO file for details of this.
 System Information
 ------------------
 
- When the slaughter client runs it gathers some meta-information about
- the host it is executing upon.
+When the slaughter client runs it gathers some meta-information about
+the host it is executing upon.
 
- All the meta-information is gleaned at runtime, by loading a specific
+All the meta-information is gleaned at runtime, by loading a specific
 module.  The module must define the single method "MetaInformation" which
 will populate a hash-reference.
 
- You can find sample code in lib/Slaughter/Info/*.pm
+You can find sample code in lib/Slaughter/Info/*.pm
 
 
 
@@ -50,11 +48,11 @@ will populate a hash-reference.
 Package Installation
 --------------------
 
- Package installation is also abstracted into a library of its own:
+Package installation is also abstracted into a library of its own:
 
     Slaughter::Packages::linux
 
- This is sufficient for the moment, as there is no non-Linux package
+This is sufficient for the moment, as there is no non-Linux package
 management support present in slaughter.  If that changes there is
 obvious scope to add it into a new library - and that will be invoked
 by the environment-specific lib/Slaughter/foo.pm helper.
@@ -65,21 +63,33 @@ by the environment-specific lib/Slaughter/foo.pm helper.
 Hacking Directions
 ------------------
 
+Brief pointers on where you need to look to do different things:
+
+Hacking: Variables
+------------------
 If you'd like to make a new variable available to running scripts you'll
 need to investigate the slaughter code if it is common to all environments
 (see the function "defaultOptions"), otherwise if you're in a new
 environment you'll need to create a new library - modelled after
 lib/Slaughter/Info/*.pm.
 
-
+Hacking: Functions
+------------------
 If you'd like to make a new support function available implement it in
 lib/Slaughter/API/generic.pm to give an error - then in each of the available
 environment-specific libraries in that same directory.
 
+Hacking: Packages
+------------------
 The interface to the system's packaging is currently only implemented
 for GNU/Linux, via lib/Slaughter/Packages/linux.pm.  I'd suggest if you
 add support for another platform you follow a similar naming scheme.
 
+Hacking: Transports
+-------------------
+If you'd like to add a new transport mechanism you should be able to do
+so copying one of the libraries in lib/Slaughter/Transport/.  Implement
+the required methods, such that the test cases pass and you're golden.
 
 
 Steve
