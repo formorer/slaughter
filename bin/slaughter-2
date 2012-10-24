@@ -1,0 +1,973 @@
+#!/usr/bin/perl -w
+
+=head1 NAME
+
+slaughter-2 - Perl Automation Tool
+
+=cut
+
+=head1 SYNOPSIS
+
+
+  General Options:
+
+   --agent       Specify the User-Agent to use for HTTP-fetches.
+   --dump        Dump details of the local environment.
+   --email       Output the logfile via email to the specified address.
+   --mitmok      Allow insecure SSL-usage.
+   --no-delete   Don't delete the compiled perl post-execution.
+   --no-execute  Don't actually execute the downloaded policy.
+   --no-log      Don't redirect run output to a log file.
+                 (Can't be used with --email)
+   --policy      Specify the policy file to load; default is "default.policy".
+   --prefix      The web-prefix beneath which /files and /policies live.
+   --protocol    The protocol to use "http" vs "https".
+   --server      Specify the file server to fetch policies from.
+
+  Help Options:
+
+   --help        Show the help information for this script.
+   --manual      Read the manual for this script.
+   --verbose     Show useful debugging information.
+   --version     Show the version number of the slaughter client.
+
+=cut
+
+
+=head1 ABOUT
+
+slaugher is a simple system administration and server automation tool,
+which is designed to download policy files from a remote server via
+HTTP.
+
+The remote files which are downloaded are actually perl scripts which
+are executed with the help of a simple wrapper module - this module
+provides several new language functions (or primitives) which can be
+useful to manage systems.
+
+When this tool is invoked, with an appropriate server configured, it
+will attempt to download and execute the contents of:
+
+=for example begin
+
+   http://server.example.org/slaughter/policies/default.policy
+
+=for example end
+
+This simple policy file may in turn include other policy files, or it
+might contain perl code to execute.
+
+The path to the policies will default to /slaughter/policies/, and
+file-fetches will be pulled from /slaughter/files/ - you may change
+the /slaughter/ prefix with the B<--prefix> command-line argument.
+
+=cut
+
+
+=head1 PRIMITIVES
+
+There are several primitives available to your code which are actually
+implemented in the Slaughter module.
+
+These primitives are more fully described online:
+
+=for example begin
+
+  http://www.steve.org.uk/Software/slaughter/primitives.html
+
+=for example end
+
+=cut
+
+
+=head1 LOGGING
+
+The output of any given run will saved to a file beneath the directory
+B</var/log/slaughter>.  (This directory will be created if it is missing.)
+
+=cut
+
+
+=head1 DEBUGGING
+
+The simplest way to debug a potential problem is to execute slaughter
+with both the B<--no-delete> and B<--verbose> options.  This will ensure that
+once the policy/policies are downloaded and compiled they will be kept.
+
+The result should be that you'll be shown the name of a file - this file
+may be executed interactively to see what is going on.
+
+You may also invoke slaughter with the B<--dump> flag which will cause
+it to display the environmental details it has discovered, and which will
+be compiled into the policy prior to execution.
+
+=cut
+
+=head1 CONFIGURATION
+
+Most of the configuration of this tool may be carried out via the
+command line, however some options may be more naturally supplied
+in the system-wide configuration file.
+
+For Unix platforms the globalc configuration file is located at
+B</etc/slaughter/slaughter.conf>, and it may be found at B<C:/slaughter.conf>
+for Microsoft Windows systems.
+
+A fully-featured file might look something like this:
+
+=for example begin
+
+  #
+  #  Comments start with "#"
+  #
+
+  #  Email address to send non-empty results to
+  ##
+  email = sysadmin@example.com
+
+  #  Sender address for the mails
+  ##
+  sender = root@example.com
+
+  #  Sendmail path/args
+  ##
+  sendmail = /usr/lib/sendmail -t
+
+  #  Be quiet
+  ##
+  verbose = 0
+
+  # Server details: http://example.com/slaughter/policies/default.policy
+  ##
+  protocol = http://
+  server   = example.com
+  prefix   = /slaughter/
+
+=for example end
+
+=head1 AUTHOR
+
+ Steve
+ --
+ http://www.steve.org.uk/
+
+=cut
+
+=head1 LICENSE
+
+Copyright (c) 2010-2012 by Steve Kemp.  All rights reserved.
+
+This module is free software;
+you can redistribute it and/or modify it under
+the same terms as Perl itself.
+The LICENSE file contains the full text of the license.
+
+=cut
+
+
+use strict;
+use warnings;
+
+use English;
+use File::Temp qw/ tempfile /;
+use File::Path qw/ mkpath /;
+use Getopt::Long;
+use LWP::UserAgent;
+use Pod::Usage;
+
+
+
+#
+# The version of our release.
+#
+my $VERSION = '__UNRELEASED__';
+
+
+#
+#  Setup default options - include meta-data about the current host.
+#
+my %CONFIG = defaultOptions();
+
+
+#
+#  Parse configuration file.
+#
+parseConfigurationFile();
+
+
+#
+#  Parse command line, this takes precedence over the configuration file.
+#
+parseCommandLine();
+
+
+#
+#  Ensure we're root, and ensure that we have the options setup that we need.
+#
+testEnvironment();
+
+
+#
+#  Fetch the remote policy via http/https
+#
+my $policy = fetchRemotePolicy(
+             $CONFIG{ 'protocol' } . $CONFIG{ 'server' } . $CONFIG{ 'prefix' } .
+               "policies/" . $CONFIG{ 'policy' } );
+
+
+#
+#  Write it out to disk, with the appropriate wrapper stuff so that
+# it gets setup.
+#
+my $file = writeoutPolicy($policy);
+$CONFIG{ 'verbose' } && print "Policy written to $file\n";
+
+
+#
+#  Test at this point that we have the modules required for this particular
+# operating system.
+#
+#  TODO
+#
+
+#
+#  Find the logfile to write our run to.
+#
+my $logfile = getLogfile();
+
+#
+#  Run the script locally
+#
+if ( $CONFIG{ 'noexecute' } )
+{
+    $CONFIG{ 'verbose' } &&
+      print "Not launching script due to --no-execute\n";
+}
+else
+{
+    $CONFIG{ 'verbose' } &&
+      print "Script starting : " . scalar localtime() . "\n";
+
+    my $cmd = $file;
+    unless ( $CONFIG{ 'nolog' } )
+    {
+        $cmd .= " 2>&1 >> $logfile";
+    }
+
+    #
+    #  Execute the compiled code explicitly via the Perl intepreter
+    # this is redundent for operating systems that honour the shebang
+    # line, but useful for Microsoft Windows.
+    #
+    my $return = system( "perl " . $cmd );
+
+    #
+    #  Show the result?
+    #
+    $CONFIG{ 'verbose' } &&
+      print "Script completed: (return = $return) " . scalar localtime() . "\n";
+
+}
+
+
+
+#
+#  Submit the logfile via email if we should.
+#
+if ( $CONFIG{ 'email' } )
+{
+    emailLogfile( $CONFIG{ 'email' }, $logfile );
+}
+
+
+#
+#  Cleanup.
+#
+unlink($file) unless ( $CONFIG{ 'no-delete' } );
+
+
+#
+#  We're all done
+#
+exit;
+
+
+
+
+=begin doc
+
+Configure the default options, and return these as a hash.
+
+As much as can be determined on "all systems" is defined here, the rest comes
+from the "MetaInformation" method of a module loaded dynamically from the
+Slaughter::Info namespace.
+
+=end doc
+
+=cut
+
+sub defaultOptions
+{
+    my %defs = ( version  => 0,
+                 verbose  => 0,
+                 prefix   => "/slaughter/",
+                 policy   => "default.policy",
+                 protocol => "http://",
+                 agent    => "slaughter/$VERSION",
+               );
+
+
+    #
+    # Platform/OS (linux or MSWin32)
+    #
+    $defs{ 'os' } = $^O;
+
+    #
+    #  Fully Qualified hostname
+    #
+    #  1.  If we can find /etc/hostname, then use that.
+    #
+    if ( -e "/etc/hostname" )
+    {
+        open( my $file, "<", "/etc/hostname" ) or
+          die "Failed to read /etc/hostname - $!";
+        $defs{ 'fqdn' } = <$file>;
+        chomp( $defs{ 'fqdn' } );
+        close($file);
+    }
+    else
+    {
+
+        #
+        #  Call "hostname".
+        #
+        $defs{ 'fqdn' } = `hostname`;
+        chomp( $defs{ 'fqdn' } );
+
+        #
+        # If it is unqualified retry with --fqdn.
+        #
+        if ( $defs{ 'fqdn' } !~ /\./ )
+        {
+            $defs{ 'fqdn' } = `hostname --fqdn`;
+            chomp( $defs{ 'fqdn' } );
+        }
+    }
+
+
+    #
+    #  Get the hostname and domain name as seperate strings.
+    #
+    if ( $defs{ 'fqdn' } =~ /^([^.]+)\.(.*)$/ )
+    {
+        $defs{ 'hostname' } = $1;
+        $defs{ 'domain' }   = $2;
+    }
+    else
+    {
+
+        #
+        #  Better than nothing, right?
+        #
+        $defs{ 'hostname' } = $defs{ 'fqdn' };
+        $defs{ 'domain' }   = $defs{ 'fqdn' };
+    }
+
+
+    #
+    #  Is this a xen host, or guest?
+    #
+    $defs{ 'xen' } = 1 if -d "/proc/xen/capabilities";
+
+    #
+    #  KVM / Qemu?
+    #
+    if ( open( my $cpu, "<", "/proc/cpuinfo" ) )
+    {
+        foreach my $line (<$cpu>)
+        {
+            chomp($line);
+            $defs{ 'kvm' } = 1 if ( $line =~ /model/ && $line =~ /qemu/i );
+        }
+        close($cpu);
+    }
+
+
+    #
+    #  Softare RAID?
+    #
+    if ( ( -e "/proc/mdstat" ) &&
+         ( -x "/sbin/mdadm" ) )
+    {
+        if ( open( my $mdstat, "<", "/proc/mdstat" ) )
+        {
+            foreach my $line (<$mdstat>)
+            {
+                if ( ( $line =~ /^md([0-9]+)/ ) &&
+                     ( $line =~ /active/i ) )
+                {
+                    $defs{ 'softwareraid' } = 1;
+                    $defs{ 'raid' }         = "software";
+                }
+            }
+            close($mdstat);
+        }
+    }
+
+
+
+    #
+    #  Attempt to load a module which will add to the meta-information
+    # we've already collected about this host.
+    #
+    #  Mostly this will be architecture-specific information and things
+    # like the IP addresses.
+    #
+    my $generic  = "use Slaughter::Info::generic";
+    my $specific = "use Slaughter::Info::$^O";
+
+    ## no critic (Eval)
+    eval($specific);
+    ## use critic
+
+    # if there were errors then we'll use the generic
+    # handler
+    if ($@)
+    {
+        print $@;
+        eval($generic);
+    }
+
+    #
+    #  Now we're going to populate the information via our module...
+    #
+    MetaInformation( \%defs );
+
+    #
+    #  Return the (hopefully updated) meta-information
+    #
+    return (%defs);
+}
+
+
+
+
+=begin doc
+
+Parse the configuration file.
+
+=end doc
+
+=cut
+
+sub parseConfigurationFile
+{
+    my $config = undef;
+
+    #
+    #  Try each of the configuration files in turn.
+    #
+    foreach my $conf (qw! /etc/slaughter/slaughter.conf C:/slaughter.conf !)
+    {
+        $config = $conf if ( -e $conf );
+    }
+
+    #
+    #  Failed to find a configuration file.
+    #
+    return if ( !defined($config) );
+
+    #
+    #  Show what we used.
+    #
+    $CONFIG{ 'verbose' } && print "Reading configuration file: $config\n";
+
+    #
+    #  Failed to open?  Return
+    #
+    open my $handle, "<", $config or
+      return;
+
+    while ( my $line = <$handle> )
+    {
+        chomp $line;
+        if ( $line =~ s/\\$// )
+        {
+            $line .= <$handle>;
+            redo unless eof($handle);
+        }
+
+        # Skip lines beginning with comments
+        next if ( $line =~ /^([ \t]*)\#/ );
+
+        # Skip blank lines
+        next if ( length($line) < 1 );
+
+        # Strip trailing comments.
+        if ( $line =~ /(.*)\#(.*)/ )
+        {
+            $line = $1;
+        }
+
+        # Find variable settings
+        if ( $line =~ /([^=]+)=([^\n]+)/ )
+        {
+            my $key = $1;
+            my $val = $2;
+
+            # Strip leading and trailing whitespace.
+            $key =~ s/^\s+//;
+            $key =~ s/\s+$//;
+            $val =~ s/^\s+//;
+            $val =~ s/\s+$//;
+
+            # Store value.
+            $CONFIG{ $key } = $val;
+        }
+    }
+    close($handle);
+}
+
+
+=begin doc
+
+Parse the command line for options.
+
+=end doc
+
+=cut
+
+sub parseCommandLine
+{
+    my $SHOW_HELP    = 0;
+    my $SHOW_MANUAL  = 0;
+    my $SHOW_VERSION = 0;
+
+    if (
+        !GetOptions(
+
+            # Help options
+            "help",    \$SHOW_HELP,
+            "manual",  \$SHOW_MANUAL,
+            "version", \$SHOW_VERSION,
+
+            # General options
+            "agent=s",    \$CONFIG{ 'agent' },
+            "email=s",    \$CONFIG{ 'email' },
+            "policy=s",   \$CONFIG{ 'policy' },
+            "prefix=s",   \$CONFIG{ 'prefix' },
+            "protocol=s", \$CONFIG{ 'protocol' },
+            "mitmok=s",   \$CONFIG{ 'mitmok' },
+            "server=s",   \$CONFIG{ 'server' },
+
+            # Flags
+            "dump",       \$CONFIG{ 'dump' },
+            "no-delete",  \$CONFIG{ 'no-delete' },
+            "no-execute", \$CONFIG{ 'noexecute' },
+            "no-log",     \$CONFIG{ 'nolog' },
+            "verbose",    \$CONFIG{ 'verbose' },
+        ) )
+    {
+        exit 1;
+    }
+
+    pod2usage(1) if $SHOW_HELP;
+    pod2usage( -verbose => 2 ) if $SHOW_MANUAL;
+
+
+    #
+    #  Showing the version number only?
+    #
+    if ($SHOW_VERSION)
+    {
+        print $VERSION . "\n";
+        exit;
+    }
+
+    #
+    #  If we're dumping, do that.
+    #
+    if ( $CONFIG{ 'dump' } )
+    {
+        use Data::Dumper;
+        print Dumper( \%CONFIG );
+        exit;
+    }
+
+}
+
+
+=begin doc
+
+Test the environment.
+
+=end doc
+
+=cut
+
+sub testEnvironment
+{
+    if ( !$CONFIG{ 'server' } )
+    {
+        print <<EOF;
+You need to specify the server which this client will fetch the policies
+from.  You can either do this by running:
+
+   slaughter --server=foo.example.org
+
+Or by:
+
+echo "server = foo.example.org" >> /etc/slaughter/slaughter.conf
+
+For Microsoft Windows clients you should use C:/slaughter.conf
+
+EOF
+        exit 1;
+    }
+
+    if ( $UID != 0 )
+    {
+        print <<EOF;
+You must launch this command as root.
+EOF
+        exit 1;
+    }
+
+    if ( $CONFIG{ 'nolog' } && $CONFIG{ 'email' } )
+    {
+        die "You cannot use --email and --no-log at the same time!\n";
+    }
+
+}
+
+
+=begin doc
+
+Fetch the remote policy via HTTP or HTTPS.
+
+Any line which matches:
+
+FetchPolicy xxxxx;
+
+Will be replaced with the output of that URL.
+
+=end doc
+
+=cut
+
+sub fetchRemotePolicy
+{
+    my ($url) = (@_);
+
+    $CONFIG{ 'verbose' } && print "Starting Policy: $url\n";
+
+    my $contents = fetchPolicy($url);
+
+    if ( defined $contents )
+    {
+        my $ret = "";
+
+        foreach my $line ( split( /[\r\n]/, $contents ) )
+        {
+
+            # Skip lines beginning with comments
+            next if ( $line =~ /^([ \t]*)\#/ );
+
+            # Skip blank lines
+            next if ( length($line) < 1 );
+
+            if ( $line =~ /FetchPolicy([ \t]+)(.*)[ \t]*\;/i )
+            {
+                my $inc = $2;
+                $CONFIG{ 'verbose' } &&
+                  print "\tFetching include: $inc\n";
+
+                ##
+                ## If this doesn't look like a fully qualified URL ..
+                ##
+                if ( $inc !~ /^https?:\/\//i )
+                {
+
+                    #
+                    #  Try to resolve the path.
+                    #
+                    if ( $url =~ /^(.*)\/([^\/]+)$/ )
+                    {
+                        $inc = $1 . "/" . $inc;
+
+                        $CONFIG{ 'verbose' } &&
+                          print "\tTurned relative URL into: $inc\n";
+                    }
+                }
+
+                #
+                #  OK this is an icky thing ..
+                #
+                if ( $inc =~ /\$/ )
+                {
+                    $CONFIG{ 'verbose' } &&
+                      print "\tTemplate expanding URL: $inc\n";
+
+                    #
+                    #  Looks like the policy has a template variable in
+                    # it.  We might be wrong.
+                    #
+                    foreach my $key ( sort keys %CONFIG )
+                    {
+                        while ( $inc =~ /(.*)\$\Q$key\E(.*)/ )
+                        {
+                            $inc = $1 . $CONFIG{ $key } . $2;
+
+                            $CONFIG{ 'verbose' } &&
+                              print
+                              "\tExpanded '\$$key' into '$CONFIG{$key}' giving: $inc\n";
+                        }
+                    }
+                }
+
+                #
+                #  Now fetch it, resolved or relative.
+                #
+                my $policy = fetchRemotePolicy($inc);
+                if ( defined($policy) )
+                {
+                    $ret .= $policy;
+                }
+                else
+                {
+                    $CONFIG{ 'verbose' } && print "Policy inclusion failed\n";
+                }
+            }
+            else
+            {
+                $ret .= $line;
+            }
+
+            $ret .= "\n";
+
+        }
+        return ($ret);
+    }
+
+}
+
+
+=begin doc
+
+Fetch the contents of a remote URL.
+
+=end doc
+
+=cut
+
+sub fetchPolicy
+{
+    my ($url) = (@_);
+
+    $CONFIG{ 'verbose' } &&
+      print "\tfetchPolicy( $url ) \n";
+
+    my $ua;
+
+    if ( $LWP::UserAgent::VERSION < 6.00 )
+    {
+        if ( $CONFIG{ 'protocol' } eq 'https://' )
+        {
+            $CONFIG{ 'verbose' } &&
+              print
+              "\told LWP::UserAgent $LWP::UserAgent::VERSION MITM-attack possible\n";
+            $CONFIG{ 'mitmok' } ||
+              die "enable 'mitmok' if you really want this\n";
+        }
+
+        $ua = LWP::UserAgent->new( agent => $CONFIG{ 'agent' } );
+    }
+    else
+    {
+        $ua = LWP::UserAgent->new( ssl_opts => { verify_hostname => 1 },
+                                   agent    => $CONFIG{ 'agent' }, );
+    }
+
+    $ua->env_proxy();
+
+    my $response = $ua->get($url);
+
+    if ( $response->is_success() )
+    {
+        $CONFIG{ 'verbose' } &&
+          print "\tOK\n";
+        return ( $response->decoded_content() );
+    }
+
+    #
+    #  Failed
+    #
+    $CONFIG{ 'verbose' } &&
+      print "\tFailed to fetch: $url\n";
+    return undef;
+}
+
+
+
+
+=begin doc
+
+Write out specified policy content into a form which can be executed,
+and return the name of the file to which it was written.
+
+=end doc
+
+=cut
+
+sub writeoutPolicy
+{
+    my ($txt) = (@_);
+
+    my ( undef, $name ) = File::Temp::tempfile();
+
+    open my $handle, ">", $name or
+      die "Failed to write to file : $!";
+
+    print $handle <<EOF;
+#!/usr/bin/perl
+use strict;
+use warnings;
+
+use Slaughter;
+
+
+# template variables.
+EOF
+
+    my $line = "my \%template = (";
+
+    foreach my $key ( keys %CONFIG )
+    {
+        my $val = $CONFIG{ $key };
+
+        if ( defined($val) )
+        {
+            print $handle "our \$$key = '$val';\n";
+            $line .= "\n\t$key => '$val',";
+        }
+        else
+        {
+            print $handle "our \$$key = undef;\n";
+            $line .= "\n\t$key => undef,";
+        }
+
+    }
+
+    $line =~ s/, $//g;
+    $line .= "\t);\n";
+    print $handle "\n# template hash\n";
+    print $handle $line . "\n";
+    print $handle "#========\n\n";
+
+    print $handle $txt;
+    close($handle);
+
+    if ( $^O ne "MSWin32" )
+    {
+        chmod( 0755, $name );
+    }
+
+    return ($name);
+
+}
+
+
+=begin doc
+
+Find and return the name of the file to log this run to.
+
+=end doc
+
+=cut
+
+sub getLogfile
+{
+    return undef if $CONFIG{ 'nolog' };
+
+    #
+    #  Ensure we have a log directory.
+    #
+    if ( !-d "/var/log/slaughter" )
+    {
+        mkpath( "/var/log/slaughter", { verbose => 0 } );
+    }
+
+    my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst ) =
+      localtime(time);
+
+    $year += 1900;
+    $mon  += 1;
+
+    #
+    #  The logfile will have a name of the form YEAR-MON-DAY-HR:MN:SS
+    #
+    my $date = sprintf( "%04d-%02d-%02d-%02d:%02d:%02d",
+                        $year, $mon, $mday, $hour, $min, $sec );
+
+    my $file = "/var/log/slaughter/" . $date . ".log";
+
+    $CONFIG{ 'verbose' } && print "Logfile: $file\n";
+
+    return ($file);
+}
+
+
+
+=begin doc
+
+Email the contents of the logfile to the named account.
+
+=end doc
+
+=cut
+
+sub emailLogfile
+{
+    my ( $to, $file ) = (@_);
+
+    #
+    #  If the logfile doesn't exist we're in trouble.
+    #
+    return unless ( -e $file );
+
+    #
+    #  If the logfile is empty then there's no need to mail it.
+    #
+    return if ( -z $file );
+
+
+    #
+    #  Otherwise continue - with the path to sendmail.
+    #
+    my $sendmail = $CONFIG{ 'sendmail' } || "/usr/lib/sendmail -t";
+
+    #
+    #  The sender of the mail.
+    #
+    my $from = $CONFIG{ 'sender' } || "root";
+
+    open( SENDMAIL, "|$sendmail -f $from" ) or
+      return;
+    print SENDMAIL <<EOF;
+To: $to
+From: $from
+Subject: slaughter run on $CONFIG{'fqdn'}
+
+EOF
+
+    if ( open( my $handle, "<", $file ) )
+    {
+        while ( my $line = <$handle> )
+        {
+            print SENDMAIL $line;
+        }
+        close($handle);
+    }
+
+    close(SENDMAIL);
+}
