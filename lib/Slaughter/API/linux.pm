@@ -315,10 +315,11 @@ sub FetchFile
         return 0;
     }
 
+
     #
     #  Fetch the source.
     #
-    my $content = fetchURL( $protocol . $server . $prefix . "/files/" . $src );
+    my $content = fetchFromTransport($src);
 
     if ( !defined($content) )
     {

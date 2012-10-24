@@ -282,7 +282,8 @@ sub FetchFile
     #
     #  Fetch the source.
     #
-    my $content = fetchURL( $protocol . $server . $prefix . "/files/" . $src );
+    my $content = fetchFromTransport($src);
+
 
     if ( !defined($content) )
     {
