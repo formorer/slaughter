@@ -24,10 +24,24 @@ Overview
 We assume that we have a "server" somewhere.  This server is designed to
 allow files and policies to be retrieved from it.
 
-This server is nothing more than Apache running HTTP, and each client
-will connect to it to download their policies - this means the management
-isn't pushed from the central source, instead each client node makes
-pull requests.
+The actual form of the server losely specified, as slaughter allows different
+transport mechanisms to be used.  Currently there are four supported transports
+for fetching files:
+
+  * A remote HTTP server.
+
+  * A remote rsync server.
+
+  * A remote GIT server.
+
+  * A remote Mercurial server.
+
+Each client which is running slaughter will connect to the server, using
+the appropriate mechaism, and download "policies".  These policies describe
+the actions that must be carried out upon the local system.
+
+Policies (and also files) are pulled by the client, meaning there is no
+central server which is in charge of initiating transactins, or connections.
 
 The attraction of client-pull is that there is no need to maintain state
 on the central server, and each client can be trusted to schedule itself
@@ -39,12 +53,11 @@ Policies
 --------
 
 The list of tasks which each node should carry out is defined in a policy
-document.  These policy documents are fetched via HTTP from the server
-and may recursively include other policies.
+file.  These policies are fetched from the server and may recursively
+include other policies.
 
 When a client node launches the first thing it will do is attempt to fetch
-the policy "default.policy", but you may configure a node to fetch a different
-policy if you wish via the "--policy" argument to the slaughter command.
+the policy "default.policy".
 
 This default policy file can contain code in Perl, and the use of our
 additional primitives.  It is expected that because the file default.policy
@@ -79,7 +92,8 @@ Client Layout
 To get started a client needs to have :
 
   a.  The slaughter-client package installed upon it.
-  b.  The name of the server stored in /etc/slaughter/slaughter.conf
+  b.  The name of the server, and the transport to use against it, stored
+     in the configuration file /etc/slaughter/slaughter.conf
 
 Once this is done cron may be used to ensure that /sbin/slaughter is invoked
 upon a regular basis.  (Hourly is a good choice.)
@@ -92,13 +106,23 @@ putting together your policies.
 Server Layout
 -------------
 
-A webserver should be setup to serve content from a particular root directory.
+Regardless of the transport which is in use, and examples are available in
+the included TRANSPORT file, slaughter does insist that the top-level of
+the server contain two sub-directories.
 
-The root directory might look like like this:
+For example using the HTTP-transport the webserver should be configured to
+serve a tree which would look like this:
 
            /var/www/slaughter/
            /var/www/slaughter/policies/
            /var/www/slaughter/files/
+
+Here we see there are two specific directories:
+
+  policies/
+    This is the location of the policies.
+  files/
+    This is the root of any files which are stored on the server to be fetched.
 
 e.g. The request for http://$master/slaughter/policies/default.policy should
 succeed.
