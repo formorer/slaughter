@@ -53,16 +53,13 @@ foreach my $name ( sort( glob( $dir . "/*.pm" ) ) )
         #
         # Test that our required methods are present
         #
-        ok( UNIVERSAL::can( $handle, 'name' ),
-            "The module Slaughter::Transport::$module implements 'name'" );
-        ok( UNIVERSAL::can( $handle, 'error' ),
-            "The module Slaughter::Transport::$module implements 'error'" );
-        ok( UNIVERSAL::can( $handle, 'isAvailable' ),
-            "The module Slaughter::Transport::$module implements 'isAvailable'"
-          );
-
-
-
+        foreach my $method (
+                   qw! error isAvailable fetchContents fetchPolicies name new !)
+        {
+            ok( UNIVERSAL::can( $handle, $method ),
+                "required method available in Slaughter::Transport::$module - $method"
+              );
+        }
 
     }
 }
