@@ -5,11 +5,17 @@ Slaughter::Transport::rsync - Transport class.
 
 =head1 SYNOPSIS
 
-...
+This transport copes with fetching a remote store to the local system, via rsync.
 
 =cut
 
 =head1 DESCRIPTION
+
+When loaded this transport will clone a remote directory tree to a local
+directory.
+
+It is assumed that the repository cloning will require zero special arguments,
+and zero prompting.  If required such things my be specified via "--transport-args".
 
 =cut
 
@@ -123,6 +129,8 @@ Return the last error from the transport.  This is only set in isAvailable.
 
 sub error
 {
+    my ($self) = (@_);
+    return ( $self->{ 'error' } || undef );
 }
 
 
@@ -148,7 +156,7 @@ sub fetchPolicies
     #
     #  Do the cloning
     #
-    if ( system("rsync -vazr $src $dst") != 0 )
+    if ( system("rsync -qazr $self->{'transportargs'} $src $dst") != 0 )
     {
         $self->{ 'verbose' } && print "FAILED TO FETCH POLICY";
         return undef;
