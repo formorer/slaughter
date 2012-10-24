@@ -35,7 +35,7 @@ slaughter-2 - Perl Automation Tool
 
 =head1 ABOUT
 
-slaugher is a simple system administration and server automation tool,
+slaughter is a simple system administration and server automation tool,
 which is designed to download policy files from a remote server via
 HTTP.
 
