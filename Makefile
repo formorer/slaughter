@@ -35,6 +35,8 @@ install: clean
 	cp lib/Slaughter/*.pm  $(prefix)/usr/share/perl5/Slaughter/
 	mkdir -p $(prefix)/usr/share/perl5/Slaughter/API || true
 	cp lib/Slaughter/API/*.pm  $(prefix)/usr/share/perl5/Slaughter/API/
+	mkdir -p $(prefix)/usr/share/perl5/Slaughter/Transport || true
+	cp lib/Slaughter/Transport/*.pm  $(prefix)/usr/share/perl5/Slaughter/Transport/
 	mkdir -p $(prefix)/usr/share/perl5/Slaughter/Info || true
 	cp lib/Slaughter/Info/*.pm  $(prefix)/usr/share/perl5/Slaughter/Info/
 	mkdir -p $(prefix)/usr/share/perl5/Slaughter/Packages/ || true
