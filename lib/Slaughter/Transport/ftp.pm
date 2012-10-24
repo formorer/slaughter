@@ -11,9 +11,6 @@ Slaughter::Transport::ftp - Transport class.
 
 =head1 DESCRIPTION
 
-This module contains code for dealing with a single registered site
-user.
-
 
 =cut
 
@@ -58,6 +55,11 @@ sub new
         $self->{ lc $key } = $supplied{ $key };
     }
 
+    #
+    # Explicitly ensure we have no error.
+    #
+    $self->{ 'error' } = "";
+
     bless( $self, $class );
     return $self;
 
@@ -68,4 +70,9 @@ sub new
 sub name
 {
     return "ftp";
+}
+
+sub isAvailable
+{
+    return 0;
 }

@@ -1,40 +1,16 @@
+sub new
+  Constructor.
 
-  initialize( prefix => "http://steve.org.uk/private"    ||
-                        "rsync://example.com/foo/"       ||
-                        "ftp://ftp.example.com/pub/blah" ||
-                        "hg://foo.mercurial.com/path/to.repo.hg" )
+sub name
+  Return name
 
+sub isAvailable
+sub error
+  Is this transport available?  Return "0" or "1".  If 0 error() may be
+ used ot see why not.
 
-  #
-  # Test that we have the dependencies for this transport
-  #
-  #  e.g. mercurial will need an executable "hg" script
-  #       git will need an executable "git".
-  #       http will need LWP::UserAgent
-  #
-  #  Return: 0 / 1
-  #
-  isAvailable();
+sub fetchPolicies
+  Fetch all policies, recursing as necessary.
 
-  #
-  #  This will read from the local store, if the
-  # transport has fetched the remote store locally
-  #
-  #  In the case of HTTP it will do a fetch against
-  # the local prefix.
-  #
-  getFile( file => "/global-keys" );
-
-  #
-  # Return 0 for HTTP
-  # return 1 for everythign that did a fetch to /var/cache/slaughter
-  #
-  isLocal();
-
-  #
-  # Get local directory
-  #
-  getLocal()  -> "/var/cache/slaughter" || undef.
-
-
-
+sub fetchContents
+  Fetch the contents of the named file, relative to the prefix.
