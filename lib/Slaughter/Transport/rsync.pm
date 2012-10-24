@@ -93,18 +93,20 @@ This module is available iff an executable rsync is found.
 
 sub isAvailable
 {
-    my( $self ) = ( @_ );
+    my ($self) = (@_);
 
-    if ( ! -d $self->{'transportdir'} )
+    if ( !-d $self->{ 'transportdir' } )
     {
-        $self->{'error'} = "Transport directory went away: $self->{'transportdir'}\n";
+        $self->{ 'error' } =
+          "Transport directory went away: $self->{'transportdir'}\n";
         return 0;
     }
 
     if ( system("rsync --version >/dev/null 2>/dev/null") == 0 )
     {
 
-        $self->{'error'} = "Failed to execute 'rsync --version', is rsync installed?\n";
+        $self->{ 'error' } =
+          "Failed to execute 'rsync --version', is rsync installed?\n";
         return 1;
     }
     return 0;
@@ -140,15 +142,15 @@ sub fetchPolicies
     #
     #  The source & destination to which we clone it.
     #
-    my $src = $self->{'prefix'};
-    my $dst = $self->{'transportdir'};
+    my $src = $self->{ 'prefix' };
+    my $dst = $self->{ 'transportdir' };
 
     #
     #  Do the cloning
     #
-    if ( system( "rsync -vazr $src $dst" ) != 0 )
+    if ( system("rsync -vazr $src $dst") != 0 )
     {
-        $self->{'verbose'} && print "FAILED TO FETCH POLICY";
+        $self->{ 'verbose' } && print "FAILED TO FETCH POLICY";
         return undef;
     }
 
@@ -160,9 +162,9 @@ sub fetchPolicies
     #  The name of the policy we fetch by default.
     #
     my $base = $dst . "/policies/default.policy";
-    if ( ! -e $base )
+    if ( !-e $base )
     {
-        $self->{'verbose'} && print "File not found, post-rsync: $base\n";
+        $self->{ 'verbose' } && print "File not found, post-rsync: $base\n";
         return undef;
     }
 
@@ -173,9 +175,9 @@ sub fetchPolicies
     my $content = "";
 
     open( my $handle, "<", $base );
-    foreach my $line ( <$handle> )
+    foreach my $line (<$handle>)
     {
-        chomp( $line );
+        chomp($line);
 
         # Skip lines beginning with comments
         next if ( $line =~ /^([ \t]*)\#/ );
@@ -209,7 +211,7 @@ sub fetchPolicies
 
                         $self->{ 'verbose' } &&
                           print
-                            "\tExpanded '\$$key' into '$self->{$key}' giving: $inc\n";
+                          "\tExpanded '\$$key' into '$self->{$key}' giving: $inc\n";
                     }
                 }
             }
@@ -234,9 +236,9 @@ sub fetchPolicies
 
         $content .= "\n";
     }
-    close( $handle );
+    close($handle);
 
-    return( $content );
+    return ($content);
 }
 
 
@@ -250,17 +252,17 @@ Internal/Private method.
 
 sub readFile
 {
-    my( $self, $file ) = ( @_ );
+    my ( $self, $file ) = (@_);
 
     my $txt;
 
-    open(my $handle, "<", $file ) or return undef;
+    open( my $handle, "<", $file ) or return undef;
 
-    while( my $line = <$handle> )
+    while ( my $line = <$handle> )
     {
         $txt .= $line;
     }
-    close( $handle );
+    close($handle);
 
     return $txt;
 }
@@ -279,7 +281,7 @@ sub fetchContents
 {
     my ( $self, $file ) = (@_);
 
-    my $complete = $self->{'transportdir'} . "/files/" . $file;
+    my $complete = $self->{ 'transportdir' } . "/files/" . $file;
 
-    return( $self->readFile( $complete ) );
+    return ( $self->readFile($complete) );
 }

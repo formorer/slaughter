@@ -76,6 +76,7 @@ sub isAvailable
 {
     return 0;
 }
+
 sub error
 {
 }
