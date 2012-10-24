@@ -23,6 +23,7 @@ slaughter-2 - Perl Automation Tool
    --prefix      The web-prefix beneath which /files and /policies live.
    --protocol    The protocol to use "http" vs "https".
    --server      Specify the file server to fetch policies from.
+   --transport   The transport to use for policy/file-fetching
 
   Help Options:
 
@@ -206,6 +207,22 @@ parseCommandLine();
 #
 testEnvironment();
 
+
+#
+#  TODO:
+#
+#  load Slaughter::Transports::$CONFIG{'transport'}
+#    $transport->fetch();
+#    $transport->validate();
+#
+#  This will result in /var/cache/transport/ being populated, or
+# it will set flags
+#
+#   NOTE:
+#      We should set $CONFIG{'transport'} with the option, and we
+#     should have a method which will allow us to fetch a file
+#     this will be used by Private.pm
+#
 
 #
 #  Fetch the remote policy via http/https
@@ -559,6 +576,7 @@ sub parseCommandLine
             "protocol=s", \$CONFIG{ 'protocol' },
             "mitmok=s",   \$CONFIG{ 'mitmok' },
             "server=s",   \$CONFIG{ 'server' },
+            "transport=s",   \$CONFIG{ 'transport' },
 
             # Flags
             "dump",       \$CONFIG{ 'dump' },
