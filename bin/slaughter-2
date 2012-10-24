@@ -208,27 +208,14 @@ parseCommandLine();
 #
 testEnvironment();
 
-
 #
-#  TODO:
-#
-#  load Slaughter::Transports::$CONFIG{'transport'}
-#    $transport->fetch();
-#    $transport->validate();
-#
-#  This will result in /var/cache/transport/ being populated, or
-# it will set flags
-#
-#   NOTE:
-#      We should set $CONFIG{'transport'} with the option, and we
-#     should have a method which will allow us to fetch a file
-#     this will be used by Private.pm
+#  Attempt to load the transport the user has specified.
 #
 my $module = "Slaughter::Transport::$CONFIG{'transport'}";
 my $object = $module->new(%CONFIG);
 
 #
-# Test the dependencies for the module are present.
+# Test that the dependencies for the transport module are present.
 #
 if ( !$object->isAvailable() )
 {
@@ -240,27 +227,26 @@ if ( !$object->isAvailable() )
 }
 
 #
-#  Now fetch the policies, expanding and recursing where appropriate
+#  Now fetch the policies, expanding and recursing, where appropriate.
 #
 my $policy = $object->fetchPolicies();
 
 
 #
-#  Write it out to disk, with the appropriate wrapper stuff so that
-# it gets setup.
+#  Write it out to disk, with the appropriate wrapper, such that it
+#  becomes executable as valid perl.
 #
 my $file = writeoutPolicy($policy);
 $CONFIG{ 'verbose' } && print "Policy written to $file\n";
 
-
+#
+##
+###
+### TODO : Further work.
+###
+##
+#
 exit;
-
-#
-#  Test at this point that we have the modules required for this particular
-# operating system.
-#
-#  TODO
-#
 
 #
 #  Find the logfile to write our run to.
