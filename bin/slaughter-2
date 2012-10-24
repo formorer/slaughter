@@ -20,11 +20,11 @@ slaughter-2 - Perl Automation Tool
 
   File/Policy Fetching:
 
-   --prefix      The prefix for the transport we're using.
-   --transport   The transport to use for policy/file-fetching
-   --username    The username for the policy-fetch, if appropriate.
-   --password    The password for the policy-fetch, if appropriate.
-
+   --prefix        The prefix for the transport we're using.
+   --transport     The transport to use for policy/file-fetching
+   --username      The username for the policy-fetch, if appropriate (http-only).
+   --password      The password for the policy-fetch, if appropriate (http-only).
+   --transport-args Any arguments to pass to the transport (used for rsync/hg/git).
 
   Help Options:
 
@@ -340,8 +340,10 @@ Slaughter::Info namespace.
 
 sub defaultOptions
 {
-    my %defs = ( version => 0,
-                 verbose => 0, );
+    my %defs = ( version       => 0,
+                 verbose       => 0,
+                 transportargs => '',
+               );
 
 
     #
@@ -587,10 +589,12 @@ sub parseCommandLine
             "email=s", \$CONFIG{ 'email' },
 
             # For fetching policies.
-            "transport=s", \$CONFIG{ 'transport' },
-            "prefix=s",    \$CONFIG{ 'prefix' },
-            "username=s",  \$CONFIG{ 'username' },
-            "password=s",  \$CONFIG{ 'password' },
+            "transport=s",    \$CONFIG{ 'transport' },
+            "prefix=s",       \$CONFIG{ 'prefix' },
+            "transport-args", \$CONFIG{ 'transportargs' },
+
+            "username=s", \$CONFIG{ 'username' },
+            "password=s", \$CONFIG{ 'password' },
 
             # Flags
             "dump",       \$CONFIG{ 'dump' },
