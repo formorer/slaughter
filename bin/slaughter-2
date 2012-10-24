@@ -11,12 +11,9 @@ slaughter-2 - Perl Automation Tool
 
   General Options:
 
-   --dump        Dump details of the local environment.
-   --email       Output the logfile via email to the specified address.
-   --no-delete   Don't delete the compiled perl post-execution.
-   --no-execute  Don't actually execute the downloaded policy.
-   --no-log      Don't redirect run output to a log file.
-                 (Can't be used with --email)
+   --dump          Dump details of the local environment, and immediately exit.
+   --no-delete     Don't delete the compiled perl post-execution.
+   --no-execute    Don't actually execute the downloaded policy.
 
   File/Policy Fetching:
 
@@ -254,13 +251,9 @@ $CONFIG{ 'verbose' } && print "Policy written to $file\n";
 #
 exit;
 
-#
-#  Find the logfile to write our run to.
-#
-my $logfile = getLogfile();
 
 #
-#  Run the script locally
+#  Run the script locally, unless we're told not to.
 #
 if ( $CONFIG{ 'noexecute' } )
 {
@@ -273,10 +266,6 @@ else
       print "Script starting : " . scalar localtime() . "\n";
 
     my $cmd = $file;
-    unless ( $CONFIG{ 'nolog' } )
-    {
-        $cmd .= " 2>&1 >> $logfile";
-    }
 
     #
     #  Execute the compiled code explicitly via the Perl intepreter
@@ -293,15 +282,6 @@ else
 
 }
 
-
-
-#
-#  Submit the logfile via email if we should.
-#
-if ( $CONFIG{ 'email' } )
-{
-    emailLogfile( $CONFIG{ 'email' }, $logfile );
-}
 
 
 #
@@ -574,9 +554,6 @@ sub parseCommandLine
             "manual",  \$SHOW_MANUAL,
             "version", \$SHOW_VERSION,
 
-            # General options
-            "email=s", \$CONFIG{ 'email' },
-
             # For fetching policies.
             "transport=s",    \$CONFIG{ 'transport' },
             "prefix=s",       \$CONFIG{ 'prefix' },
@@ -589,7 +566,6 @@ sub parseCommandLine
             "dump",       \$CONFIG{ 'dump' },
             "no-delete",  \$CONFIG{ 'nodelete' },
             "no-execute", \$CONFIG{ 'noexecute' },
-            "no-log",     \$CONFIG{ 'nolog' },
             "verbose",    \$CONFIG{ 'verbose' },
         ) )
     {
@@ -666,10 +642,6 @@ EOF
         exit 1;
     }
 
-    if ( $CONFIG{ 'nolog' } && $CONFIG{ 'email' } )
-    {
-        die "You cannot use --email and --no-log at the same time!\n";
-    }
 
     #
     #  Attempt to load the transport module the user has specified
@@ -682,171 +654,12 @@ EOF
 
     if ($@)
     {
-        print "The transport method you've chosen doesn't seem to exist\n";
+        print "The transport method you've chosen doesn't seem to exist.\n";
         print $@;
 
         exit(0);
     }
 }
-
-
-=begin doc
-
-Fetch the remote policy via HTTP or HTTPS.
-
-Any line which matches:
-
-FetchPolicy xxxxx;
-
-Will be replaced with the output of that URL.
-
-=end doc
-
-=cut
-
-sub fetchRemotePolicy
-{
-    my ($url) = (@_);
-
-    $CONFIG{ 'verbose' } && print "Starting Policy: $url\n";
-
-    my $contents = fetchPolicy($url);
-
-    if ( defined $contents )
-    {
-        my $ret = "";
-
-        foreach my $line ( split( /[\r\n]/, $contents ) )
-        {
-
-            # Skip lines beginning with comments
-            next if ( $line =~ /^([ \t]*)\#/ );
-
-            # Skip blank lines
-            next if ( length($line) < 1 );
-
-            if ( $line =~ /FetchPolicy([ \t]+)(.*)[ \t]*\;/i )
-            {
-                my $inc = $2;
-                $CONFIG{ 'verbose' } &&
-                  print "\tFetching include: $inc\n";
-
-                ##
-                ## If this doesn't look like a fully qualified URL ..
-                ##
-                if ( $inc !~ /^https?:\/\//i )
-                {
-
-                    #
-                    #  Try to resolve the path.
-                    #
-                    if ( $url =~ /^(.*)\/([^\/]+)$/ )
-                    {
-                        $inc = $1 . "/" . $inc;
-
-                        $CONFIG{ 'verbose' } &&
-                          print "\tTurned relative URL into: $inc\n";
-                    }
-                }
-
-                #
-                #  OK this is an icky thing ..
-                #
-                if ( $inc =~ /\$/ )
-                {
-                    $CONFIG{ 'verbose' } &&
-                      print "\tTemplate expanding URL: $inc\n";
-
-                    #
-                    #  Looks like the policy has a template variable in
-                    # it.  We might be wrong.
-                    #
-                    foreach my $key ( sort keys %CONFIG )
-                    {
-                        while ( $inc =~ /(.*)\$\Q$key\E(.*)/ )
-                        {
-                            $inc = $1 . $CONFIG{ $key } . $2;
-
-                            $CONFIG{ 'verbose' } &&
-                              print
-                              "\tExpanded '\$$key' into '$CONFIG{$key}' giving: $inc\n";
-                        }
-                    }
-                }
-
-                #
-                #  Now fetch it, resolved or relative.
-                #
-                my $policy = fetchRemotePolicy($inc);
-                if ( defined($policy) )
-                {
-                    $ret .= $policy;
-                }
-                else
-                {
-                    $CONFIG{ 'verbose' } && print "Policy inclusion failed\n";
-                }
-            }
-            else
-            {
-                $ret .= $line;
-            }
-
-            $ret .= "\n";
-
-        }
-        return ($ret);
-    }
-
-}
-
-
-=begin doc
-
-Fetch the contents of a remote URL.
-
-=end doc
-
-=cut
-
-sub fetchPolicy
-{
-    my ($url) = (@_);
-
-    $CONFIG{ 'verbose' } &&
-      print "\tfetchPolicy( $url ) \n";
-
-    my $ua;
-
-    if ( $LWP::UserAgent::VERSION < 6.00 )
-    {
-        $ua = LWP::UserAgent->new();
-    }
-    else
-    {
-        $ua = LWP::UserAgent->new( ssl_opts => { verify_hostname => 1 } );
-
-    }
-
-    $ua->env_proxy();
-
-    my $response = $ua->get($url);
-
-    if ( $response->is_success() )
-    {
-        $CONFIG{ 'verbose' } &&
-          print "\tOK\n";
-        return ( $response->decoded_content() );
-    }
-
-    #
-    #  Failed
-    #
-    $CONFIG{ 'verbose' } &&
-      print "\tFailed to fetch: $url\n";
-    return undef;
-}
-
 
 
 
@@ -924,100 +737,4 @@ EOF
 
     return ($name);
 
-}
-
-
-=begin doc
-
-Find and return the name of the file to log this run to.
-
-=end doc
-
-=cut
-
-sub getLogfile
-{
-    return undef if $CONFIG{ 'nolog' };
-
-    #
-    #  Ensure we have a log directory.
-    #
-    if ( !-d "/var/log/slaughter" )
-    {
-        mkpath( "/var/log/slaughter", { verbose => 0 } );
-    }
-
-    my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst ) =
-      localtime(time);
-
-    $year += 1900;
-    $mon  += 1;
-
-    #
-    #  The logfile will have a name of the form YEAR-MON-DAY-HR:MN:SS
-    #
-    my $date = sprintf( "%04d-%02d-%02d-%02d:%02d:%02d",
-                        $year, $mon, $mday, $hour, $min, $sec );
-
-    my $file = "/var/log/slaughter/" . $date . ".log";
-
-    $CONFIG{ 'verbose' } && print "Logfile: $file\n";
-
-    return ($file);
-}
-
-
-
-=begin doc
-
-Email the contents of the logfile to the named account.
-
-=end doc
-
-=cut
-
-sub emailLogfile
-{
-    my ( $to, $file ) = (@_);
-
-    #
-    #  If the logfile doesn't exist we're in trouble.
-    #
-    return unless ( -e $file );
-
-    #
-    #  If the logfile is empty then there's no need to mail it.
-    #
-    return if ( -z $file );
-
-
-    #
-    #  Otherwise continue - with the path to sendmail.
-    #
-    my $sendmail = $CONFIG{ 'sendmail' } || "/usr/lib/sendmail -t";
-
-    #
-    #  The sender of the mail.
-    #
-    my $from = $CONFIG{ 'sender' } || "root";
-
-    open( SENDMAIL, "|$sendmail -f $from" ) or
-      return;
-    print SENDMAIL <<EOF;
-To: $to
-From: $from
-Subject: slaughter run on $CONFIG{'fqdn'}
-
-EOF
-
-    if ( open( my $handle, "<", $file ) )
-    {
-        while ( my $line = <$handle> )
-        {
-            print SENDMAIL $line;
-        }
-        close($handle);
-    }
-
-    close(SENDMAIL);
 }
