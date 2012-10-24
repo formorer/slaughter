@@ -6,6 +6,17 @@
 
 
   #
+  # Test that we have the dependencies for this transport
+  #
+  #  e.g. mercurial will need an executable "hg" script
+  #       git will need an executable "git".
+  #       http will need LWP::UserAgent
+  #
+  #  Return: 0 / 1
+  #
+  isAvailable();
+
+  #
   #  This will read from the local store, if the
   # transport has fetched the remote store locally
   #
