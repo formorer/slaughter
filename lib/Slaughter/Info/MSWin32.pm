@@ -1,9 +1,18 @@
+=head2 MetaInformation
 
-#
-#  Return meta-information about a Microsoft Windows host.
-#
-#  NOTE:  This has only been tested under Strawberry perl.
-#
+This function retrieves meta-information about the current host,
+and is invoked on Microsoft Windows systems.
+
+=for example begin
+
+  my %data = MetaInformation();
+
+=for example end
+
+NOTE:  This has only been tested under Strawberry perl.
+
+=cut
+
 sub MetaInformation()
 {
     my ($ref) = (@_);

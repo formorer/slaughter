@@ -1,7 +1,17 @@
 
-#
-#  Return meta-information about a Linux host.
-#
+=head2 MetaInformation
+
+This function retrieves meta-information about the current host,
+and is invoked solely on Linux hosts.
+
+=for example begin
+
+  my %data = MetaInformation();
+
+=for example end
+
+=cut
+
 sub MetaInformation()
 {
     my ($ref) = (@_);
