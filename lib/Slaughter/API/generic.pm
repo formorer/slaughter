@@ -39,7 +39,7 @@ unimplemented.
 
 =head1 LICENSE
 
-Copyright (c) 2010 by Steve Kemp.  All rights reserved.
+Copyright (c) 2010-2012 by Steve Kemp.  All rights reserved.
 
 This module is free software;
 you can redistribute it and/or modify it under
@@ -50,11 +50,79 @@ The LICENSE file contains the full text of the license.
 
 
 
+=head2 Alert
+
+The alert primitive is used to send an email.  Sample usage is:
+
+=for example begin
+
+ Alert( Message => "Server on fire: $hostname",
+             To => 'steve[at]steve.org.uk',
+        Subject => "Alert: $fqdn" );
+
+=for example end
+
+The following parameters are available:
+
+=over
+
+=item From [default: "root"]
+
+The sender address of the email.
+
+=item Message [mandatory]
+
+The content of the mssage to send
+
+=item Sendmail [default: "/usr/lib/sendmail -t"]
+
+The path to the sendmail binary.
+
+=item Subject [mandatory]
+
+The subject to send.
+
+=item To [mandatory]
+
+The receipient of the message.
+
+=back
+
+=cut
+
 sub Alert
 {
     print "Alert - not implemented for $^O\n";
 }
 
+
+=head2 AppendIfMissing
+
+This primitive will open a local file, and append a line to it if it is not
+already present.
+
+=for example begin
+
+  AppendIfMissing( File => "/etc/hosts.allow",
+                   Line => "All: 1.2.3.4" );
+
+=for example end
+
+The following parameters are available:
+
+=over
+
+=item File [mandatory]
+
+The filename which should be examined and potentially updated.
+
+=item Line [mandatory]
+
+The line which should be searched for and potentially appended.
+
+=back
+
+=cut
 
 sub AppendIfMissing
 {
