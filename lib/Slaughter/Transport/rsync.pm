@@ -146,6 +146,7 @@ sub fetchPolicies
     #
     my $src = $self->{ 'prefix' };
     my $dst = $self->{ 'transportdir' };
+    $self->{'verbose'} && print "Cloning $src -> $dst\n";
 
     #
     #  Do the cloning
@@ -169,6 +170,7 @@ sub fetchPolicies
         $self->{ 'verbose' } && print "File not found, post-rsync: $base\n";
         return undef;
     }
+    $self->{'verbose'} && print "Processing: $base\n";
 
 
     #
@@ -199,7 +201,7 @@ sub fetchPolicies
             if ( $inc =~ /\$/ )
             {
                 $self->{ 'verbose' } &&
-                  print "\tTemplate expanding URL: $inc\n";
+                  print "\tTemplate expanding included file: $inc\n";
 
                 #
                 #  Looks like the policy has a template variable in
