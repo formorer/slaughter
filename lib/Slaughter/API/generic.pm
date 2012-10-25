@@ -104,6 +104,12 @@ sub InstallPackage
 }
 
 
+sub ReplaceRexexp
+{
+    print "ReplaceRegexp- not implemented for $^O\n";
+}
+
+
 sub RemovePackage
 {
     print "RemovePackage - not implemented for $^O\n";

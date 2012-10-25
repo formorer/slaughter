@@ -652,6 +652,75 @@ sub InstallPackage
 }
 
 
+##
+##
+##  Public:  Replace lines in a file matching a given regexp.
+##
+##  Parameters:
+##       File:     The path to the file to manipulate.
+##       Pattern:  The regular expression to match against.
+##       Replace:  The replacement text.
+##
+##
+sub ReplaceRegexp
+{
+    my (%params) = (@_);
+
+    my $pattern = $params{ 'Pattern' };
+    my $replace = $params{ 'Replace' } || "";
+    my $file    = $params{ 'File' };
+
+    if ( open( my $handle, "<", $file ) )
+    {
+        my @lines;
+        my $found = 0;
+
+        # Read and replace as appropriate.
+        foreach my $read (<$handle>)
+        {
+            chomp($read);
+            my $orig = $read;
+
+            if ( $replace =~ /\$/ )
+            {
+                $read =~ s/$pattern/$replace/gee;
+            }
+            else
+            {
+                $read =~ s/$pattern/$replace/g;
+            }
+
+            $found = 1 if ( $read ne $orig );
+
+            push( @lines, $read );
+        }
+        close($handle);
+
+        #  Now write out the possibly modified fils.
+        if ($found)
+        {
+            if ( open( my $handle, ">", $file ) )
+            {
+                foreach my $line (@lines)
+                {
+                    print $handle $line . "\n";
+                }
+                close($handle);
+
+                return $found;
+            }
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    else
+    {
+        return -1;
+    }
+}
+
 
 ##
 ##

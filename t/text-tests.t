@@ -110,9 +110,57 @@ for ( my $i = 0 ; $i < 5 ; $i++ )
     is( -s $filename, 49, "Appending a new line is not required" );
 }
 
+
 #
-# system( "cat $filename" );
+#  OK now we have a file which contains:
 #
+# --
+# Steve
+# Kemp
+# #1234567890
+# ABCDEFGHI
+# Testing is fun!
+#--
+#
+#  Replace lines matching "Steve" with "Bob".
+#
+is( FileMatches( File => $filename, Pattern => '^Bob' ),
+    0, "Prior to replacement there is no 'Bob' in the file." );
+
+ReplaceRegexp( File => $filename, Pattern => "Steve", Replace => "Bob" );
+
+is( FileMatches( File => $filename, Pattern => '^Bob' ),
+    1, "After replacement there is 'Bob' in the file." );
+is( FileMatches( File => $filename, Pattern => '^Bob$' ),
+    1, "After replacement there is 'Bob' in the file." );
+
+
+#
+#  Replace " is " with " isn't ".
+#
+is( FileMatches( File => $filename, Pattern => " isn't " ),
+    0, "Prior to replacement there is no 'isn't' in the file." );
+
+ReplaceRegexp( File => $filename, Pattern => " is ", Replace => " isn't " );
+
+is( FileMatches( File => $filename, Pattern => " isn't " ),
+    1, "After replacement there is 'isn't' in the file." );
+
+#
+#  Now do a replacement with lower-casing - to test the /eval modifier.
+#
+is( FileMatches( File => $filename, Pattern => "^[A-Z]+\$" ),
+    1, "Before down-casing there is a line consisting solely of upper-case letters" );
+is( FileMatches( File => $filename, Pattern => "^[a-z]+\$" ),
+    0, "Before down-casing there is no line consisting solely of lower-case letters" );
+
+ReplaceRegexp( File => $filename, Pattern => "^([A-Z]+)\$", Replace => "lc(\$1)" );
+
+is( FileMatches( File => $filename, Pattern => "^[A-Z]+\$" ),
+    0, "After down-casing there is no line consisting solely of upper-case letters" );
+is( FileMatches( File => $filename, Pattern => "^[a-z]+\$" ),
+    1, "After down-casing there is a line consisting solely of lower-case letters" );
+
 
 #
 #  Cleanup
