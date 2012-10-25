@@ -96,6 +96,7 @@ sub Alert
 }
 
 
+
 =head2 AppendIfMissing
 
 This primitive will open a local file, and append a line to it if it is not
@@ -128,6 +129,7 @@ sub AppendIfMissing
 {
     print "AppendIfMissing - not implemented for $^O\n";
 }
+
 
 
 =head2 CommentLinesMatching
@@ -214,6 +216,7 @@ sub DeleteFilesMatching
 }
 
 
+
 =head2 DeleteOldFiles
 
 This primitive will delete files older than the given number of
@@ -255,6 +258,102 @@ sub DeleteOldFiles
     print "DeleteOldFiles - not implemented for $^O\n";
 }
 
+
+=head2 FetchFile
+
+The FetchFile primitive is used to copy a file from the remote server
+to the local system.   The file will have be moved into place if the
+local file is missing OR if it exists but contains different contents
+to the remote version.
+
+The following is an example of usage:
+
+=for example begin
+
+    if ( FetchFile( Source => "/etc/motd",
+                    Dest   => "/etc/motd",
+                    Owner  => "root",
+                    Group  => "root",
+                    Mode   => "644" ) )
+    {
+        # File was created/updated.
+    }
+    else
+    {
+        # File already existed locally with the same contents.
+    }
+
+=for example end
+
+The following parameters are available:
+
+=over
+
+=item Dest [mandatory]
+
+The destination file to write to, on the local system.
+
+=item Expand [default: false]
+
+This is used to enable template-expansion, documented later.
+
+=item Group
+
+The unix group which should own the file.
+
+=item Mode
+
+The Unix mode to set for the file.  If this doesn't start with "0" it will
+be passed through the perl "oct" function.
+
+=item Owner
+
+The Unix owner who should own the file.
+
+=item Source [mandatory]
+
+The path to the remote file.  This is relative to the /files/ prefix beneath
+the transport root.
+
+=back
+
+When a file fetch is attempted several variations are attempted, not just the
+literal filename.  The first file which exists and matches is returned, and the
+fetch is aborted:
+
+=over 8
+
+=item /etc/motd.$fqdn
+
+=item /etc/motd.$hostname
+
+=item /etc/motd.$os
+
+=item /etc/motd.$arch
+
+=item /etc/motd
+
+=back
+
+Template template expansion involves the use of the L<Text::Template> module, of
+"Expand => true".  This will convert the following text:
+
+=for example begin
+
+# This is the config file for SSHD on ${fqdn}
+
+=for example end
+
+To the following, assuming the local host is called "precious.my.flat":
+
+=for example begin
+
+# This is the config file for SSHD on precious.my.flat
+
+=for example end
+
+
+=cut
 
 sub FetchFile
 {
@@ -310,7 +409,6 @@ sub FileMatches
 
 
 
-
 =head2 FindBinary
 
 This method allows you to search for an executable upon your
@@ -351,27 +449,43 @@ sub FindBinary
 }
 
 
+
+=head2 InstallPackage
+
+The InstallPackage primitive will allow you to install a system package.
+Currently apt-get and yum are supported.
+
+=for example begin
+
+  foreach my $package ( qw! bash tcsh ! )
+  {
+      if ( PackageInstalled( Package => $package ) )
+      {
+          print "$package installed\n";
+      }
+      else
+      {
+          InstallPackage( Package => $package );
+      }
+  }
+
+=for example end
+
+The following parameters are available:
+
+=over
+
+=item Package [mandatory]
+
+The name of the package to install.
+
+=back
+
+=cut
+
 sub InstallPackage
 {
     print "InstallPackage - not implemented for $^O\n";
-}
-
-
-sub ReplaceRexexp
-{
-    print "ReplaceRegexp- not implemented for $^O\n";
-}
-
-
-sub RemovePackage
-{
-    print "RemovePackage - not implemented for $^O\n";
-}
-
-
-sub PackageInstalled
-{
-    print "PackageInstalled - not implemented for $^O\n";
 }
 
 
@@ -396,6 +510,43 @@ host.
 sub Mounts
 {
     print "Mounts - not implemented for $^O\n";
+}
+
+
+
+=head2 PackageInstalled
+
+Test whether a given system package is installed.
+
+=for example begin
+
+  if ( PackageInstalled( Package => "exim4-config" ) )
+  {
+      print "$package installed\n";
+  }
+
+=for example end
+
+The following parameters are supported:
+
+=over 8
+
+=item Package
+
+The name of the package to test.
+
+=back
+
+The return value will be a 0 if not installed, or 1 if it is.
+
+This primitive supports both RPM and Debian packages, when running
+on such a system.
+
+=cut
+
+sub PackageInstalled
+{
+    print "PackageInstalled - not implemented for $^O\n";
 }
 
 
@@ -439,10 +590,83 @@ sub PercentageUsed
 }
 
 
-sub SetPermissions
+
+=head2 ReplaceRegexp
+
+This primitive will open a local file, and replace any lines matching a given
+regular expression.
+
+=for example begin
+
+  ReplaceRegexp( File    => "/etc/ssh/sshd_config",
+                 Pattern => "^PermitRootLogin.*yes.*",
+                 Replace => "PermitRootLogin no" );
+
+=for example end
+
+The following parameters are available:
+
+=over
+
+=item File [mandatory]
+
+The filename which should be examined and potentially updated.
+
+=item Pattern [mandatory]
+
+The pattern to test and potentially replace.
+
+=item Replace [mandatory]
+
+The replacement text to use.
+
+=back
+
+The return value of this function is the number of lines updated,
+0 if none, or -1 if the file could not be opened.
+
+=cut
+
+sub ReplaceRexexp
 {
-    print "SetPermissions - not implemented for $^O\n";
+    print "ReplaceRegexp- not implemented for $^O\n";
 }
+
+
+
+=head2 RemovePackage
+
+Remove the specified system package from the system.
+
+=for example begin
+
+  if ( PackageInstalled( Package => 'telnetd' ) )
+  {
+      RemovePackage( Package => 'telnetd' );
+  }
+
+=for example end
+
+The following parameters are supported:
+
+=over 8
+
+=item Package
+
+The name of the package to remove.
+
+=back
+
+This primitive supports both RPM and Debian packages, when running
+on such a system.
+
+=cut
+
+sub RemovePackage
+{
+    print "RemovePackage - not implemented for $^O\n";
+}
+
 
 
 =head2 RunCommand
@@ -477,6 +701,60 @@ sub RunCommand
 }
 
 
+
+=head2 SetPermissions
+
+This method allows the file owner,group, and mode-bits of a local file
+to be changed.
+
+=for example begin
+
+  SetPermissions( File => "/etc/motd" ,
+                  Owner => "root",
+                  Group => "root",
+                  Mode => "644" );
+
+=for example end
+
+The following parameters are supported:
+
+=over 8
+
+=item File [mandatory]
+
+The filename to work with.
+
+=item Group
+
+The group to set as the owner for the file.
+
+=item User
+
+The username to set as the files owner.
+
+=item Mode
+
+The permissions mas to set for the file.  Note if this doesn't start with a leading
+"0" then it will be passed through the "oct" function - this allows you to use the
+obvious construct :
+
+for example begin
+
+  Mode => "755"
+
+=for example end
+
+=back
+
+=cut
+
+sub SetPermissions
+{
+    print "SetPermissions - not implemented for $^O\n";
+}
+
+
+
 =head2 UserExists
 
 This primitive will test to see whether the given local user exists.
@@ -509,6 +787,7 @@ sub UserExists
 {
     print "UserExists - not implemented for $^O\n";
 }
+
 
 
 =head2 UserDetails
@@ -573,7 +852,6 @@ The user's username.
 Undef will be returned on failure.
 
 =cut
-
 
 sub UserDetails
 {
