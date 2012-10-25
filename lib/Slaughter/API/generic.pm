@@ -293,7 +293,7 @@ The following parameters are available:
 
 The destination file to write to, on the local system.
 
-=item Expand [default: false]
+=item Expand [default: falseca]
 
 This is used to enable template-expansion, documented later.
 
@@ -340,7 +340,7 @@ Template template expansion involves the use of the L<Text::Template> module, of
 
 =for example begin
 
-# This is the config file for SSHD on ${fqdn}
+   # This is the config file for SSHD on ${fqdn}
 
 =for example end
 
@@ -348,7 +348,7 @@ To the following, assuming the local host is called "precious.my.flat":
 
 =for example begin
 
-# This is the config file for SSHD on precious.my.flat
+   # This is the config file for SSHD on precious.my.flat
 
 =for example end
 

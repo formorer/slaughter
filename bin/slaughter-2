@@ -68,7 +68,7 @@ several mechanisms:
 =back
 
 The simplest mechanism is HTTP, which can be configured by specifying the
-URL of the server from which to download the files, and the transport of
+prefix-URL of the server from which to download the files, and the transport of
 'http'.
 
 Given the configuration:
@@ -89,7 +89,7 @@ The client will download the file:
 
 The path "/policies/" is automatically appended to the first fetch,
 and to all subsequent policies.  Similarly all files will be assumed
-to be beneath the common root of:
+to be beneath the common URL-prefix of:
 
 =for example begin
 
