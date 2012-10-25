@@ -720,7 +720,7 @@ EOF
 
     my $line = "my \%template = (";
 
-    foreach my $key ( keys %CONFIG )
+    foreach my $key ( sort keys %CONFIG )
     {
         my $val = $CONFIG{ $key };
 
