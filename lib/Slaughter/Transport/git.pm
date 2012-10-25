@@ -154,6 +154,8 @@ sub fetchPolicies
     #
     my $repo = $self->{ 'prefix' };
     my $dst  = $self->{ 'transportdir' };
+    $self->{'verbose'} && print "Cloning $repo to $dst\n";
+
 
     #
     #  Do the cloning
@@ -177,7 +179,7 @@ sub fetchPolicies
         $self->{ 'verbose' } && print "File not found, post-clone: $base\n";
         return undef;
     }
-
+    $self->{'verbose'} && print "Processing $base\n";
 
     #
     #  Open the file, and expand it.
@@ -199,7 +201,7 @@ sub fetchPolicies
         {
             my $inc = $2;
             $self->{ 'verbose' } &&
-              print "\tFetching include: $inc\n";
+              print "\tFetching include file: $inc\n";
 
             #
             #  OK this is an icky thing ..
