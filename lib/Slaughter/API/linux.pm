@@ -669,11 +669,11 @@ sub ReplaceRegexp
     my $pattern = $params{ 'Pattern' };
     my $replace = $params{ 'Replace' } || "";
     my $file    = $params{ 'File' };
+    my $found   = 0;
 
     if ( open( my $handle, "<", $file ) )
     {
         my @lines;
-        my $found = 0;
 
         # Read and replace as appropriate.
         foreach my $read (<$handle>)
@@ -690,7 +690,7 @@ sub ReplaceRegexp
                 $read =~ s/$pattern/$replace/g;
             }
 
-            $found = 1 if ( $read ne $orig );
+            $found += 1 if ( $read ne $orig );
 
             push( @lines, $read );
         }
