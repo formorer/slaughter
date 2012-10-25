@@ -86,13 +86,11 @@ sub name
 
 
 
-=head isAvailable
+=head2 isAvailable
 
 Return whether this transport is available.
 
 This module is available iff an executable hg is found.
-
-=end doc
 
 =cut
 

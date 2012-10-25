@@ -73,7 +73,7 @@ sub new
 
 
 
-=head2
+=head2 name
 
 return the name of this module.
 

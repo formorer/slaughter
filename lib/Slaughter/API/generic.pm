@@ -204,6 +204,8 @@ The regular expression applied to filenames.
 
 The return value of this function is the number of files deleted.
 
+=back
+
 =cut
 
 sub DeleteFilesMatching
@@ -243,6 +245,8 @@ The age of files which should be deleted.
 The root directory from which the search begins.
 
 The return value of this function is the number of files deleted.
+
+=back
 
 =cut
 
