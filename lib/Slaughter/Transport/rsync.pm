@@ -73,11 +73,9 @@ sub new
 
 
 
-=begin doc
+=head2
 
 return the name of this module.
-
-=end doc
 
 =cut
 
@@ -87,13 +85,11 @@ sub name
 }
 
 
-=begin doc
+=head2 isAvailable
 
 Return whether this transport is available.
 
 This module is available iff an executable rsync is found.
-
-=end doc
 
 =cut
 
@@ -119,11 +115,11 @@ sub isAvailable
 }
 
 
-=begin doc
+=head2 error
 
-Return the last error from the transport.  This is only set in isAvailable.
+Return the last error from the transport.
 
-=end doc
+This is only set in L</isAvailable>.
 
 =cut
 
@@ -135,11 +131,9 @@ sub error
 
 
 
-=begin doc
+=head2 fetchPolicies
 
 Fetch the policies which are required from the remote rsync server.
-
-=end doc
 
 =cut
 
@@ -277,11 +271,9 @@ sub readFile
 
 
 
-=begin doc
+=head2 fetchContents
 
-Fetch a file.
-
-=end doc
+Fetch a file from the remote server.
 
 =cut
 
