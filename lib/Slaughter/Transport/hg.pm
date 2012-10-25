@@ -155,7 +155,7 @@ sub fetchPolicies
     my $repo = $self->{ 'prefix' };
     my $dst  = $self->{ 'transportdir' };
 
-    $self->{'verbose'} && print "Fetching $repo into $dst\n";
+    $self->{ 'verbose' } && print "Fetching $repo into $dst\n";
 
     #
     #  Do the cloning
@@ -179,7 +179,7 @@ sub fetchPolicies
         $self->{ 'verbose' } && print "File not found, post-clone: $base\n";
         return undef;
     }
-    $self->{'verbose'} && print "Processing $base\n";
+    $self->{ 'verbose' } && print "Processing $base\n";
 
 
     #

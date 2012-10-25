@@ -146,7 +146,7 @@ sub fetchPolicies
     #
     my $src = $self->{ 'prefix' };
     my $dst = $self->{ 'transportdir' };
-    $self->{'verbose'} && print "Cloning $src -> $dst\n";
+    $self->{ 'verbose' } && print "Cloning $src -> $dst\n";
 
     #
     #  Do the cloning
@@ -170,7 +170,7 @@ sub fetchPolicies
         $self->{ 'verbose' } && print "File not found, post-rsync: $base\n";
         return undef;
     }
-    $self->{'verbose'} && print "Processing: $base\n";
+    $self->{ 'verbose' } && print "Processing: $base\n";
 
 
     #

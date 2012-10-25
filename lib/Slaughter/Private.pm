@@ -118,7 +118,6 @@ sub fetchFromTransport
 
 
 
-
 =head2 checksumFile
 
 This primitive will attempt to calculate and return the SHA digest of
