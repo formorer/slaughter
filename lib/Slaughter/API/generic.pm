@@ -262,11 +262,88 @@ sub FetchFile
 }
 
 
+
+=head2 FileMatches
+
+This allows you to test whether the contents of a given file match
+either a literal line of text, or a regular expression.
+
+=for example begin
+
+  if ( FileMatches( File    => "/etc/sudoers",
+                    Pattern => "steve" ) )
+  {
+     # OK "steve" is in sudoers.  Somewhere.
+  }
+
+=for example end
+
+The following parameters are available:
+
+=over
+
+
+=item File [mandatory]
+
+The name of the file to test.
+
+=item Line [or Pattern mandatory]
+
+A line to look for within the file literally.
+
+=item Pattern [or Line mandatory]
+
+A regular expression to match against the file contents.
+
+=back
+
+The return value of this function will be the number of matches
+found - regardless of whether a regular expression or literal
+match is in use.
+
+=cut
+
 sub FileMatches
 {
     print "FileMatches - not implemented for $^O\n";
 }
 
+
+
+
+=head2 FindBinary
+
+This method allows you to search for an executable upon your
+system $PATH, or a supplied alternative string.
+
+=for example begin
+
+  if ( FindBinary( Binary => "ls" ) )
+  {
+      # we have ls!
+  }
+
+=for example end
+
+The following parameters are available:
+
+=over
+
+
+=item Binary [mandatory]
+
+The name of the binary file to find.
+
+=item Path [default: $ENV{'PATH'}]
+
+This is assumed to be a semi-colon deliminated list of directories to search
+for the binary within.
+
+=back
+
+If the binary is found the full path will be returned, otherwise undef.
+
+=cut
 
 sub FindBinary
 {
@@ -298,11 +375,63 @@ sub PackageInstalled
 }
 
 
+
+=head2 Mounts
+
+Return a list of all the mounted filesystems upon the current
+system.
+
+=for example begin
+
+  my @mounts = Mounts();
+
+=for example end
+
+No parameters are required or supported in this method, and the
+return value is an array of all mounted filesystems upon this
+host.
+
+=cut
+
 sub Mounts
 {
     print "Mounts - not implemented for $^O\n";
 }
 
+
+
+=head2 PercentageUsed
+
+Return the percentage of space used in in the given mounted-device.
+
+=for example begin
+
+  foreach my $point ( Mounts() )
+  {
+     if ( PercentageUsed( Path => $point ) > 80 )
+     {
+        Alert( To      => "root",
+               From    => "root",
+               Subject => "$server is running out of space on $point",
+               Message => "This is a friendly warning." );
+     }
+  }
+
+=for example end
+
+The following parameters are supported:
+
+=over 8
+
+=item Path
+
+The mount-point to the filesystem in question.
+
+=back
+
+The return value will be a percentage in the range 0-100.
+
+=cut
 
 sub PercentageUsed
 {
