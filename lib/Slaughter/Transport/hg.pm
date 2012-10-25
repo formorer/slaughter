@@ -73,11 +73,9 @@ sub new
 
 
 
-=begin doc
+=head2 name
 
 return the name of this module.
-
-=end doc
 
 =cut
 
@@ -88,7 +86,7 @@ sub name
 
 
 
-=begin doc
+=head isAvailable
 
 Return whether this transport is available.
 
@@ -121,11 +119,11 @@ sub isAvailable
 
 
 
-=begin doc
+=head2 error
 
-Return the last error from the transport.  This is only set in isAvailable.
+Return the last error from the transport.
 
-=end doc
+This is only set in L</isAvailable>.
 
 =cut
 
@@ -137,11 +135,13 @@ sub error
 
 
 
-=begin doc
+=head2 fetchPolicies
 
-Fetch the policies which are required from the remote mercurial server.
+Fetch the policies which are required from the remote server.
 
-=end doc
+This method begins by looking for the file "default.policy" within
+the top-level policies sub-directory of the repository.  Additional
+included policies are fetched and interpolated.
 
 =cut
 
@@ -279,11 +279,12 @@ sub readFile
 
 
 
-=begin doc
+=head2 fetchContents
 
-Fetch a file.
+Fetch a file from within the checked out repository.
 
-=end doc
+Given a root repository of /path/to/repo/ the file is looked for beneath
+/path/to/repo/files.
 
 =cut
 
