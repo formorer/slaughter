@@ -54,11 +54,11 @@ use Slaughter::Packages::linux;
 ##  Public:  Send a message by email.
 ##
 ##  Parameters:
+##       From      defaults to: "root".
 ##       Message   defaults to: "No message".
+##       Sendmail  defaults to: "/usr/lib/sendamil -t"
 ##       Subject   defaults to: "No subject".
 ##       To        defaults to: "root".
-##       From      defaults to: "root".
-##       Sendmail  defaults to: "/usr/lib/sendamil -t"
 ##
 ##
 sub Alert
