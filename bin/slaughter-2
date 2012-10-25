@@ -712,6 +712,7 @@ sub writeoutPolicy
 use strict;
 use warnings;
 
+use English;
 use Slaughter;
 
 
@@ -750,6 +751,18 @@ EOF
 #
 use Slaughter::Transport::$CONFIG{'transport'};
 our \$TRANSPORT = Slaughter::Transport::$CONFIG{'transport'}->new( \%template );
+
+
+#
+# Sanity check prior to execution
+#
+if ( \$UID != 0 )
+{
+    print <<EOFF;
+You must launch this command as root.
+EOFF
+    exit 1;
+}
 
 EOF
 
