@@ -174,11 +174,77 @@ sub CommentLinesMatching
 }
 
 
+
+=head2 DeleteFilesMatching
+
+This primitive will delete files with names matching a particular
+pattern, recursively.
+
+=for example begin
+
+  #
+  #  Delete *.dpkg-old - recursively
+  #
+  DeleteFilesMatching( Root    => "/etc",
+                       Pattern => "\\.dpkg-old\$" );
+
+=for example end
+
+The following parameters are available:
+
+=over
+
+=item Root [mandatory]
+
+The root directory from which the search begins.
+
+=item Pattern [mandatory]
+
+The regular expression applied to filenames.
+
+The return value of this function is the number of files deleted.
+
+=cut
+
 sub DeleteFilesMatching
 {
     print "DeleteFilesMatching - not implemented for $^O\n";
 }
 
+
+=head2 DeleteOldFiles
+
+This primitive will delete files older than the given number of
+days from the specified directory.
+
+Note unlike L</DeleteFilesMatching> this function is not recursive.
+
+=for example begin
+
+  #
+  #  Delete files older than ten days from /tmp.
+  #
+  DeleteFilesMatching( Root  => "/tmp",
+                       Age   => 10 );
+
+=for example end
+
+The following parameters are available:
+
+=over
+
+
+=item Age [mandatory]
+
+The age of files which should be deleted.
+
+=item Root [mandatory]
+
+The root directory from which the search begins.
+
+The return value of this function is the number of files deleted.
+
+=cut
 
 sub DeleteOldFiles
 {
