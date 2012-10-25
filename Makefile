@@ -21,6 +21,7 @@ clean:
 	-find . -name '*.log' -delete
 	-rm -f ./debian/files ./debian/*.substvars
 	-if [ -d ./debian/slaughter-client ] ; then rm -rf ./debian/slaughter-client; fi
+	-if [ -d ./html ] ; then rm -rf ./html; fi
 	-rm ./slaughter.1 || true
 
 
@@ -53,7 +54,7 @@ uninstall:
 	rm -rf $(prefix)/etc/slaughter
 
 
-release: tidy clean
+release: tidy clean pod
 	rm -rf $(DIST_PREFIX)/$(BASE)-$(VERSION)
 	rm -f $(DIST_PREFIX)/$(BASE)-$(VERSION).tar.gz
 	cp -R . $(DIST_PREFIX)/$(BASE)-$(VERSION)
@@ -68,6 +69,9 @@ release: tidy clean
 	gpg --armour --detach-sign $(BASE)-$(VERSION).tar.gz
 	echo $(VERSION) > .version
 
+
+pod:
+	./bin/make-pod
 
 test:
 	prove --shuffle t/

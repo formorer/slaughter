@@ -1,0 +1,57 @@
+#!/usr/bin/perl -w
+
+
+use strict;
+use warnings;
+
+use File::Find;
+use Pod::Simple::HTML;
+
+
+my @found;
+
+#
+#  The output director
+#
+my $out = "./html";
+system( "mkdir -p $out" ) unless( -d $out );
+
+find( { wanted => \&checkFile, no_chdir => 1 }, '.' );
+
+
+sub checkFile
+{
+    # The file.
+    my $file = $File::Find::name;
+
+    # We don't care about directories
+    return if ( !-f $file );
+
+    # Nor about backup files.
+    return if ( $file =~ /~$/ );
+
+    # or non-modules
+    return if ( $file !~ /\.pm$/i );
+
+
+    my $parser = Pod::Simple::HTML->new();
+
+    open IN, $file  or die "Couldn't open $file: $!\n";
+
+    my $path = $file;
+    $path =~ s/^\.\///g;
+    $path =~ s/\//::/g;
+    $path =~ s/\.pm$/.html/g;
+    $path =~ s/^lib:://g;
+
+    print "FILE: $file -> $out/$path\n";
+
+
+    open OUT, ">$out/$path" or die "Couldn't open $out/$path: $!\n";
+
+    $parser->index(1);
+    $parser->html_css('http://search.cpan.org/s/style.css');
+
+    $parser->output_fh(*OUT);
+    $parser->parse_file(*IN);
+}
