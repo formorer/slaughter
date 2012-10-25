@@ -5,11 +5,18 @@ Slaughter::Transport::http - Transport class.
 
 =head1 SYNOPSIS
 
-...
+This transport copes with fetching files and policies from a remote server
+using HTTP or HTTPS as a transport.
 
 =cut
 
 =head1 DESCRIPTION
+
+This transport is slightly different to the others, as each file is fetched
+on-demand, with no local filesystem access and no caching.
+
+If HTTP Basic-Auth is required the appropriate details should be passed to
+slaughter with the "--username" & "--password" flags.
 
 =cut
 
@@ -66,11 +73,9 @@ sub new
 
 
 
-=begin doc
+=head2 name
 
 return the name of this module.
-
-=end doc
 
 =cut
 
@@ -81,13 +86,11 @@ sub name
 
 
 
-=begin doc
+=head2 isAvailable
 
 Return whether this transport is available.
 
 As we're pure-perl it should be always available, so we unconditionally return 1.
-
-=end doc
 
 =cut
 
@@ -100,11 +103,11 @@ sub isAvailable
 
 
 
-=begin doc
+=head2 error
 
-Return the last error from the transport.  This is only set in isAvailable.
+Return the last error from the transport.
 
-=end doc
+This is only set in L</isAvailable>.
 
 =cut
 
@@ -116,13 +119,11 @@ sub error
 
 
 
-=begin doc
+=head2 fetchPolicies
 
 Fetch the policies which are required from the remote HTTP site.
 
 If we've been given a username & password we'll use HTTP basic-authentication.
-
-=end doc
 
 =cut
 
@@ -229,11 +230,9 @@ sub fetchPolicies
 
 
 
-=begin doc
+=head2 fetchContents
 
 Fetch the contents of a remote URL, using HTTP basic-auth if we should
-
-=end doc
 
 =cut
 
