@@ -10,6 +10,8 @@ Slaughter::Private - Perl Automation Tool Helper Internal Details
 
 This module implements the non-public API of the Slaughter administration tool.
 
+Users are not expected to use, touch, browse, or modify the code in this module!
+
 =cut
 
 
@@ -23,7 +25,7 @@ This module implements the non-public API of the Slaughter administration tool.
 
 =head1 LICENSE
 
-Copyright (c) 2010 by Steve Kemp.  All rights reserved.
+Copyright (c) 2010-2012 by Steve Kemp.  All rights reserved.
 
 This module is free software;
 you can redistribute it and/or modify it under
@@ -42,9 +44,29 @@ use LWP::UserAgent;
 use Text::Template;
 
 
-##
-##  PRIVATE
-##
+
+=head2 fetchFromTransport
+
+This primitive will retrieve a file from the central server, using
+the specified transport.
+
+The various transports are pluggable and live beneath the Slaughter::Transport
+namespace.
+
+=for example begin
+
+  FetchFromTransport( "/etc/motd" );
+
+=for example end
+
+A single parameter is accepted which is the name of the file
+to fetch, relative to the transport's root.
+
+On success the file's contents are returned.  On failure undef
+is returned.
+
+=cut
+
 sub fetchFromTransport
 {
     my ($url) = (@_);
@@ -95,16 +117,29 @@ sub fetchFromTransport
 
 
 
-##
-##  Private
-##
-##  Produce the SHA1 hash of the named files contents.
-##
-## Notes:
-##
-## Attempt to use both of the modules Digest::SHA & Digest::SHA1
-## stopping the first time one succeeds.
-##
+
+
+=head2 checksumFile
+
+This primitive will attempt to calculate and return the SHA digest of
+the specified file.
+
+The method attempts to use both L<Digest::SHA> & L<Digest::SHA1>,
+returning the result from the first one which is present.
+
+=for example begin
+
+  checksumFile( "/etc/motd" );
+
+=for example end
+
+A single parameter is accepted which is the name of the file
+to has.
+
+On success the hash is returned, on failure undef is returned.
+
+=cut
+
 sub checksumFile
 {
     my ($file) = (@_);
