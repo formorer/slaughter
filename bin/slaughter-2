@@ -262,6 +262,16 @@ my $policy = $object->fetchPolicies();
 
 
 #
+#  Policy failure?
+#
+if ( !$policy )
+{
+    print "Failed to fetch policy - Re-run with \"--verbose\" for details\n";
+    exit 0;
+}
+
+
+#
 #  Write it out to disk, with the appropriate wrapper, such that it
 #  becomes executable as valid perl.
 #
@@ -464,7 +474,9 @@ sub defaultOptions
     if ($@)
     {
         print $@;
+        ## no critic (Eval)
         eval($generic);
+        ## use critic
     }
 
     #
@@ -668,6 +680,34 @@ EOF
         exit 1;
     }
 
+    #
+    #  If we have no transport type, but we do have a prefix, we can attempt
+    # to infer what to use.
+    #
+    if ( $CONFIG{ 'prefix' } && !$CONFIG{ 'transport' } )
+    {
+
+        # show what is going on
+        $CONFIG{ 'verbose' } &&
+          print "Attempting to guesss transport for $CONFIG{'prefix'}\n";
+
+        # git://.... or   http://.../foo.git
+        $CONFIG{ 'transport' } = "git"
+          if ( $CONFIG{ 'prefix' } =~ /(^git|\.git$)/i );
+
+        # http://.../foo.hg
+        $CONFIG{ 'transport' } = "hg" if ( $CONFIG{ 'prefix' } =~ /\.hg$/i );
+
+        # rsync://.../
+        $CONFIG{ 'transport' } = "rsync"
+          if ( $CONFIG{ 'prefix' } =~ /^rsync/i );
+
+        # fall-back to HTTP.
+        $CONFIG{ 'transport' } = "http" if ( !$CONFIG{ 'transport' } );
+
+        $CONFIG{ 'verbose' } &&
+          print "Guessed transport: $CONFIG{'transport'}\n";
+    }
 
     #
     #  Attempt to load the transport module the user has specified
