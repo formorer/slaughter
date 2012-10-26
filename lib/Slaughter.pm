@@ -12,6 +12,31 @@ This module is the distribution and architecture independant library
 which is used to abstract away platform differences for the Slaughter
 administration tool.
 
+It is loaded via:
+
+=for example begin
+
+   use Slaughter;
+
+=for example end
+
+This usage actually dynamically loads the appropriate module from beneath the
+Slaughter::API namespace - which will contain the implementation of the Slaughter
+primitives.
+
+If no appropriate module is located to match the current system then the fall-backup
+module (Slaughter::API::generic) is loaded.  The generic module contains stub
+primitives which merely output the message:
+
+=for example begin
+
+  This module is not implemented for $^O
+
+=for example end
+
+This allows compiled policies to execute, without throwing errors, and also report
+upon the primitives which need to be implemented or adapted.
+
 =cut
 
 
