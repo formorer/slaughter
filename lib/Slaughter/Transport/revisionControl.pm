@@ -278,7 +278,7 @@ sub fetchPolicies
 
 =head2 name
 
-Return the name of this transport.  THis will be setup in the derived class.
+Return the name of this transport.  This will be setup in the derived class.
 
 =cut
 
