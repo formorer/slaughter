@@ -20,6 +20,25 @@ slaughter with the "--username" & "--password" flags.
 
 =cut
 
+=head1 AUTHOR
+
+ Steve
+ --
+ http://www.steve.org.uk/
+
+=cut
+
+=head1 LICENSE
+
+Copyright (c) 2012 by Steve Kemp.  All rights reserved.
+
+This module is free software;
+you can redistribute it and/or modify it under
+the same terms as Perl itself.
+The LICENSE file contains the full text of the license.
+
+=cut
+
 
 package Slaughter::Transport::http;
 
@@ -64,7 +83,7 @@ sub new
     #
     # Explicitly ensure we have no error.
     #
-    $self->{ 'error' } = "";
+    $self->{ 'error' } = undef;
 
     bless( $self, $class );
     return $self;
@@ -114,7 +133,7 @@ This is only set in L</isAvailable>.
 sub error
 {
     my ($self) = (@_);
-    return ( $self->{ 'error' } || undef );
+    return ( $self->{ 'error' } );
 }
 
 

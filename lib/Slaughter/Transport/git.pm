@@ -17,6 +17,30 @@ directory.
 It is assumed that the repository cloning will require zero special arguments,
 and zero prompting.  If required such things my be specified via "--transport-args".
 
+B<Note> on launching a full checkout of the remote repository is inititated.
+It is possible that a future extension to this module will allow an existing
+repository to be uploaded in place.  If that is the case we'll need to use a
+fixed transport-location, rather than a new directory per-execution.
+
+=cut
+
+=head1 AUTHOR
+
+ Steve
+ --
+ http://www.steve.org.uk/
+
+=cut
+
+=head1 LICENSE
+
+Copyright (c) 2012 by Steve Kemp.  All rights reserved.
+
+This module is free software;
+you can redistribute it and/or modify it under
+the same terms as Perl itself.
+The LICENSE file contains the full text of the license.
+
 =cut
 
 
@@ -64,7 +88,7 @@ sub new
     #
     # Explicitly ensure we have no error.
     #
-    $self->{ 'error' } = "";
+    $self->{ 'error' } = undef;
 
     bless( $self, $class );
     return $self;
@@ -130,7 +154,7 @@ This is only set in L</isAvailable>.
 sub error
 {
     my ($self) = (@_);
-    return ( $self->{ 'error' } || undef );
+    return ( $self->{ 'error' } );
 }
 
 
