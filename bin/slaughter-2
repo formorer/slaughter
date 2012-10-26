@@ -237,11 +237,13 @@ createTransportDir();
 #
 testEnvironment();
 
+
 #
 #  Attempt to load the transport the user has specified.
 #
 my $module = "Slaughter::Transport::$CONFIG{'transport'}";
 my $object = $module->new(%CONFIG);
+
 
 #
 # Test that the dependencies for the transport module are present.
@@ -252,8 +254,10 @@ if ( !$object->isAvailable() )
       "The transport module you've chosen - $module - doesn't seem to be available:\n";
 
     print $object->error() . "\n";
+
     exit(0);
 }
+
 
 #
 #  Now fetch the policies, expanding and recursing, where appropriate.
@@ -276,16 +280,7 @@ if ( !$policy )
 #  becomes executable as valid perl.
 #
 my $file = writeoutPolicy($policy);
-$CONFIG{ 'verbose' } && print "Policy written to $file\n";
-
-#
-##
-###
-### TODO : Further work.
-###
-##
-#
-exit;
+$CONFIG{ 'verbose' } && print "Policy written to: $file\n";
 
 
 #
@@ -294,7 +289,7 @@ exit;
 if ( $CONFIG{ 'noexecute' } )
 {
     $CONFIG{ 'verbose' } &&
-      print "Not launching script due to --no-execute\n";
+      print "Not launching script due to --no-execute.\n";
 }
 else
 {
@@ -338,9 +333,8 @@ exit;
 
 Configure the default options, and return these as a hash.
 
-As much as can be determined on "all systems" is defined here, the rest comes
-from the "MetaInformation" method of a module loaded dynamically from the
-Slaughter::Info namespace.
+Information comes from one of the modules in the Slaughter::Info namespace,
+here we just setup the defaults.
 
 =end doc
 
@@ -362,8 +356,7 @@ sub defaultOptions
     $defs{ 'os' } = $^O;
 
     #
-    #  Attempt to load a module which will add to the meta-information
-    # we've already collected about this host.
+    #  Attempt to load a module which will add to the meta-information.
     #
     #  Mostly this will be architecture-specific information and things
     # like the IP addresses.
@@ -375,8 +368,7 @@ sub defaultOptions
     eval($specific);
     ## use critic
 
-    # if there were errors then we'll use the generic
-    # handler
+    # If there were errors then we'll use the generic handler
     if ($@)
     {
         print $@;
@@ -401,7 +393,18 @@ sub defaultOptions
 
 =begin doc
 
-Parse the configuration file.
+Parse the configuration file, which is one of:
+
+=over 8
+
+=item /etc/slaughter/slaughter.conf
+
+=item C:/slaughter.conf
+
+=back
+
+The configuration file comprises of "key = value" lines, and lines which are
+ignored as they start with a comment character.  "#".
 
 =end doc
 
@@ -478,7 +481,7 @@ sub parseConfigurationFile
 
 =begin doc
 
-Parse the command line for options.
+Parse the command-line for options.
 
 =end doc
 
@@ -503,6 +506,7 @@ sub parseCommandLine
             "prefix=s",       \$CONFIG{ 'prefix' },
             "transport-args", \$CONFIG{ 'transportargs' },
 
+            # Some policies might require a username/password.
             "username=s", \$CONFIG{ 'username' },
             "password=s", \$CONFIG{ 'password' },
 
@@ -548,7 +552,7 @@ sub parseCommandLine
 Create a temporary directory for holding files, some transports need this.
 
 Note this directory will be removed when this process terminates unless
-it was invoked with --no-delete.
+slaughter was invoked with --no-delete.
 
 =end doc
 
