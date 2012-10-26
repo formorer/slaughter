@@ -14,7 +14,7 @@ NOTE:  This has only been tested under Strawberry perl.
 
 =cut
 
-sub MetaInformation()
+sub MetaInformation
 {
     my ($ref) = (@_);
 

@@ -13,7 +13,7 @@ information module cannot be loaded.
 
 =cut
 
-sub MetaInformation()
+sub MetaInformation
 {
     my ($ref) = (@_);
 

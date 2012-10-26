@@ -12,7 +12,7 @@ and is invoked solely on Linux hosts.
 
 =cut
 
-sub MetaInformation()
+sub MetaInformation
 {
     my ($ref) = (@_);
 
