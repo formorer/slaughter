@@ -35,6 +35,10 @@ The LICENSE file contains the full text of the license.
 =cut
 
 
+use strict;
+use warnings;
+
+
 
 BEGIN
 {
@@ -50,7 +54,9 @@ BEGIN
     # handler
     if ($@)
     {
+        ## no critic (Eval)
         eval($generic);
+        ## use critic
     }
 }
 
