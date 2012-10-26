@@ -11,6 +11,16 @@ information module cannot be loaded.
 
 =for example end
 
+Currently the following OS-specific modules exist:
+
+=over 8
+
+=item Slaughter::Info::linux
+
+=item Slaughter::Info::MSWin32
+
+=back
+
 =cut
 
 sub MetaInformation

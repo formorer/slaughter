@@ -37,6 +37,31 @@ fixed transport-location, rather than a new directory per-execution.
 
 =cut
 
+=head1 SUBCLASSING
+
+If you wish to write your own transport you must only subclass the constructor
+of this class.  The following parameters should be used:
+
+=over 8
+
+=item  cmd
+
+The command to clone the repository.  This will have the repository location, as specified by "--prefix", and the destination directory appended to it.
+
+=item name
+
+The name of the transport.
+
+=item version
+
+A command to call which will output the version of the revision control system.   This may be any command which outputs text, as the output is discarded.  The purposes is to ensure that the binary required for cloning is present on the system.
+
+=back
+
+For sample implementations please consult, for example, Slaughter::Transport::git.
+
+=cut
+
 =head1 AUTHOR
 
  Steve
