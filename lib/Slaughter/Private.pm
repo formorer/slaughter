@@ -35,7 +35,6 @@ The LICENSE file contains the full text of the license.
 =cut
 
 
-
 use File::Basename qw/ dirname basename /;
 use File::Find;
 use File::Path qw/ mkpath /;
@@ -112,7 +111,7 @@ sub fetchFromTransport
     #  Failed
     #
     $verbose && print "\tFailed to fetch any of our attempts for $url\n";
-    return undef;
+    return;
 }
 
 
@@ -153,7 +152,10 @@ sub checksumFile
 
         # Attempt to load the module
         my $eval = "use $module;";
+
+        ## no critic (Eval)
         eval($eval);
+        ## use critic
 
         #
         #  Loaded module, with no errors.
