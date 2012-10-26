@@ -11,16 +11,11 @@ This transport copes with cloning a remote mercurial repository to the local fil
 
 =head1 DESCRIPTION
 
-When loaded this transport will clone a remote mercurial repository to a local
-directory.
+This module uses the Slaughter::Transport::revisionControl base-class in such
+a way as to offer a git-based transport.
 
-It is assumed that the repository cloning will require zero special arguments,
-and zero prompting.  If required such things my be specified via "--transport-args".
-
-B<Note> on launching a full checkout of the remote repository is inititated.
-It is possible that a future extension to this module will allow an existing
-repository to be uploaded in place.  If that is the case we'll need to use a
-fixed transport-location, rather than a new directory per-execution.
+All the implementation, except for the setup of some variables, comes from that
+base class.
 
 =cut
 
@@ -45,6 +40,7 @@ The LICENSE file contains the full text of the license.
 
 
 package Slaughter::Transport::hg;
+use base 'Slaughter::Transport::revisionControl';
 
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
 
@@ -71,253 +67,39 @@ Create a new instance of this object.
 
 sub new
 {
-    my ( $proto, %supplied ) = (@_);
-    my $class = ref($proto) || $proto;
-
-    my $self = {};
+    #
+    #  Unpleasant setup of the parent class
+    #
+    my $classname = shift;
+    my $self      = {};
+    bless $self, $classname;
+    $self = Slaughter::Transport::revisionControl->new(@_);
 
     #
-    #  Allow user supplied values to override our defaults
+    # The name of our derived transport.
     #
-    foreach my $key ( keys %supplied )
-    {
-        $self->{ lc $key } = $supplied{ $key };
-    }
+    $self->{ 'name' }    = "hg";
+
+    #
+    #  The command to invoke the version of our revision control system.
+    # Used to test that it is installed.
+    #
+    $self->{ 'version' } = "hg --version";
+
+    #
+    # The command to clone our remote repository.
+    #
+    $self->{ 'cmd' }     = "hg clone ";
+    $self->{ 'cmd' } .= " $self->{'transportargs'} "
+      if ( $self->{ 'transportargs' } );
 
 
     #
-    # Explicitly ensure we have no error.
+    #  All done.
     #
-    $self->{ 'error' } = undef;
-
-    bless( $self, $class );
     return $self;
 
 }
 
 
-
-=head2 name
-
-return the name of this module.
-
-=cut
-
-sub name
-{
-    return "hg";
-}
-
-
-
-=head2 isAvailable
-
-Return whether this transport is available.
-
-This module is available iff an executable hg is found.
-
-=cut
-
-sub isAvailable
-{
-    my ($self) = (@_);
-
-    if ( !-d $self->{ 'transportdir' } )
-    {
-        $self->{ 'error' } =
-          "Transport directory went away: $self->{'transportdir'}\n";
-        return 0;
-    }
-
-    if ( system("hg --version >/dev/null 2>/dev/null") == 0 )
-    {
-
-        $self->{ 'error' } =
-          "Failed to execute 'hg --version', is hg installed?\n";
-        return 1;
-    }
-    return 0;
-}
-
-
-
-=head2 error
-
-Return the last error from the transport.
-
-This is only set in L</isAvailable>.
-
-=cut
-
-sub error
-{
-    my ($self) = (@_);
-    return ( $self->{ 'error' } );
-}
-
-
-
-=head2 fetchPolicies
-
-Fetch the policies which are required from the remote server.
-
-This method begins by looking for the file "default.policy" within
-the top-level policies sub-directory of the repository.  Additional
-included policies are fetched and interpolated.
-
-=cut
-
-sub fetchPolicies
-{
-    my ($self) = (@_);
-
-    #
-    #  The repository, and the destination to which we clone it.
-    #
-    my $repo = $self->{ 'prefix' };
-    my $dst  = $self->{ 'transportdir' };
-
-    $self->{ 'verbose' } && print "Fetching $repo into $dst\n";
-
-    #
-    #  Do the cloning
-    #
-    if ( system("hg clone $self->{'transportargs'} $repo $dst") != 0 )
-    {
-        $self->{ 'verbose' } && print "FAILED TO FETCH POLICY";
-        return undef;
-    }
-
-    #
-    #  OK we've cloned the policies/files to the local filesystem
-    # now we need to return to the caller an expanded policy file.
-    #
-    #
-    #  The name of the policy we fetch by default.
-    #
-    my $base = $dst . "/policies/default.policy";
-    if ( !-e $base )
-    {
-        $self->{ 'verbose' } && print "File not found, post-clone: $base\n";
-        return undef;
-    }
-    $self->{ 'verbose' } && print "Processing $base\n";
-
-
-    #
-    #  Open the file, and expand it.
-    #
-    my $content = "";
-
-    open( my $handle, "<", $base );
-    foreach my $line (<$handle>)
-    {
-        chomp($line);
-
-        # Skip lines beginning with comments
-        next if ( $line =~ /^([ \t]*)\#/ );
-
-        # Skip blank lines
-        next if ( length($line) < 1 );
-
-        if ( $line =~ /FetchPolicy([ \t]+)(.*)[ \t]*\;/i )
-        {
-            my $inc = $2;
-            $self->{ 'verbose' } &&
-              print "\tFetching include: $inc\n";
-
-            #
-            #  OK this is an icky thing ..
-            #
-            if ( $inc =~ /\$/ )
-            {
-                $self->{ 'verbose' } &&
-                  print "\tTemplate expanding file: $inc\n";
-
-                #
-                #  Looks like the policy has a template variable in
-                # it.  We might be wrong.
-                #
-                foreach my $key ( sort keys %$self )
-                {
-                    while ( $inc =~ /(.*)\$\Q$key\E(.*)/ )
-                    {
-                        $inc = $1 . $self->{ $key } . $2;
-
-                        $self->{ 'verbose' } &&
-                          print
-                          "\tExpanded '\$$key' into '$self->{$key}' giving: $inc\n";
-                    }
-                }
-            }
-
-            #
-            #  Now fetch it, resolved or relative.
-            #
-            my $policy = $self->readFile( $dst . "/policies/" . $inc );
-            if ( defined($policy) )
-            {
-                $content .= $policy;
-            }
-            else
-            {
-                $self->{ 'verbose' } && print "Policy inclusion failed: $inc\n";
-            }
-        }
-        else
-        {
-            $content .= $line;
-        }
-
-        $content .= "\n";
-    }
-    close($handle);
-
-    return ($content);
-}
-
-
-=begin doc
-
-Internal/Private method.
-
-=end doc
-
-=cut
-
-sub readFile
-{
-    my ( $self, $file ) = (@_);
-
-    my $txt;
-
-    open( my $handle, "<", $file ) or return undef;
-
-    while ( my $line = <$handle> )
-    {
-        $txt .= $line;
-    }
-    close($handle);
-
-    return $txt;
-}
-
-
-
-=head2 fetchContents
-
-Fetch a file from within the checked out repository.
-
-Given a root repository of /path/to/repo/ the file is looked for beneath
-/path/to/repo/files.
-
-=cut
-
-sub fetchContents
-{
-    my ( $self, $file ) = (@_);
-
-    my $complete = $self->{ 'transportdir' } . "/files/" . $file;
-
-    return ( $self->readFile($complete) );
-}
+1;
