@@ -12,7 +12,7 @@ This transport copes with cloning a remote mercurial repository to the local fil
 =head1 DESCRIPTION
 
 This module uses the Slaughter::Transport::revisionControl base-class in such
-a way as to offer a git-based transport.
+a way as to offer a Mercurial-based transport.
 
 All the implementation, except for the setup of some variables, comes from that
 base class.
