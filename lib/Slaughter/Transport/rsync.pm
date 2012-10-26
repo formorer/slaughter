@@ -67,6 +67,7 @@ Create a new instance of this object.
 
 sub new
 {
+
     #
     #  Unpleasant setup of the parent class
     #
@@ -89,7 +90,7 @@ sub new
     #
     # The command to clone our remote repository.
     #
-    $self->{ 'cmd' }  = "rsync -qazr --delete ";
+    $self->{ 'cmd' } = "rsync -qazr --delete ";
     $self->{ 'cmd' } .= " $self->{'transportargs'} "
       if ( $self->{ 'transportargs' } );
 

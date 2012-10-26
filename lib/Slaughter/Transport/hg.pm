@@ -67,6 +67,7 @@ Create a new instance of this object.
 
 sub new
 {
+
     #
     #  Unpleasant setup of the parent class
     #
@@ -78,7 +79,7 @@ sub new
     #
     # The name of our derived transport.
     #
-    $self->{ 'name' }    = "hg";
+    $self->{ 'name' } = "hg";
 
     #
     #  The command to invoke the version of our revision control system.
@@ -89,7 +90,7 @@ sub new
     #
     # The command to clone our remote repository.
     #
-    $self->{ 'cmd' }     = "hg clone ";
+    $self->{ 'cmd' } = "hg clone ";
     $self->{ 'cmd' } .= " $self->{'transportargs'} "
       if ( $self->{ 'transportargs' } );
 

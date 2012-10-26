@@ -68,6 +68,7 @@ Create a new instance of this object.
 
 sub new
 {
+
     #
     #  Unpleasant setup of the parent class
     #
@@ -79,7 +80,7 @@ sub new
     #
     #  The name of our derived transport.
     #
-    $self->{ 'name' }    = "git";
+    $self->{ 'name' } = "git";
 
     #
     #  The command to invoke the version of our revision control system.
@@ -90,7 +91,7 @@ sub new
     #
     #  The command to clone the remote repository
     #
-    $self->{ 'cmd' }     = "git clone ";
+    $self->{ 'cmd' } = "git clone ";
     $self->{ 'cmd' } .= " $self->{'transportargs'} "
       if ( $self->{ 'transportargs' } );
 
