@@ -125,7 +125,7 @@ sub new
     #
     #  The command to update our repository - NOT USED
     #
-    $self->{'cmd_update'} = "hg pull --update";
+    $self->{ 'cmd_update' } = "hg pull --update";
 
 
     #

@@ -125,7 +125,7 @@ sub new
     #
     #  The command to update our repository - NOT USED
     #
-    $self->{'cmd_update'} = "svn update";
+    $self->{ 'cmd_update' } = "svn update";
 
     #
     #  All done.

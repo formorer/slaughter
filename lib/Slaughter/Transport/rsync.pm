@@ -128,7 +128,7 @@ sub new
     #
     #  In the case or rsync an update is the same as a clone
     #
-    $self->{'cmd_update'} = $self->{'cmd_clone'};
+    $self->{ 'cmd_update' } = $self->{ 'cmd_clone' };
 
     #
     #  All done.

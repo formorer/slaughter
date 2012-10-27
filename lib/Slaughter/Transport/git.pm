@@ -125,7 +125,7 @@ sub new
     #
     #  The command to update our repository - NOT USED
     #
-    $self->{'cmd_update'} = "git pull";
+    $self->{ 'cmd_update' } = "git pull";
 
     #
     #  All done
