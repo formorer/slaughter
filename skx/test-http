@@ -1,0 +1,64 @@
+#!/bin/bash
+#
+# Create a trash setup, serving it via HTTP.
+#
+
+
+#
+#  The directory we'll use.
+#
+tmp=~/.trash.d/http
+
+#
+#  Where we are.
+#
+dir=$(pwd)
+
+#
+# Remove it and recreate it
+#
+test -d $tmp && rm -rf $tmp
+mkdir -p $tmp
+
+#
+#  create a stub repository with a simple set of policies.
+#
+mkdir -p $tmp/files/
+mkdir -p $tmp/policies/
+cat > $tmp/policies/default.policy <<EOF
+
+#
+# Include a policy based on hostname
+#
+FetchPolicy \$fqdn.policy;
+
+#
+#  Fetch a shell command policy
+#
+FetchPolicy cmd.policy;
+EOF
+
+cat > $tmp/policies/$(hostname).policy <<EOF
+ print "I am \$fqdn\n";
+EOF
+cat > $tmp/policies/cmd.policy <<EOF
+  RunCommand( Cmd => "uptime" );
+EOF
+
+#
+#  Start httpd
+#
+cd $tmp
+python -m SimpleHTTPServer 2222 &
+pid=$!
+
+#
+#  Now use the HTTP transport to work with http://localhost:2222/
+#
+cd $dir
+sudo perl -I./lib ./bin/slaughter-2 --transport=http --prefix=http://localhost:2222/ --verbose --no-delete
+
+#
+#  Kill the httpd
+#
+kill -9 $pid
