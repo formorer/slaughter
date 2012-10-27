@@ -19,6 +19,33 @@ base class.
 
 =cut
 
+=head1 IMPLEMENTATION
+
+The following commands are set in the constructor, and these are sufficient
+for our base-class to implement the full transport:
+
+=over 8
+
+=item cmd_clone
+
+This is set to "svn checkout".
+
+=item cmd_update
+
+This is set to "svn update".
+
+=item cmd_version
+
+This is set to "svn --version".
+
+=item name
+
+This is set to "svn".
+
+=back
+
+=cut
+
 =head1 AUTHOR
 
  Steve
