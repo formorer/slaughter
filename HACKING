@@ -1,10 +1,11 @@
+Overview
+--------
 
 
  There are several phases to the execution of slaughter upon a client machine:
 
   - Determining information about the local system.
-  - Reading the configuration file.
-  - Parsing the command line options.
+  - Reading the configuration file and parsing the command line options.
   - Fetching the remote policy/policies.
   - Wrapping the retrieved policy-code to make it valid Perl.
   - Executing the wrapped code.
@@ -67,7 +68,7 @@ Brief pointers on where you need to look to do different things:
 
    Hacking: Variables
    ------------------
-   If you'd like to make a new variable available to running scripts you'll
+    If you'd like to make a new variable available to running scripts you'll
    need to investigate the slaughter code if it is common to all environments
    (see the function "defaultOptions").  If the variable is specific to a
    particular operating-sytem it should be added to the relevant module beneath
@@ -75,21 +76,24 @@ Brief pointers on where you need to look to do different things:
 
    Hacking: Functions
    ------------------
-   If you'd like to make a new support function available implement it in
+    If you'd like to make a new support function available implement it in
    lib/Slaughter/API/generic.pm to output an error - then in each of the available
    environment-specific libraries in that same directory.
 
    Hacking: Packages
    ------------------
-   The interface to the system's packaging is currently only implemented
+    The interface to the system's packaging is currently only implemented
    for GNU/Linux, via lib/Slaughter/Packages/linux.pm.  I'd suggest if you
    add support for another platform you follow a similar naming scheme.
 
    Hacking: Transports
    -------------------
-   If you'd like to add a new transport mechanism you should be able to do
+    If you'd like to add a new transport mechanism you should be able to do
    so copying one of the libraries in lib/Slaughter/Transport/.  Implement
    the required methods, such that the test cases pass and you're golden.
+    Transports based on revision control software, are particularly trivial
+   to implement using the base-class provided.  (Consult git.pm/hg.pm for examples.)
+
 
 
 Submitting Patches
@@ -97,8 +101,10 @@ Submitting Patches
 
 Patches are welcome.  Suggestions with no code are just as welcome.
 
-Patches will be significantly more likely to be accepted if they contain
-corresponding test-code, or test-cases.
+However note that patches will be significantly more likely to be accepted
+if they contain corresponding test-code, or test-cases.
+
+
 
 Steve
 --
