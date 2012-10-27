@@ -57,9 +57,6 @@ The LICENSE file contains the full text of the license.
 
 
 
-
-
-
 =head2 MetaInformation
 
 This function retrieves meta-information about the current host,
@@ -85,12 +82,15 @@ Currently the following OS-specific modules exist:
 
 =cut
 
-sub MetaInformation
 {
-    my ($ref) = (@_);
+    no warnings 'redefine';
 
-    $ref->{ 'unknown' } = "all";
+    sub MetaInformation
+    {
+        my ($ref) = (@_);
+
+        $ref->{ 'unknown' } = "all";
+    }
+
 }
-
-
 1;

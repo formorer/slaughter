@@ -58,7 +58,6 @@ The LICENSE file contains the full text of the license.
 
 
 
-
 =head2 MetaInformation
 
 This function retrieves meta-information about the current host,
@@ -75,85 +74,91 @@ NOTE:  This has only been tested under Strawberry perl.
 
 =cut
 
-sub MetaInformation
 {
-    my ($ref) = (@_);
+    no warnings 'redefine';
 
-    #
-    #  Kernel version.
-    #
-    $ref->{ 'kernel' } = $ENV{ 'OS' };
-    chomp( $ref->{ 'kernel' } );
-
-    #
-    #  Are we i386/amd64?
-    #
-    my $type = $ENV{ 'PROCESSOR_ARCHITECTURE' };
-    if ( $type =~ /x86/i )
+    sub MetaInformation
     {
-        $ref->{ 'arch' } = "i386";
-        $ref->{ 'bits' } = 32;
-    }
-    else
-    {
-        $ref->{ 'arch' } = "amd64";
-        $ref->{ 'bits' } = 64;
-    }
+        my ($ref) = (@_);
 
+        #
+        #  Kernel version.
+        #
+        $ref->{ 'kernel' } = $ENV{ 'OS' };
+        chomp( $ref->{ 'kernel' } );
 
-    #
-    #  IP address(es).
-    #
-    my $ip = undef;
-
-    $ip = "ipconfig";
-
-    if ( defined($ip) )
-    {
-        my $count = 1;
-
-        foreach my $line ( split( /[\r\n]/, `$ip` ) )
+        #
+        #  Are we i386/amd64?
+        #
+        my $type = $ENV{ 'PROCESSOR_ARCHITECTURE' };
+        if ( $type =~ /x86/i )
         {
-            next if ( !defined($line) || !length($line) );
-            chomp($line);
+            $ref->{ 'arch' } = "i386";
+            $ref->{ 'bits' } = 32;
+        }
+        else
+        {
+            $ref->{ 'arch' } = "amd64";
+            $ref->{ 'bits' } = 64;
+        }
 
-            #
-            #  This matches something like:
-            #
-            #  IP Address. . . . . . . . . . . . : 10.6.11.138
-            #
-            #
-            if ( $line =~ /IP Address.* : (.*)/ )
+
+        #
+        #  IP address(es).
+        #
+        my $ip = undef;
+
+        $ip = "ipconfig";
+
+        if ( defined($ip) )
+        {
+            my $count = 1;
+
+            foreach my $line ( split( /[\r\n]/, `$ip` ) )
             {
-                my $ip = $1;
+                next if ( !defined($line) || !length($line) );
+                chomp($line);
 
                 #
-                # Save away the IP address in "ip0", "ip1", "ip2" .. etc.
+                #  This matches something like:
                 #
-                $ref->{ "ip" . $count } = $ip;
-                $count += 1;
+                #  IP Address. . . . . . . . . . . . : 10.6.11.138
+                #
+                #
+                if ( $line =~ /IP Address.* : (.*)/ )
+                {
+                    my $ip = $1;
+
+                    #
+                    # Save away the IP address in "ip0", "ip1", "ip2" .. etc.
+                    #
+                    $ref->{ "ip" . $count } = $ip;
+                    $count += 1;
+                }
+            }
+
+            if ( $count > 0 )
+            {
+                $ref->{ 'ipcount' } = ( $count - 1 );
             }
         }
 
-        if ( $count > 0 )
-        {
-            $ref->{ 'ipcount' } = ( $count - 1 );
-        }
+
+        #
+        #  Find the name of our release
+        #
+        my @win_info = Win32::GetOSVersion();
+        my $version  = $win_info[0];
+        my $distrib  = Win32::GetOSName();
+
+        # work around for historical reasons
+        $distrib = 'WinXP' if $distrib =~ /^WinXP/;
+        $ref->{ 'version' }      = $version;
+        $ref->{ 'distribution' } = $distrib;
+
     }
 
-
-    #
-    #  Find the name of our release
-    #
-    my @win_info = Win32::GetOSVersion();
-    my $version  = $win_info[0];
-    my $distrib  = Win32::GetOSName();
-
-    # work around for historical reasons
-    $distrib = 'WinXP' if $distrib =~ /^WinXP/;
-    $ref->{ 'version' }      = $version;
-    $ref->{ 'distribution' } = $distrib;
-
 }
+
 
 1;
