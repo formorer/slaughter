@@ -1,0 +1,39 @@
+#!/bin/bash
+#
+# Create a trash mercurial repository, and use that as a source
+#
+
+
+#
+#  The directory we'll use.
+#
+hg=~/hg/trash.d
+
+
+#
+# Remove it and recreate it
+test -d $hg && rm -rf $hg
+mkdir -p $hg
+
+#
+#  create a stub repository with a simple policy
+#
+mkdir -p $hg/files/
+mkdir -p $hg/policies/
+cat > $hg/policies/default.policy <<EOF
+  RunCommand( Cmd => "/usr/bin/uptime" );
+EOF
+
+#
+#  Initialize the repository and add the contents to it.
+#
+pushd $hg && hg init && popd
+pushd $hg && hg add files && popd
+pushd $hg && hg add policies && popd
+pushd $hg && hg commit "-m added" && popd
+
+pwd
+#
+#  Now clone from that repository
+#
+sudo perl -I./lib ./bin/slaughter-2 --transport=hg --prefix=$hg --verbose --no-delete
