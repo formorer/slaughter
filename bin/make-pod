@@ -1,11 +1,12 @@
 #!/usr/bin/perl -w
 #
-# This is a simple script which will populate ../html/ with HTML
-# versions of our POD/
+# This is a simple script which will populate a named directory
+# with HTML versions of the POD contained in our perl modules.
 #
 # Quick hack to allow me to manually eyeball POD.
 #
 # Steve
+# --
 #
 
 use strict;
