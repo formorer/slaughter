@@ -1,0 +1,55 @@
+#!/bin/bash
+#
+# Create a trash git repository, and use that as a source
+#
+
+
+#
+#  The directory we'll use.
+#
+git=~/git/trash.d
+
+
+#
+# Remove it and recreate it
+test -d $git && rm -rf $git
+mkdir -p $git
+
+#
+#  create a stub repository with a simple policy
+#
+mkdir -p $git/files/
+mkdir -p $git/policies/
+cat > $git/policies/default.policy <<EOF
+
+#
+# Include a policy based on hostname
+#
+FetchPolicy \$fqdn.policy;
+
+#
+#  Fetch a shell command policy
+#
+FetchPolicy cmd.policy;
+EOF
+
+cat > $git/policies/$(hostname).policy <<EOF
+ print "I am \$fqdn\n";
+EOF
+cat > $git/policies/cmd.policy <<EOF
+  RunCommand( Cmd => "uptime" );
+EOF
+
+#
+#  Initialize the repository and add the contents to it.
+#
+pushd $git && git init && popd
+pushd $git && git add files && popd
+pushd $git && git add policies && popd
+pushd $git && git commit "-m added" && popd
+
+pwd
+#
+#  Now clone from that repository
+#
+sudo perl -I./lib ./bin/slaughter-2 --transport=git --prefix=$git --verbose --no-delete
