@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w -I../lib -I./lib/
 #
-#  Test we can load the transport modules
+#  Test we can load the transport modules, and that they offer
+# the complete/expected API.
 #
 # Steve
 # --
@@ -18,7 +19,7 @@ require_ok('Slaughter');
 
 
 #
-#  Find the location
+#  Find the location of the transport modules on disk.
 #
 my $dir = undef;
 
@@ -44,7 +45,7 @@ foreach my $name ( sort( glob( $dir . "/*.pm" ) ) )
         require_ok("Slaughter::Transport::$module");
 
         #
-        # Create
+        # Create a new instance of the module.
         #
         $module = "Slaughter::Transport::$module";
         my $handle = $module->new();
@@ -56,9 +57,16 @@ foreach my $name ( sort( glob( $dir . "/*.pm" ) ) )
                    qw! error isAvailable fetchContents fetchPolicies name new !)
         {
             ok( UNIVERSAL::can( $handle, $method ),
-                "required method available in $module - $method"
-              );
+                "required method available in $module - $method" );
         }
 
+        #
+        # Sanity check by ensuring that a made-up method name is
+        # invalid.
+        #
+        # This ensures we're not misusing UNIVERSAL:can
+        #
+        ok( !UNIVERSAL::can( $handle, "not_present" ),
+            "Random methods aren't present" );
     }
 }
