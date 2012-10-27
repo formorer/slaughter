@@ -70,7 +70,7 @@ sub countSubs
       die "Failed to open $file - $!";
     while ( my $line = <FILE> )
     {
-        $count += 1 if ( $line =~ /^sub / );
+        $count += 1 if ( $line =~ /^[ \t]*sub / );
     }
     close(FILE);
 
