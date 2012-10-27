@@ -1,0 +1,12 @@
+
+Small collection of scripts that will create/trash/re-create random
+policy-sets and use them, via the appropriate transports.
+
+Usage:
+
+  ./skx/test-http
+  ./skx/test-git
+  ./skx/test-git
+
+These will create/directories so read them before using them.  Even
+better don't touch!
