@@ -1,57 +1,93 @@
 #!/usr/bin/perl -w
-
+#
+# This is a simple script which will populate ../html/ with HTML
+# versions of our POD/
+#
+# Quick hack to allow me to manually eyeball POD.
+#
+# Steve
+#
 
 use strict;
 use warnings;
 
 use File::Find;
+use File::Path qw/ mkpath /;
 use Pod::Simple::HTML;
 
 
-my @found;
 
 #
-#  The output director
-#
-my $out = "./html";
-system( "mkdir -p $out" ) unless( -d $out );
+#  Only argument is the (required) output directory
+##
+my $dir = shift @ARGV;
+if ( !$dir )
+{
+    die "Usage: $0 directory\n";
+}
 
+#
+#  Make the directory if it isn't already present.
+#
+mkpath( $dir, { verbose => 0 } ) unless ( -d $dir );
+
+
+#
+#  Recursively find *.pm and process.
+#
 find( { wanted => \&checkFile, no_chdir => 1 }, '.' );
 
 
+
+#
+#  Given a potential file if it is a perl library make
+# the documentation.  Convert:
+#
+#   /path/to/foo.pm
+#
+#  into
+#
+#   path::to::foo.html
+#
 sub checkFile
 {
+
     # The file.
     my $file = $File::Find::name;
 
-    # We don't care about directories
-    return if ( !-f $file );
-
-    # Nor about backup files.
-    return if ( $file =~ /~$/ );
-
-    # or non-modules
+    # We only care about pm files.
     return if ( $file !~ /\.pm$/i );
 
-
+    #
+    #  Get the parser.
+    #
     my $parser = Pod::Simple::HTML->new();
 
-    open IN, $file  or die "Couldn't open $file: $!\n";
 
+    #
+    #  Mangle the name used for the output.
+    #
     my $path = $file;
     $path =~ s/^\.\///g;
     $path =~ s/\//::/g;
     $path =~ s/\.pm$/.html/g;
     $path =~ s/^lib:://g;
 
-    print "FILE: $file -> $out/$path\n";
+    print "FILE: $file -> $dir/$path\n";
 
 
-    open OUT, ">$out/$path" or die "Couldn't open $out/$path: $!\n";
+    open( my $in, "<", $file ) or
+      die "Couldn't open $file: $!\n";
+
+    open( my $out, ">", "$dir/$path" ) or
+      die "Couldn't open $dir/$path: $!\n";
 
     $parser->index(1);
     $parser->html_css('http://search.cpan.org/s/style.css');
 
-    $parser->output_fh(*OUT);
-    $parser->parse_file(*IN);
+    $parser->output_fh($out);
+    $parser->parse_file($in);
+
+    close($in);
+    close($out);
 }
