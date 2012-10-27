@@ -1,3 +1,64 @@
+#!/usr/bin/perl -w
+
+=head1 NAME
+
+Slaughter::Info::linux - Perl Automation Tool Helper linux info implementation
+
+=cut
+
+=head1 SYNOPSIS
+
+This module is the linux versions of the Slaughter information-gathering
+module.
+
+Modules beneath the Slaughter::Info namespace are called when slaughter
+is executed, they are intended to populate a hash with system information
+about the current host.
+
+This module is loaded only on linux systems, and will determine such details
+as the localhost hostname, the free RAM, any IP addresses, etc.
+
+Usage is:
+
+
+=for example begin
+
+    use Slaughter::Info::linux;
+
+    my %info;
+    MetaInformation( \%info );
+
+    # use info now ..
+    print "We have software RAID\n" if $info{'softwareraid'};
+
+=for example end
+
+=cut
+
+
+=head1 AUTHOR
+
+ Steve
+ --
+ http://www.steve.org.uk/
+
+=cut
+
+=head1 LICENSE
+
+Copyright (c) 2010-2012 by Steve Kemp.  All rights reserved.
+
+This module is free software;
+you can redistribute it and/or modify it under
+the same terms as Perl itself.
+The LICENSE file contains the full text of the license.
+
+=cut
+
+
+
+
+
 
 =head2 MetaInformation
 
@@ -6,7 +67,8 @@ and is invoked solely on Linux hosts.
 
 =for example begin
 
-  my %data = MetaInformation();
+  my %data;
+  MetaInformation( \%data );
 
 =for example end
 
