@@ -6,10 +6,11 @@
 #
 #  This test checks that the modules in :
 #
-#     /lib/Slaughter/API +
-#     lib/Slaughter/INFO
+#     /lib/Slaughter/API/
+#     /lib/Slaughter/Info/
 #
-#  Contain the same number of subroutines as in the generic.pm one.
+#  Contain the same number of subroutines as present in the generic.pm
+#  module in that same directory.
 #
 # Steve
 # --
@@ -31,7 +32,7 @@ foreach my $dir (qw! Slaughter/API Slaughter/Info !)
 {
     ok( -d ( $base . "/" . $dir ), "Directory present" );
 
-    # open linux - and count the subroutines
+    # open the generic module - and count the subroutines
     my $expected = countSubs("$base/$dir/generic.pm");
     ok( $expected,
         "We found a number of subroutines in $base/$dir/generic.pm [$expected]"
@@ -50,6 +51,15 @@ foreach my $dir (qw! Slaughter/API Slaughter/Info !)
 }
 
 
+
+=begin doc
+
+Count the number of subroutines in the specified perl file.
+
+=end doc
+
+=cut
+
 sub countSubs
 {
     my ($file) = (@_);
@@ -63,7 +73,6 @@ sub countSubs
         $count += 1 if ( $line =~ /^sub / );
     }
     close(FILE);
-
 
     return ($count);
 }
