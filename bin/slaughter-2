@@ -644,6 +644,9 @@ EOF
 Write out specified policy content into a form which can be executed,
 and return the name of the file to which it was written.
 
+Once complete this is the script which will be executed on the client
+system - so it will be valid perl.
+
 =end doc
 
 =cut
@@ -652,37 +655,39 @@ sub writeoutPolicy
 {
     my ($txt) = (@_);
 
+    #
+    # Create the temporary file, and set the permissions on
+    # it to something restrictive.
+    #
     my ( undef, $name ) = File::Temp::tempfile();
-
-    open my $handle, ">", $name or
-      die "Failed to write to file : $!";
-
-    print $handle <<EOF;
-#!/usr/bin/perl
-use strict;
-use warnings;
-
-use English;
-use Slaughter;
+    if ( $^O ne "MSWin32" )
+    {
+        chmod( 0700, $name );
+    }
 
 
-# template variables.
-EOF
-
+    #
+    #  Two lines we output into the generated script.
+    #
     my $line = "my \%template = (";
+    my $keys = "";
 
+    #
+    #  Generate the fixed sections we output,
+    # which are based upon our global config.
+    #
     foreach my $key ( sort keys %CONFIG )
     {
         my $val = $CONFIG{ $key };
 
         if ( defined($val) )
         {
-            print $handle "our \$$key = '$val';\n";
+            $keys .= "our \$$key = '$val';\n";
             $line .= "\n\t$key => '$val',";
         }
         else
         {
-            print $handle "our \$$key = undef;\n";
+            $keys .= "our \$$key = undef;\n";
             $line .= "\n\t$key => undef,";
         }
 
@@ -690,19 +695,51 @@ EOF
 
     $line =~ s/, $//g;
     $line .= "\t);\n";
-    print $handle "\n# template hash\n";
-    print $handle $line . "\n";
-    print $handle "#========\n\n";
 
+    #
+    #  Open the file for writing.
+    #
+    open my $handle, ">", $name or
+      die "Failed to write to file : $!";
+
+
+    #
+    #  Write the script.
+    #
     print $handle <<EOF;
+#!/usr/bin/perl -w
+
+use strict;
+use warnings;
+
+use English;
+use Slaughter;
 
 #
-# TRANSPORT SETUP
+#  1/5:
+#
+# Generated output of the form:
+#   our \$var = 'value';
+#
+$keys
+
+#
+#  2/5:
+#
+# Generated output in the form of a hash:
+#
+$line
+
+#
+#  3/5:
+#
+# Setup of the transport, for fetching files.
 #
 use Slaughter::Transport::$CONFIG{'transport'};
 our \$TRANSPORT = Slaughter::Transport::$CONFIG{'transport'}->new( \%template );
 
-
+#
+#  4/5:
 #
 # Sanity check prior to execution
 #
@@ -714,15 +751,20 @@ EOFF
     exit 1;
 }
 
+#
+#  5/5:
+#
+#  User-supplied policies.
+#
+
+$txt
+
 EOF
 
-    print $handle $txt;
+    #
+    #  All done.
+    #
     close($handle);
-
-    if ( $^O ne "MSWin32" )
-    {
-        chmod( 0700, $name );
-    }
 
     return ($name);
 
