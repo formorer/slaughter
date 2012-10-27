@@ -1,0 +1,78 @@
+#!/bin/bash
+#
+# Create a trash setup, serving it via rsync.
+#
+
+
+#
+#  The directory we'll use.
+#
+tmp=~/.trash.d/rsync
+
+#
+#  Where we are.
+#
+dir=$(pwd)
+
+#
+# Remove it and recreate it
+#
+test -d $tmp && rm -rf $tmp
+mkdir -p $tmp
+
+#
+#  create a stub repository with a simple set of policies.
+#
+mkdir -p $tmp/files/
+mkdir -p $tmp/policies/
+cat > $tmp/policies/default.policy <<EOF
+
+#
+# Include a policy based on hostname
+#
+FetchPolicy \$fqdn.policy;
+
+#
+#  Fetch a shell command policy
+#
+FetchPolicy cmd.policy;
+EOF
+
+cat > $tmp/policies/$(hostname).policy <<EOF
+ print "I am \$fqdn\n";
+EOF
+cat > $tmp/policies/cmd.policy <<EOF
+  RunCommand( Cmd => "uptime" );
+EOF
+
+#
+# Create an rsync config file
+#
+cat > /tmp/rsyncd.conf <<EOF
+[slaughter]
+        path = $tmp
+        uid = `whoami`
+        use chroot = no
+        comment = slaughter policy files
+        read only = true
+EOF
+
+#
+#  Start rsyncd
+#
+cd $tmp
+rsync --config /tmp/rsyncd.conf --daemon --port 3333 &
+pid=$!
+
+#
+#  Now use the rsync transport to work with the repository
+#
+cd $dir
+sudo perl -I./lib ./bin/slaughter-2 --transport=rsync --prefix=rsync://localhost:3333/slaughter/ --verbose --no-delete
+
+#
+#  Kill the daemon
+#
+kill -9 $pid
+
+
