@@ -23,7 +23,7 @@ Usage is:
 
 =for example begin
 
-    use Slaughter::Info::linux;
+    use Slaughter::Info::MSWin32;
 
     my %info;
     MetaInformation( \%info );
