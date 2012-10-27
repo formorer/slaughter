@@ -85,14 +85,20 @@ sub new
     #  The command to invoke the version of our revision control system.
     # Used to test that it is installed.
     #
-    $self->{ 'version' } = "hg --version";
+    $self->{ 'cmd_version' } = "hg --version";
 
     #
     # The command to clone our remote repository.
     #
-    $self->{ 'cmd' } = "hg clone ";
-    $self->{ 'cmd' } .= " $self->{'transportargs'} "
+    $self->{ 'cmd_clone' } = "hg clone ";
+    $self->{ 'cmd_clone' } .= " $self->{'transportargs'} "
       if ( $self->{ 'transportargs' } );
+
+
+    #
+    #  The command to update our repository - NOT USED
+    #
+    $self->{'cmd_update'} = "hg pull --update";
 
 
     #

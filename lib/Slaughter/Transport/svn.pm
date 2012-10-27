@@ -86,15 +86,19 @@ sub new
     #
     # Used to test that it is installed.
     #
-    $self->{ 'version' } = "svn --version";
+    $self->{ 'cmd_version' } = "svn --version";
 
     #
     # The command to clone our remote repository.
     #
-    $self->{ 'cmd' } = "svn checkout ";
-    $self->{ 'cmd' } .= " $self->{'transportargs'} "
+    $self->{ 'cmd_clone' } = "svn checkout ";
+    $self->{ 'cmd_clone' } .= " $self->{'transportargs'} "
       if ( $self->{ 'transportargs' } );
 
+    #
+    #  The command to update our repository - NOT USED
+    #
+    $self->{'cmd_update'} = "svn update";
 
     #
     #  All done.

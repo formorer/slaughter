@@ -44,17 +44,21 @@ of this class.  The following parameters should be used:
 
 =over 8
 
-=item  cmd
+=item  cmd_clone
 
 The command to clone the repository.  This will have the repository location, as specified by "--prefix", and the destination directory appended to it.
+
+=item cmd_update
+
+A command to call to update an I<existing> repository.  Currently each time slaughter runs it will pull the remote repository from scratch to a brand new temporary directory, it is possible in the future we will work with a local directory that persists - at that point having the ability to both checkout and update a remote repository will be useful.
+
+=item cmd_version
+
+A command to call which will output the version of the revision control system.   This may be any command which outputs text, as the output is discarded.  The purposes is to ensure that the binary required for cloning is present on the system.
 
 =item name
 
 The name of the transport.
-
-=item version
-
-A command to call which will output the version of the revision control system.   This may be any command which outputs text, as the output is discarded.  The purposes is to ensure that the binary required for cloning is present on the system.
 
 =back
 
@@ -152,11 +156,11 @@ sub isAvailable
         return 0;
     }
 
-    if ( system("$self->{'version'} >/dev/null 2>/dev/null") == 0 )
+    if ( system("$self->{'cmd_version'} >/dev/null 2>/dev/null") == 0 )
     {
 
         $self->{ 'error' } =
-          "Failed to execute '$self->{'version'}', is $self->{'name'} installed?\n";
+          "Failed to execute '$self->{'cmd_version'}', is $self->{'name'} installed?\n";
         return 1;
     }
     return 0;
@@ -205,7 +209,7 @@ sub fetchPolicies
     #
     #  Do the cloning
     #
-    if ( system("$self->{'cmd'} $repo $dst") != 0 )
+    if ( system("$self->{'cmd_clone'} $repo $dst") != 0 )
     {
         $self->{ 'verbose' } && print "FAILED TO FETCH POLICY";
         return undef;

@@ -85,15 +85,22 @@ sub new
     #  The command to invoke the version of our revision control system.
     # Used to test that it is installed.
     #
-    $self->{ 'version' } = "rsync --version";
+    $self->{ 'cmd_version' } = "rsync --version";
 
     #
     # The command to clone our remote repository.
     #
-    $self->{ 'cmd' } = "rsync -qazr --delete ";
-    $self->{ 'cmd' } .= " $self->{'transportargs'} "
+    $self->{ 'cmd_clone' } = "rsync -qazr --delete ";
+    $self->{ 'cmd_clone' } .= " $self->{'transportargs'} "
       if ( $self->{ 'transportargs' } );
 
+
+    #
+    #  The command to update our repository - NOT USED
+    #
+    #  In the case or rsync an update is the same as a clone
+    #
+    $self->{'cmd_update'} = $self->{'cmd_clone'};
 
     #
     #  All done.

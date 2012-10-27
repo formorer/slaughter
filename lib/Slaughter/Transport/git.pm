@@ -86,14 +86,19 @@ sub new
     #  The command to invoke the version of our revision control system.
     # Used to test that it is installed.
     #
-    $self->{ 'version' } = "git --version";
+    $self->{ 'cmd_version' } = "git --version";
 
     #
     #  The command to clone the remote repository
     #
-    $self->{ 'cmd' } = "git clone ";
-    $self->{ 'cmd' } .= " $self->{'transportargs'} "
+    $self->{ 'cmd_clone' } = "git clone ";
+    $self->{ 'cmd_clone' } .= " $self->{'transportargs'} "
       if ( $self->{ 'transportargs' } );
+
+    #
+    #  The command to update our repository - NOT USED
+    #
+    $self->{'cmd_update'} = "git pull";
 
     #
     #  All done
