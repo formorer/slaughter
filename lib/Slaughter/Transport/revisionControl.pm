@@ -143,6 +143,9 @@ sub new
 Is this module available?  This uses the details from the derived class
 to determine whether I<that> transport is available.
 
+We regard the transport as available if the execution of the command 
+stored in L</cmd_version> succeeds.
+
 =cut
 
 sub isAvailable
@@ -170,9 +173,7 @@ sub isAvailable
 
 =head2 error
 
-Return the last error from the transport.
-
-This is only set in L</isAvailable>.
+Return the last error from the transport, this is set in L</isAvailable>.
 
 =cut
 
@@ -191,6 +192,10 @@ Fetch the policies which are required from the remote server.
 This method begins by looking for the file "default.policy" within
 the top-level policies sub-directory of the repository.  Additional
 included policies are fetched and interpolated.
+
+Fetching of the policies involves first cloning the remote repository,
+using the command specified in L</cmd_clone>, then looking beneath
+the repository for the policies/ subdirectory.
 
 =cut
 
@@ -307,7 +312,8 @@ sub fetchPolicies
 
 =head2 name
 
-Return the name of this transport.  This will be setup in the derived class.
+Return the name of this transport.  This will be setup in the derived class,
+via the L</name> parameter.
 
 =cut
 
@@ -321,7 +327,8 @@ sub name
 
 =begin doc
 
-Internal/Private method.
+This is an internal/private method that merely returns the contents of the
+named file - or undef on error.
 
 =end doc
 
@@ -348,7 +355,7 @@ sub readFile
 
 =head2 fetchContents
 
-Fetch a file from within the checked out repository.
+Fetch a file from within the checked-out repository.
 
 Given a root repository of /path/to/repo/ the file is looked for beneath
 /path/to/repo/files.
