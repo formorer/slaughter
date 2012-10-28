@@ -52,4 +52,4 @@ pwd
 #
 #  Now clone from that repository
 #
-sudo perl -I./lib ./bin/slaughter-2 --transport=git --prefix=$git --verbose --no-delete
+sudo perl -I./lib ./bin/slaughter --transport=git --prefix=$git --verbose --no-delete

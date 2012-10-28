@@ -68,7 +68,7 @@ pid=$!
 #  Now use the rsync transport to work with the repository
 #
 cd $dir
-sudo perl -I./lib ./bin/slaughter-2 --transport=rsync --prefix=rsync://localhost:3333/slaughter/ --verbose --no-delete
+sudo perl -I./lib ./bin/slaughter --transport=rsync --prefix=rsync://localhost:3333/slaughter/ --verbose --no-delete
 
 #
 #  Kill the daemon

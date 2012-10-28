@@ -63,7 +63,7 @@ thttpd -C /tmp/thttpd.conf
 #  Now use the HTTP transport to work with http://localhost:2222/
 #
 cd $dir
-sudo perl -I./lib ./bin/slaughter-2 --transport=http --prefix=http://127.0.0.1:2222 --verbose --no-delete
+sudo perl -I./lib ./bin/slaughter --transport=http --prefix=http://127.0.0.1:2222 --verbose --no-delete
 
 
 #

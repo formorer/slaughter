@@ -36,4 +36,4 @@ pwd
 #
 #  Now clone from that repository
 #
-sudo perl -I./lib ./bin/slaughter-2 --transport=hg --prefix=$hg --verbose --no-delete
+sudo perl -I./lib ./bin/slaughter --transport=hg --prefix=$hg --verbose --no-delete
