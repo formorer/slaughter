@@ -1,4 +1,4 @@
-Source: slaughter
+Source: slaughter2
 Section: admin
 Priority: optional
 Maintainer: Steve Kemp <steve@steve.org.uk>
@@ -7,17 +7,24 @@ Standards-Version: 3.9.1
 Homepage: http://www.steve.org.uk/Software/slaughter/
 
 
-Package: slaughter-client
-Provides: slaughter
+Package: slaughter2-client
+Provides: slaughter2
 Architecture: all
 Depends: ${misc:Depends}, libdigest-sha-perl | ibdigest-sha1-perl, libwww-perl, libtext-template-perl, perl-modules
-Suggests: httpd
 Description: Automation tool to perform system administration remotely
- This package contains a client which will connect to a central (HTTP) server
+ This package contains a client which will connect to a central server
  and fetch policies to execute.
  .
+ The policies may be fetched via several different methods including:
+ .
+  * HTTP
+ .
+  * rsync
+ .
+  * Git/Mercurial/Subversion
+ .
  The locally-executed policies are expressive perl scripts with an additional
- set of helper primitives which allow:
+ set of helper primitives which allow such actions as:
  .
   * Copying files.
  .
@@ -27,5 +34,5 @@ Description: Automation tool to perform system administration remotely
  .
   * Sending alerts.
  .
- There is no need for a centralised slaughter-server, as all policy
- files are served via HTTP (or HTTPS).
+ There is no need for a centralised slaughter-server, except for that required
+ to provide the policies.
