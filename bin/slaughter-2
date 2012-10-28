@@ -16,11 +16,11 @@ slaughter-2 - Perl Automation Tool
 
   File/Policy Fetching:
 
-   --prefix        The prefix for the transport we're using.
-   --transport     The transport to use for policy/file-fetching
-   --username      The username for the policy-fetch, if appropriate (http-only).
-   --password      The password for the policy-fetch, if appropriate (http-only).
-   --transport-args Any arguments to pass to the transport (used for rsync/hg/git).
+   --prefix         The prefix for the transport we're using.
+   --transport      The transport to use for policy/file-fetching
+   --username       The username for the policy-fetch, if appropriate (http-only).
+   --password       The password for the policy-fetch, if appropriate (http-only).
+   --transport-args Any arguments to pass to the transport (used for rsync/hg/git/svn).
 
   Help Options:
 
@@ -38,10 +38,9 @@ slaughter is a simple system administration and server automation tool,
 which is designed to download policy files from a central server and
 execute them locally.
 
-The remote files which are downloaded are actually perl scripts which
-are executed with the help of a simple wrapper module - this module
-provides several new language functions (or primitives) which can be
-useful to manage systems.
+The policy files which are downloaded are perl scripts which are executed
+with the help of a simple wrapper module - this module provides several new
+language functions (or primitives) which can be useful to manage systems.
 
 =cut
 
@@ -64,6 +63,8 @@ several mechanisms:
 =item mercurial
 
 =item rsync
+
+=item subversion
 
 =back
 
