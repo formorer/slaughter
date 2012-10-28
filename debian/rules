@@ -32,7 +32,7 @@ install: build
 	mkdir -p `pwd`/debian/tmp/usr/share/man/man8/
 	pod2man ./bin/slaughter --official --section=8 > slaughter.1
 
-	dh_movefiles -p slaughter-client
+	dh_movefiles -p slaughter2-client
 
 # Build architecture-independent files here.
 binary-indep: build install
