@@ -1,42 +1,80 @@
 
-TODO - Write nmore neatly
+Slaughter fetches policies, and optionally files, from a remote server.
+The remote server might be :
+
+    * An rsync server.
+    * HTTP/HTTPS server.
+    * Remote git/mercurial/subversion repository.
+
+To specify which of these is being used the slaughter client needs to be
+configured with two things:
+
+    * THe method by which to fetch the files (HTTP-get, rsync clone, svn checkout).
+    * The location of the files.
+
+The former is the "transport", the latter is the "server-prefix".
+
 
 
 
 http transport
 --------------
 
-  Have apache serve:
+The HTTP-transport is the simplest.  All files are served via HTTP, on a remote
+server.
+
+Given this directory tree:
 
     /var/www/slaughter/
     /var/www/slaughter/files/
     /var/www/slaughter/policies/
+    /var/www/slaughter/policies/default.policy
 
-  Then the client will be invoked:
+Then the client will be invoked like this:
 
-   slaughter --transport=http --prefix=http://example.com/slaughter/
+    slaughter --transport=http --prefix=http://example.com/slaughter/
+
+Here the prefix is the URL which contains the subdirectories "files" and "policies".
+You can test the transfer by running a command such as this:
+
+    curl http://example.com/slaughter/policies/default.policy
+
+
 
 
 rsync transport
 ---------------
 
-  Store the files as per the previous example.  Have the followign rsync configuration
- file:
+rsync is an efficient protocol for transfering files, coping well with incremental
+fetches.
 
-[slaughter]
-        path = /var/www/slaughter/
+Assuming the files are stored on the disk like this:
+
+    /srv/slaughter/
+    /srv/slaughter/files/
+    /srv/slaughter/policies/
+    /srv/slaughter/policies/default.policy
+
+
+The following rsync configuration file would be a sensible starting point, note
+especially how it uses an ACL to prevent fetches from unknown machines:
+
+    [slaughter]
+        path = /srv/slaughter/
         comment = slaughter policy files
         read only = true
+        hosts allow = 1.2.3.0/24 *.example.com
 
 
-  The client will be invoked:
+The client will be invoked:
 
     slaughter --transport=rsync --prefix=rsync://example.com/slaughter/
 
-  The client will invoke:
-      rsync -qazr rsync://example.com/slaughter /tmp/foo
+You can test the transfer by running a command such as this:
 
-  Additional arguments may be passed to rsync vai the "--transport-args" flag.
+    rsync -qazr rsync://example.com/slaughter /tmp/foo
+
+Additional arguments may be passed to rsync via the "--transport-args" flag.
 
 
 
@@ -44,21 +82,20 @@ rsync transport
 hg transport
 ------------
 
-  Create a repository which contains the top-level directories "files/" &
-"policies/".  Host this repository somewhere that mercurial can poll from,
+Create a repository which contains the top-level directories "files/" and
+"policies/".  Host this repository somewhere that mercurial can pull it from,
 ideally via http/https.
 
-  The client will be invoked:
+The client will be invoked:
 
     slaughter --transport=hg --prefix=http://example.com/path/to/repo.hg
 
-  The client will invoke:
+The client will invoke something similar to this, which may be used to test
+the path is correct.
+
       hg clone http://example.com/path/to/repo.hg /tmp/foo
 
-  Additional arguments may be passed to mercurial via the "--transport-args" flag.
-
-
-
+Additional arguments may be passed to mercurial via the "--transport-args" flag.
 
 
 
@@ -66,18 +103,20 @@ ideally via http/https.
 git transport
 -------------
 
-  Create a repository which contains the top-level directories "files/" &
-"policies/".  Host this repository somewhere that mercurial can poll from,
+Create a repository which contains the top-level directories "files/" and
+"policies/".  Host this repository somewhere that git can pull it from,
 ideally via http/https.
 
-  The client will be invoked:
+The client will be invoked:
 
     slaughter --transport=git --prefix=http://example.com/path/to/repo.git
 
-  The client will invoke:
-      git clone http://example.com/path/to/repo.hg /tmp/foo
+The client will invoke something similiar to this, which may be used to
+test the path is correct:
 
-  Additional arguments may be passed to the git command line via the "--transport-args" flag.
+     git clone http://example.com/path/to/repo.hg /tmp/foo
+
+Additional arguments may be passed to the git command line via the "--transport-args" flag.
 
 
 
