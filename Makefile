@@ -75,5 +75,7 @@ pod:
 
 test:
 	prove --shuffle t/
+
+skx-test:
 	[ -d skx/ ] && for i in skx/test-*; do $$i ; done
 
