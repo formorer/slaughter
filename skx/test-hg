@@ -31,6 +31,12 @@ FetchPolicy \$fqdn.policy;
 #  Fetch a shell command policy
 #
 FetchPolicy cmd.policy;
+
+#
+#  Copy a file
+#
+FetchPolicy motd.policy;
+
 EOF
 
 
@@ -41,6 +47,26 @@ EOF
 cat > $hg/policies/cmd.policy <<EOF
   RunCommand( Cmd => "uptime" );
 EOF
+
+cat > $hg/policies/motd.policy <<EOF
+if ( FetchFile(
+            Source => "/etc/motd",
+              Dest => "/etc/motd",
+            Expand => "true",
+             Owner => "root",
+             Group => "root",
+              Mode => "644" ) )
+{
+print "Replaced file: /etc/motd\n";
+}
+EOF
+
+mkdir -p $hg/files/etc/
+
+cat > $hg/files/etc/motd <<EOF
+  This is the MOTD file for {\$fqdn}
+EOF
+
 
 #
 #  Initialize the repository and add the contents to it.
