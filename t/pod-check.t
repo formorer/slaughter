@@ -29,7 +29,6 @@ find( { wanted => \&checkFile, no_chdir => 1 }, $prefix );
 #  Now check other files too.
 #
 checkPOD( "$prefix/bin/slaughter" );
-checkPOD( "$prefix/bin/slaughter-2" );
 
 #
 #  Check a file.
