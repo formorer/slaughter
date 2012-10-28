@@ -69,15 +69,20 @@ sudo perl -I./lib ./bin/slaughter-2 --transport=http --prefix=http://127.0.0.1:2
 #
 #  Run two - try again with htaccess
 #
+#  Username: steve
+#  Password: kemp
+#
+#
 echo 'steve:QzhWLEpEM4Rx6' > $tmp/.htpasswd
 echo 'steve:QzhWLEpEM4Rx6' > $tmp/files/.htpasswd
 echo 'steve:QzhWLEpEM4Rx6' > $tmp/policies/.htpasswd
+
+
 cd $dir
 sudo perl -I./lib ./bin/slaughter-2 --transport=http --prefix=http://127.0.0.1:2222 --verbose --no-delete --username=steve --password=kemp
 
 
-
 #
-#  Kill the httpd
+#  Kill the thttpd instance.
 #
 kill -9 $(cat /tmp/thttpd.conf.pid)
