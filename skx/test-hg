@@ -49,15 +49,14 @@ cat > $hg/policies/cmd.policy <<EOF
 EOF
 
 cat > $hg/policies/motd.policy <<EOF
-if ( FetchFile(
-            Source => "/etc/motd",
-              Dest => "/etc/motd",
-            Expand => "true",
-             Owner => "root",
-             Group => "root",
-              Mode => "644" ) )
+if ( FetchFile( Source  => "/etc/motd",
+                  Dest  => "/etc/motd",
+                 Expand => "true",
+                   Owner=> "root",
+                  Group => "root",
+                   Mode => "644" ) )
 {
-print "Replaced file: /etc/motd\n";
+    print "Replaced file: /etc/motd\n";
 }
 EOF
 
@@ -76,7 +75,7 @@ pushd $hg && hg add files && popd
 pushd $hg && hg add policies && popd
 pushd $hg && hg commit "-m added" && popd
 
-pwd
+
 #
 #  Now clone from that repository
 #
