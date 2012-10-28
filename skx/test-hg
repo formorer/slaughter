@@ -21,7 +21,25 @@ mkdir -p $hg
 mkdir -p $hg/files/
 mkdir -p $hg/policies/
 cat > $hg/policies/default.policy <<EOF
-  RunCommand( Cmd => "/usr/bin/uptime" );
+
+#
+# Include a policy based on hostname
+#
+FetchPolicy \$fqdn.policy;
+
+#
+#  Fetch a shell command policy
+#
+FetchPolicy cmd.policy;
+EOF
+
+
+cat > $hg/policies/$(hostname).policy <<EOF
+ print "I am \$fqdn\n";
+EOF
+
+cat > $hg/policies/cmd.policy <<EOF
+  RunCommand( Cmd => "uptime" );
 EOF
 
 #
