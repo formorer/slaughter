@@ -35,7 +35,7 @@ Server-Driver
 Logging
 -------
 
-  * Logging has been excorcised from slaughter 2.x - instead output will go
+  * Logging has been exorcised from slaughter 2.x - instead output will go
     via mail, assuming we're launched via cron.  This needs to be updated.
 
 
