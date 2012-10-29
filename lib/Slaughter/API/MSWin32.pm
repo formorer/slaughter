@@ -521,6 +521,12 @@ sub FetchFile
                                SOURCE => $content );
 
         $content = $template->fill_in( HASH => %template );
+
+        if ( !$content )
+        {
+            print "Template expansion failed " . $Text::Template::ERROR . "\n";
+        }
+
     }
     else
     {
