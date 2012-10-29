@@ -682,7 +682,7 @@ sub writeoutPolicy
     #
     #  Two lines we output into the generated script.
     #
-    my $line = "my \%template = (";
+    my $line = "our \%template = (";
     my $keys = "";
 
     #

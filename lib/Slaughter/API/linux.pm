@@ -573,7 +573,7 @@ sub FetchFile
           Text::Template->new( TYPE   => 'string',
                                SOURCE => $content );
 
-        $content = $template->fill_in( HASH => %template );
+        $content = $template->fill_in( HASH => \%template );
     }
     else
     {
