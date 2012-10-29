@@ -22,7 +22,7 @@ require_ok('Text::Template');
 #
 #  Template variables we'll interpolate - came from my desktop.
 #
-my %template = ( arch         => 'amd64',
+our %template = ( arch         => 'amd64',
                  bits         => '64',
                  distribution => 'Debian',
                  domain       => 'precious',
