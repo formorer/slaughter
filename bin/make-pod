@@ -36,7 +36,7 @@ mkpath( $dir, { verbose => 0 } ) unless ( -d $dir );
 #
 #  Recursively find *.pm and process.
 #
-find( { wanted => \&checkFile, no_chdir => 1 }, '.' );
+find( { wanted => \&checkFile, no_chdir => 1 }, './lib/' );
 
 
 
