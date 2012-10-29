@@ -53,7 +53,8 @@ The LICENSE file contains the full text of the license.
 #
 use File::Basename qw! basename dirname !;
 use File::Find;
-
+use File::Temp qw/ tempfile /;
+use Text::Template;
 
 
 #

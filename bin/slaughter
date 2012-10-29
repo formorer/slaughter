@@ -270,7 +270,8 @@ my $policy = $object->fetchPolicies();
 #
 if ( !$policy )
 {
-    print "Failed to fetch policy - Re-run with \"--verbose\" for details\n";
+    print
+      "Failed to fetch policy - Re-run with \"--verbose\" for more details.\n";
     exit 0;
 }
 
@@ -296,14 +297,12 @@ else
     $CONFIG{ 'verbose' } &&
       print "Script starting : " . scalar localtime() . "\n";
 
-    my $cmd = $file;
-
     #
     #  Execute the compiled code explicitly via the Perl interpreter
     # this is redundant for operating systems that honour the shebang
     # line, but useful for Microsoft Windows.
     #
-    my $return = system( "perl " . $cmd );
+    my $return = system( "perl " . $file );
 
     #
     #  Show the result?
@@ -324,7 +323,7 @@ unlink($file) unless ( $CONFIG{ 'nodelete' } );
 #
 #  We're all done
 #
-exit;
+exit 0;
 
 
 
