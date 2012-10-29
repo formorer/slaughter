@@ -419,7 +419,7 @@ The following parameters are available:
 
 The destination file to write to, on the local system.
 
-=item Expand [default: falseca]
+=item Expand [default: false]
 
 This is used to enable template-expansion, documented later.
 
