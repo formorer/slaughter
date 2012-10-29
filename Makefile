@@ -71,7 +71,7 @@ release: tidy clean pod
 
 
 pod:
-	./bin/make-pod ./html
+	./skx/make-pod ./html
 
 test:
 	prove --shuffle t/
