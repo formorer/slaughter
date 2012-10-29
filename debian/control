@@ -8,7 +8,7 @@ Homepage: http://www.steve.org.uk/Software/slaughter/
 
 
 Package: slaughter2-client
-Provides: slaughter2
+Provides: slaughter, slaughter2
 Replaces: slaughter-client
 Architecture: all
 Depends: ${misc:Depends}, libdigest-sha-perl | ibdigest-sha1-perl, libwww-perl, libtext-template-perl, perl-modules
