@@ -1,7 +1,9 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl -w -Ilib/ -I../lib/
 #
-#  Simple test program to ensure that we can load modules
-# and hash files.
+#  Simple test program to ensure that we can load modules and hash files.
+#
+#  We compare the results with that obtained by Slaughter::Private, and
+# the unix "sha1sum" binary - if available.
 #
 # Steve
 # --
@@ -11,6 +13,15 @@ use warnings;
 
 use Test::More qw! no_plan !;
 use File::Temp qw/ tempfile /;
+
+
+
+#
+#  Make our private module available
+#
+BEGIN {use_ok('Slaughter::Private');}
+require_ok('Slaughter::Private');
+
 
 
 #
@@ -49,6 +60,7 @@ if ( -x "/usr/bin/sha1sum" )
         "SHA1Sum utility confirmed the temporary file has the hash we expect" );
 }
 
+
 #
 #  Attempt to test both digest modules in turn.
 #
@@ -81,6 +93,10 @@ foreach my $module (qw! Digest::SHA Digest::SHA1 !)
     is( $hash->hexdigest(),
         "b57e303d4466e3aac4ea20f3935fb6d77951e2c4",
         "Our sample data received the correct result" );
+
+    is( "b57e303d4466e3aac4ea20f3935fb6d77951e2c4",
+        checksumFile( $filename ),
+        "Slaughter::Private agrees with the $module result." );
 }
 
 #
