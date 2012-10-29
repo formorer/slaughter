@@ -1,7 +1,7 @@
 
 =head1 NAME
 
-Slaughter::Transport::http - Transport class.
+Slaughter::Transport::http - HTTP transport class.
 
 =head1 SYNOPSIS
 

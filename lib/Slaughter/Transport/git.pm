@@ -1,7 +1,7 @@
 
 =head1 NAME
 
-Slaughter::Transport::git - Transport class.
+Slaughter::Transport::git - Git transport class.
 
 =head1 SYNOPSIS
 

@@ -1,22 +1,23 @@
 
 =head1 NAME
 
-Slaughter::Transport::revisionControl - Transport class.
+Slaughter::Transport::revisionControl - Transport base-class.
 
 =head1 SYNOPSIS
 
-This is a base-class of a generic revision control based transport.
+This is a base-class for a generic revision control based transport.
 
 =cut
 
 =head1 DESCRIPTION
 
 This module implements the primitives which our transport API demands, but
-it does so in an abstract fashion - allowing a derived class to specify the
-actual commands used.
+it does so in an abstract fashion with the intention that sub-classes
+will provide the missing configuration to allow it to be used.
 
-Therefore this module may be used by any revision-control system that allows
-a checkout to be carried out by a command such as:
+This module may be used by any revision-control system, or other tool,
+that allows a fetch of a remote repository to be carried out by a simple
+command such as:
 
 =for example begin
 
@@ -25,22 +26,32 @@ a checkout to be carried out by a command such as:
 =for example end
 
 In our derived Mercurical class we set the command to "hg clone", similarly
-in the GIT class we use "git clone".
+in the GIT class we use "git clone".  Finally although it isn't a revision
+control system our rsync implementation works via a subclass precisely
+because it is possible to fetch a remote tree using a simple command,
+in that case it is:
 
-If required in the future this module may be updated to work with other
-revision control systems, which have different requirements.
+=for example begin
 
-B<NOTE>:  A full checkout of the remote repository is inititated.
+  rsync -qazr repository-location destination-path
+
+=for example end
+
+B<NOTE>:  A full checkout of the remote repository is always inititated by
+this module.
+
 It is possible that a future extension to this module will allow an existing
-repository to be uploaded in place.  If that is the case we'll need to use a
-fixed transport-location, rather than a new directory per-execution.
+repository to be uploaded in-place.
 
 =cut
 
 =head1 SUBCLASSING
 
-If you wish to write your own transport you must only subclass the constructor
-of this class.  The following parameters should be used:
+If you wish to write your own transport for a revision control tool,
+or similar command that will fetch a remote repository, you must 
+subclass this class, and populate the options in the <L/_init/> method.
+
+The following expected parameters should be filled:
 
 =over 8
 
@@ -235,7 +246,6 @@ sub fetchPolicies
     #
     #  OK we've cloned the policies/files to the local filesystem
     # now we need to return to the caller an expanded policy file.
-    #
     #
     #  The name of the policy we fetch by default.
     #

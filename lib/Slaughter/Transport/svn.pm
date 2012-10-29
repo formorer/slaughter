@@ -1,7 +1,7 @@
 
 =head1 NAME
 
-Slaughter::Transport::svn - Transport class.
+Slaughter::Transport::svn - Subversion transport class.
 
 =head1 SYNOPSIS
 

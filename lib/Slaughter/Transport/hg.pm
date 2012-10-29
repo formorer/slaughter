@@ -1,7 +1,7 @@
 
 =head1 NAME
 
-Slaughter::Transport::hg - Transport class.
+Slaughter::Transport::hg - Mercurial transport class.
 
 =head1 SYNOPSIS
 

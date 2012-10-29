@@ -1,7 +1,7 @@
 
 =head1 NAME
 
-Slaughter::Transport::rsync - Transport class.
+Slaughter::Transport::rsync - rsync transport class.
 
 =head1 SYNOPSIS
 
