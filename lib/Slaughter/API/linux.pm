@@ -83,7 +83,7 @@ The sender address of the email.
 
 =item Message [mandatory]
 
-The content of the mssage to send
+The content of the message to send
 
 =item Sendmail [default: "/usr/lib/sendmail -t"]
 
@@ -266,7 +266,7 @@ sub CommentLinesMatching
         close($handle);
 
         #
-        #  Now write out the possibly modified fils.
+        #  Now write out the modified file.
         #
         if ($found)
         {
@@ -873,8 +873,7 @@ sub InstallPackage
 
 =head2 Mounts
 
-Return a list of all the mounted filesystems upon the current
-system.
+Return a list of all the mounted filesystems upon the current system.
 
 =for example begin
 
