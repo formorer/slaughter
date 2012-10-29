@@ -27,12 +27,10 @@ install: build
 	dh_clean -k
 	dh_installdirs
 	make test
-	make install prefix=`pwd`/debian/tmp
+	make install prefix=`pwd`/debian/slaughter2-client
 
-	mkdir -p `pwd`/debian/tmp/usr/share/man/man8/
+	mkdir -p `pwd`/debian/slaughter2-client/usr/share/man/man8/
 	pod2man ./bin/slaughter --official --section=8 > slaughter.1
-
-	dh_movefiles -p slaughter2-client
 
 # Build architecture-independent files here.
 binary-indep: build install
