@@ -1,0 +1,6 @@
+
+new()
+  Constructor
+
+MetaInformation()
+  Populate the hash-reference with "interesting details" about the current system.
