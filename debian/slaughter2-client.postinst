@@ -48,6 +48,7 @@ if [ ! -z "$server" ]; then
     fi
 fi
 
-exit 0
+#DEBHELPER#
 
+exit 0
 
