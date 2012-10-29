@@ -8,7 +8,7 @@ Slaughter::API::generic - Perl Automation Tool Helper generic implementation
 
 =head1 SYNOPSIS
 
-This module implementes generic versions of the Slaughter primitives.
+This module implements generic versions of the Slaughter primitives.
 
 When the module "Slaughter;" is used what happens is that a more OS-specific
 module is loaded:
