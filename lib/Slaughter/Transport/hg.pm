@@ -5,7 +5,7 @@ Slaughter::Transport::hg - Transport class.
 
 =head1 SYNOPSIS
 
-This transport copes with cloning a remote mercurial repository to the local filesystem.
+This transport copes with cloning a remote Mercurial repository to the local filesystem.
 
 =cut
 
@@ -21,8 +21,7 @@ base class.
 
 =head1 IMPLEMENTATION
 
-The following commands are set in the constructor, and these are sufficient
-for our base-class to implement the full transport:
+The following values are set in the L</_init> method:
 
 =over 8
 
@@ -66,23 +65,15 @@ The LICENSE file contains the full text of the license.
 =cut
 
 
-package Slaughter::Transport::hg;
-use base 'Slaughter::Transport::revisionControl';
-
-use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
-
-
-require Exporter;
-require AutoLoader;
-
-@ISA    = qw(Exporter AutoLoader);
-@EXPORT = qw();
-
-($VERSION) = '0.1';
-
 
 use strict;
 use warnings;
+
+
+
+package Slaughter::Transport::hg;
+
+use parent 'Slaughter::Transport::revisionControl';
 
 
 
@@ -94,14 +85,20 @@ Create a new instance of this object.
 
 sub new
 {
+    my ( $class, %args ) = @_;
+    return $class->SUPER::new(%args);
+}
 
-    #
-    #  Unpleasant setup of the parent class
-    #
-    my $classname = shift;
-    my $self      = {};
-    bless $self, $classname;
-    $self = Slaughter::Transport::revisionControl->new(@_);
+
+=head2 _init
+
+Initialiaze this object, by setting up the Mercurical-specific commands, etc.
+
+=cut
+
+sub _init
+{
+    my ($self) = (@_);
 
     #
     # The name of our derived transport.
@@ -127,13 +124,8 @@ sub new
     #
     $self->{ 'cmd_update' } = "hg pull --update";
 
-
-    #
-    #  All done.
-    #
-    return $self;
-
 }
+
 
 
 1;

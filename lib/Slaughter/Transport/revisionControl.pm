@@ -86,28 +86,21 @@ The LICENSE file contains the full text of the license.
 =cut
 
 
-package Slaughter::Transport::revisionControl;
-
-use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
-
-
-require Exporter;
-require AutoLoader;
-
-@ISA    = qw(Exporter AutoLoader);
-@EXPORT = qw();
-
-($VERSION) = '0.1';
-
-
 use strict;
 use warnings;
+
+
+
+package Slaughter::Transport::revisionControl;
 
 
 
 =head2 new
 
 Create a new instance of this object.
+
+This constructor calls the "_init" method of any derived class, which is
+where we'll expect them to setup their revision-specific commands.
 
 =cut
 
@@ -132,7 +125,26 @@ sub new
     #
     $self->{ 'error' } = undef;
 
+    #
+    #  This will get replaced by sub-classes.
+    #
+    $self->{ 'name' } = "revisionControl";
+
     bless( $self, $class );
+
+    #
+    #  We expect a derived class will implement an "_init" method,
+    # which will populate the variables we expect.
+    #
+    #  We don't call this method unconditionally for the simple reason
+    # that we wish this class to be constructable by our test suite.
+    #
+    if ( UNIVERSAL::can( $self, '_init' ) )
+    {
+        $self->_init();
+        $self->{ 'setup' } = 1;
+    }
+
     return $self;
 
 }
@@ -143,7 +155,7 @@ sub new
 Is this module available?  This uses the details from the derived class
 to determine whether I<that> transport is available.
 
-We regard the transport as available if the execution of the command 
+We regard the transport as available if the execution of the command
 stored in L</cmd_version> succeeds.
 
 =cut

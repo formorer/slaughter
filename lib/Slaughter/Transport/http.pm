@@ -40,22 +40,12 @@ The LICENSE file contains the full text of the license.
 =cut
 
 
-package Slaughter::Transport::http;
-
-use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
-
-
-require Exporter;
-require AutoLoader;
-
-@ISA    = qw(Exporter AutoLoader);
-@EXPORT = qw();
-
-($VERSION) = '0.1';
-
-
 use strict;
 use warnings;
+
+
+
+package Slaughter::Transport::http;
 
 
 
@@ -330,3 +320,4 @@ sub fetchContents
 }
 
 
+1;
