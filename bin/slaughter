@@ -198,7 +198,6 @@ use English;
 use File::Temp qw/ tempfile tempdir /;
 use File::Path qw/ mkpath /;
 use Getopt::Long;
-use LWP::UserAgent;
 use Pod::Usage;
 
 
