@@ -7,7 +7,7 @@ sub name
 sub isAvailable
 sub error
   Is this transport available?  Return "0" or "1".  If 0 error() may be
- used ot see why not.
+ used to return an explanation.
 
 sub fetchPolicies
   Fetch all policies, recursing as necessary.
