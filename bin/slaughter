@@ -142,7 +142,7 @@ Most of the configuration of this tool may be carried out via the
 command line, however some options may be more naturally supplied
 in the system-wide configuration file.
 
-For Unix platforms the globalc configuration file is located at
+For Unix platforms the global configuration file is located at
 B</etc/slaughter/slaughter.conf>, and it may be found at B<C:/slaughter.conf>
 for Microsoft Windows systems.
 
@@ -300,8 +300,8 @@ else
     my $cmd = $file;
 
     #
-    #  Execute the compiled code explicitly via the Perl intepreter
-    # this is redundent for operating systems that honour the shebang
+    #  Execute the compiled code explicitly via the Perl interpreter
+    # this is redundant for operating systems that honour the shebang
     # line, but useful for Microsoft Windows.
     #
     my $return = system( "perl " . $cmd );
