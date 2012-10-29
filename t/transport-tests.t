@@ -26,7 +26,7 @@ my $dir = undef;
 $dir = "./lib/Slaughter/Transport"  if ( -d "./lib/Slaughter/Transport" );
 $dir = "../lib/Slaughter/Transport" if ( -d "../lib/Slaughter/Transport" );
 
-ok( -d $dir, "We found the transport directory" );
+ok( -d $dir, "We found the transport directory." );
 
 
 #
@@ -36,30 +36,48 @@ foreach my $name ( sort( glob( $dir . "/*.pm" ) ) )
 {
     if ( $name =~ /(.*)\/(.*)\.pm/ )
     {
-        my $module = $2;
+        #
+        #  Name of the module implementation file.
+        #
+        my $name = $2;
 
         #
         # Load the module
         #
-        use_ok("Slaughter::Transport::$module");
-        require_ok("Slaughter::Transport::$module");
+        use_ok("Slaughter::Transport::$name");
+        require_ok("Slaughter::Transport::$name");
 
         #
         # Create a new instance of the module.
         #
-        $module = "Slaughter::Transport::$module";
+        my $module = "Slaughter::Transport::$name";
         my $handle = $module->new();
+
+        #
+        #  Is the module the type we wish to be?
+        #
+        ok( $handle, "Calling the constructor succeeded." );
+        isa_ok( $handle, $module );
 
         #
         # Test that our required methods are present
         #
         foreach my $method (
-                   qw! error isAvailable fetchContents fetchPolicies name new !)
+                   qw! error fetchContents fetchPolicies isAvailable name new !)
         {
             ok( UNIVERSAL::can( $handle, $method ),
-                "required method available in $module - $method" );
+                "required method available - $method" );
         }
 
+        #
+        # Call the "name" method, which is always safe, and ensure it returns
+        # something sane.
+        #
+        my $reported = $handle->name();
+        ok( $reported, "We received output from name()." );
+        is( $reported, $name, "The name matches what we expect." );
+
+        #
         #
         # Sanity check by ensuring that a made-up method name is
         # invalid.
@@ -67,6 +85,6 @@ foreach my $name ( sort( glob( $dir . "/*.pm" ) ) )
         # This ensures we're not misusing UNIVERSAL:can
         #
         ok( !UNIVERSAL::can( $handle, "not_present" ),
-            "Random methods aren't present" );
+            "Random methods aren't present." );
     }
 }
