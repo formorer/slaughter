@@ -95,7 +95,7 @@ The subject to send.
 
 =item To [mandatory]
 
-The receipient of the message.
+The recipient of the message.
 
 =back
 
@@ -382,8 +382,7 @@ Note unlike L</DeleteFilesMatching> this function is not recursive.
 
 The following parameters are available:
 
-=over
-
+=over 8
 
 =item Age [mandatory]
 
@@ -393,9 +392,9 @@ The age of files which should be deleted.
 
 The root directory from which the search begins.
 
-The return value of this function is the number of files deleted.
-
 =back
+
+The return value of this function is the number of files deleted.
 
 =cut
 
@@ -472,7 +471,7 @@ The following parameters are available:
 
 The destination file to write to, on the local system.
 
-=item Expand [default: falseca]
+=item Expand [default: false]
 
 This is used to enable template-expansion, documented later.
 
@@ -482,7 +481,7 @@ The unix group which should own the file.
 
 =item Mode
 
-The Unix mode to set for the file.  If this doesn't start with "0" it will
+The Unix mode to set for the file.  B<NOTE> If this doesn't start with "0" it will
 be passed through the perl "oct" function.
 
 =item Owner
@@ -1268,11 +1267,11 @@ The username to set as the files owner.
 
 =item Mode
 
-The permissions mas to set for the file.  Note if this doesn't start with a leading
+The permissions bits to set for the file.  B<NOTE> if this doesn't start with a leading
 "0" then it will be passed through the "oct" function - this allows you to use the
 obvious construct :
 
-for example begin
+=for example begin
 
   Mode => "755"
 
