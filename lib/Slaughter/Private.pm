@@ -54,7 +54,7 @@ namespace.
 
 =for example begin
 
-  FetchFromTransport( "/etc/motd" );
+  fetchFromTransport( "/etc/motd" );
 
 =for example end
 
