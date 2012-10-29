@@ -23,14 +23,16 @@ Usage is:
 
 =for example begin
 
-    use Slaughter::Info::generic;
+     use Slaughter::Info::generic;
 
-    my %info;
-    MetaInformation( \%info );
+     my %data;
 
-    # use info now ..
+     my $obj = Slaughter::Info::generic->new();
+     $obj-> MetaInformation( \%data );
 
 =for example end
+
+The data retrieved by this generic module is almost nothing.
 
 =cut
 
@@ -55,6 +57,31 @@ The LICENSE file contains the full text of the license.
 =cut
 
 
+use strict;
+use warnings;
+
+
+package Slaughter::Info::generic;
+
+
+
+
+=head2 new
+
+Create a new instance of this object.
+
+=cut
+
+sub new
+{
+    my ( $proto, %supplied ) = (@_);
+    my $class = ref($proto) || $proto;
+
+    my $self = {};
+    bless( $self, $class );
+    return $self;
+
+}
 
 
 =head2 MetaInformation
@@ -62,13 +89,6 @@ The LICENSE file contains the full text of the license.
 This function retrieves meta-information about the current host,
 it is the fall-back module which is used if a system-specific
 information module cannot be loaded.
-
-=for example begin
-
-  my %data;
-  MetaInformation( \%data );
-
-=for example end
 
 Currently the following OS-specific modules exist:
 
@@ -82,15 +102,13 @@ Currently the following OS-specific modules exist:
 
 =cut
 
+sub MetaInformation
 {
-    no warnings 'redefine';
+    my ( $self, $ref ) = (@_);
 
-    sub MetaInformation
-    {
-        my ($ref) = (@_);
-
-        $ref->{ 'unknown' } = "all";
-    }
-
+    $ref->{ 'unknown' } = "all";
 }
+
+
+
 1;

@@ -20,16 +20,17 @@ as the operating system version, the processor type, etc.
 
 Usage is:
 
-
 =for example begin
 
     use Slaughter::Info::MSWin32;
 
-    my %info;
-    MetaInformation( \%info );
+    my %data;
+
+    my $obj = Slaughter::Info::MSWin32->new();
+    $obj-> MetaInformation( \%data );
 
     # use info now ..
-    print $info{'arch'} . " architecture\n";
+    print $data{'arch'} . "-bit architecture\n";
 
 =for example end
 
@@ -56,6 +57,32 @@ The LICENSE file contains the full text of the license.
 =cut
 
 
+use strict;
+use warnings;
+
+
+package Slaughter::Info::MSWin32;
+
+
+
+
+=head2 new
+
+Create a new instance of this object.
+
+=cut
+
+sub new
+{
+    my ( $proto, %supplied ) = (@_);
+    my $class = ref($proto) || $proto;
+
+    my $self = {};
+    bless( $self, $class );
+    return $self;
+
+}
+
 
 
 =head2 MetaInformation
@@ -63,34 +90,26 @@ The LICENSE file contains the full text of the license.
 This function retrieves meta-information about the current host,
 and is invoked on Microsoft Windows systems.
 
-=for example begin
-
-  my %data;
-  MetaInformation( \%data );
-
-=for example end
-
-NOTE:  This has only been tested under Strawberry perl.
+B<NOTE> This module has only been tested under Strawberry perl.
 
 =cut
 
+sub MetaInformation
 {
-    no warnings 'redefine';
+    my ( $self, $ref ) = (@_);
 
-    sub MetaInformation
+    #
+    #  Kernel version.
+    #
+    $ref->{ 'kernel' } = $ENV{ 'OS' };
+    chomp( $ref->{ 'kernel' } ) if ( $ref->{ 'kernel' } );
+
+    #
+    #  Are we i386/amd64?
+    #
+    my $type = $ENV{ 'PROCESSOR_ARCHITECTURE' };
+    if ($type)
     {
-        my ($ref) = (@_);
-
-        #
-        #  Kernel version.
-        #
-        $ref->{ 'kernel' } = $ENV{ 'OS' };
-        chomp( $ref->{ 'kernel' } );
-
-        #
-        #  Are we i386/amd64?
-        #
-        my $type = $ENV{ 'PROCESSOR_ARCHITECTURE' };
         if ( $type =~ /x86/i )
         {
             $ref->{ 'arch' } = "i386";
@@ -101,64 +120,70 @@ NOTE:  This has only been tested under Strawberry perl.
             $ref->{ 'arch' } = "amd64";
             $ref->{ 'bits' } = 64;
         }
+    }
+    else
+    {
+        $ref->{ 'arch' } = "unknown";
+        $ref->{ 'bits' } = 0;
+    }
 
 
-        #
-        #  IP address(es).
-        #
-        my $ip = undef;
 
-        $ip = "ipconfig";
+    #
+    #  IP address(es).
+    #
+    my $ip = undef;
 
-        if ( defined($ip) )
+    $ip = "ipconfig";
+
+    if ( defined($ip) )
+    {
+        my $count = 1;
+
+        foreach my $line ( split( /[\r\n]/, `$ip` ) )
         {
-            my $count = 1;
+            next if ( !defined($line) || !length($line) );
+            chomp($line);
 
-            foreach my $line ( split( /[\r\n]/, `$ip` ) )
+            #
+            #  This matches something like:
+            #
+            #  IP Address. . . . . . . . . . . . : 10.6.11.138
+            #
+            #
+            if ( $line =~ /IP Address.* : (.*)/ )
             {
-                next if ( !defined($line) || !length($line) );
-                chomp($line);
+                my $ip = $1;
 
                 #
-                #  This matches something like:
+                # Save away the IP address in "ip0", "ip1", "ip2" .. etc.
                 #
-                #  IP Address. . . . . . . . . . . . : 10.6.11.138
-                #
-                #
-                if ( $line =~ /IP Address.* : (.*)/ )
-                {
-                    my $ip = $1;
-
-                    #
-                    # Save away the IP address in "ip0", "ip1", "ip2" .. etc.
-                    #
-                    $ref->{ "ip" . $count } = $ip;
-                    $count += 1;
-                }
-            }
-
-            if ( $count > 0 )
-            {
-                $ref->{ 'ipcount' } = ( $count - 1 );
+                $ref->{ "ip" . $count } = $ip;
+                $count += 1;
             }
         }
 
-
-        #
-        #  Find the name of our release
-        #
-        my @win_info = Win32::GetOSVersion();
-        my $version  = $win_info[0];
-        my $distrib  = Win32::GetOSName();
-
-        # work around for historical reasons
-        $distrib = 'WinXP' if $distrib =~ /^WinXP/;
-        $ref->{ 'version' }      = $version;
-        $ref->{ 'distribution' } = $distrib;
-
+        if ( $count > 0 )
+        {
+            $ref->{ 'ipcount' } = ( $count - 1 );
+        }
     }
 
+
+    #
+    #  Find the name of our release
+    #
+    my @win_info = Win32::GetOSVersion();
+    my $version  = $win_info[0];
+    my $distrib  = Win32::GetOSName();
+
+    # work around for historical reasons
+    $distrib = 'WinXP' if $distrib =~ /^WinXP/;
+    $ref->{ 'version' }      = $version;
+    $ref->{ 'distribution' } = $distrib;
+
 }
+
 
 
 1;

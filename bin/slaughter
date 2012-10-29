@@ -334,8 +334,8 @@ exit;
 
 Configure the default options, and return these as a hash.
 
-Information comes from one of the modules in the Slaughter::Info namespace,
-here we just setup the defaults.
+These default options are augmented by one of the modules in the
+Slaughter::Info namespace.
 
 =end doc
 
@@ -359,34 +359,38 @@ sub defaultOptions
     #
     #  Attempt to load a module which will add to the meta-information.
     #
-    #  Mostly this will be architecture-specific information and things
-    # like the IP addresses.
+    #  We fall back to the ::generic version of the module if the
+    # platform-specific module fails to load.
     #
-    my $generic  = "use Slaughter::Info::generic";
-    my $specific = "use Slaughter::Info::$^O";
+    my @modules;
+    push( @modules, "Slaughter::Info::$^O" );
+    push( @modules, "Slaughter::Info::generic" );
 
-    ## no critic (Eval)
-    eval($specific);
-    ## use critic
-
-    # If there were errors then we'll use the generic handler
-    if ($@)
+    foreach my $name (@modules)
     {
-        print $@;
         ## no critic (Eval)
-        eval($generic);
+        eval("use $name");
         ## use critic
+
+        next if ($@);
+
+        #
+        #  Update the information we already have with that from
+        # the module.
+        #
+        my $obj = $name->new();
+        $obj->MetaInformation( \%defs );
+
+        #
+        #  Return the (hopefully updated) meta-information
+        #
+        return (%defs);
     }
 
-    #
-    #  Now we're going to populate the information via our module...
-    #
-    MetaInformation( \%defs );
 
-    #
-    #  Return the (hopefully updated) meta-information
-    #
-    return (%defs);
+    print
+      "Failed to load a suitable module from the Slaughter::Info:: namespace\n";
+    exit(1);
 }
 
 

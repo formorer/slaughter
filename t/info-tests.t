@@ -27,7 +27,6 @@ my $dir = undef;
 
 $dir = "./lib/Slaughter/Info"  if ( -d "./lib/Slaughter/Info" );
 $dir = "../lib/Slaughter/Info" if ( -d "../lib/Slaughter/Info" );
-
 ok( -d $dir, "We found the Info directory" );
 
 
@@ -36,19 +35,39 @@ ok( -d $dir, "We found the Info directory" );
 #
 foreach my $name ( sort( glob( $dir . "/*.pm" ) ) )
 {
+    #
+    #  Avoid warnings about unknown commands.
+    #
     next if ( $name =~ /MSWin32/ );
 
     if ( $name =~ /(.*)\/(.*)\.pm/ )
     {
-        my $module = $2;
-
-
+        #
+        #  Name of the module implementation file.
+        #
+        my $name = $2;
 
         #
         # Load the module
         #
-        use_ok("Slaughter::Info::$module");
-        require_ok("Slaughter::Info::$module");
+        use_ok("Slaughter::Info::$name");
+        require_ok("Slaughter::Info::$name");
+
+        #
+        # Create a new instance of the module.
+        #
+        my $module = "Slaughter::Info::$name";
+        my $handle = $module->new();
+
+        #
+        #  Is the module the type we wish to be?
+        #
+        ok( $handle, "Calling the constructor succeeded." );
+        isa_ok( $handle, $module );
+
+
+        ok( UNIVERSAL::can( $handle, "MetaInformation" ),
+            "required method available - MetaInformation" );
 
         #
         # Setup an empty hash.
@@ -60,7 +79,7 @@ foreach my $name ( sort( glob( $dir . "/*.pm" ) ) )
         #
         # Call the function
         #
-        MetaInformation( \%info );
+        $handle->MetaInformation( \%info );
 
         #
         # We should now find the hash has an entry or two.
