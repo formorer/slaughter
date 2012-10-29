@@ -29,7 +29,7 @@ fi
 #
 #  Test that we're not already updated
 #
-if ( grep ^transport /tmp/slaughter.conf >/dev/null 2>/dev/null ); then
+if ( grep ^transport $file >/dev/null 2>/dev/null ); then
     echo "The configuration file appears to be updated: $file"
     exit 0
 fi
