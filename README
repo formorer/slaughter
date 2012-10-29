@@ -46,7 +46,7 @@ the appropriate mechanism, and download policies.  These policies describe
 the actions that must be carried out upon the local system.
 
 Policies (and also files) are pulled by the client, meaning there is no
-central server which is in charge of initiating transactins, or connections.
+central server which is in charge of initiating transactions, or connections.
 
 The attraction of client-pull is that there is no need to maintain state
 on the central server, and each client can be trusted to schedule itself
