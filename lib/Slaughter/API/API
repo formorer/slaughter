@@ -1,0 +1,53 @@
+Alert
+  Send a message.
+
+AppendIfMissing
+  Append a line to a file if not already present.
+
+CommentLinesMatching
+  Comment out lines matching a particular pattern.
+
+DeleteFilesMatching
+  Delete files which have names matching a given regexp.
+
+DeleteOldFiles
+  Delete files older than the given number of days.
+
+FetchFile
+  Fetch a file, via the currently-active transport.
+
+FileMatches
+  Test to see if a file contains content that matches a given line/regexp.
+
+FindBinary
+  Find a binary on a $PATH-like string.
+
+InstallPackage
+  Install a package.
+
+Mounts
+  Find active mount-pounts.
+
+PackageInstalled
+  Test to see if a package is installed.
+
+PercentageUsed
+  Determine how full a given filesystem is.
+
+ReplaceRexexp
+  Replace lines in a file matchign a given regexp.
+
+RemovePackage
+  Remove a package.
+
+RunCommand
+  Run an arbitrary command, via system().
+
+SetPermissions
+  Set file owner, group owner, and permissions bits on a file/directory.
+
+UserExists
+  Does a user exist.
+
+UserDetails
+  Get the user details.
