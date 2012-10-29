@@ -20,7 +20,7 @@ clean:
 	-find . -name '*.tdy' -delete
 	-find . -name '*.log' -delete
 	-rm -f ./debian/files ./debian/*.substvars
-	-if [ -d ./debian/slaughter-client ] ; then rm -rf ./debian/slaughter-client; fi
+	-if [ -d ./debian/slaughter2-client ] ; then rm -rf ./debian/slaughter2-client; fi
 	-if [ -d ./html ] ; then rm -rf ./html; fi
 	-rm ./slaughter.1 || true
 
