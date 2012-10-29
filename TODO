@@ -35,12 +35,8 @@ Server-Driver
 Logging
 -------
 
-  * Logging is simple as the log output from each run is sent to a different
-    file, that makes it simple to handle emailing as it reduces the problem
-    to mailing the contents of a new file.  However logfiles like this are nasty.
-
-  * Log to a single file, appending, on each run.  Either drop the mailing of
-    logfiles or remember where we started to append from?
+  * Logging has been excorcised from slaughter 2.x - instead output will go
+    via mail, assuming we're launched via cron.  This needs to be updated.
 
 
 Steve
