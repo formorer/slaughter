@@ -621,6 +621,18 @@ EOF
     }
 
     #
+    # Abort if we don't have both transport & prefix set now.
+    #
+    if ( !$CONFIG{ 'transport' } || !$CONFIG{ 'prefix' } )
+    {
+        print
+          "Unless you specify both --transport and --prefix slaughter will be unable to fetch policies\n";
+        print
+          "(You can use the configuration file /etc/slaughter/slaughter.conf if you prefer.)\n";
+        exit 0;
+    }
+
+    #
     #  Attempt to load the transport module the user has specified
     #
     my $transport = "use Slaughter::Transport::$CONFIG{'transport'}";
