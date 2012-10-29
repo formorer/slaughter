@@ -48,13 +48,20 @@ The LICENSE file contains the full text of the license.
 =cut
 
 
+
+#
+#  Standard libraries we use.
+#
+use File::Basename qw! basename dirname !;
+use File::Find;
+
+
 #
 #  The modules we use, and the internal functions are defined
 # in this module.
 #
 use Slaughter::Private;
 
-use File::Copy;
 
 
 

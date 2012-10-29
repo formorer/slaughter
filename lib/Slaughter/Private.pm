@@ -35,12 +35,6 @@ The LICENSE file contains the full text of the license.
 =cut
 
 
-use File::Basename qw/ dirname basename /;
-use File::Find;
-use File::Path qw/ mkpath /;
-use File::Temp qw/ tempfile /;
-use LWP::UserAgent;
-use Text::Template;
 
 
 
