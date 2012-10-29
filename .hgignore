@@ -1,8 +1,11 @@
 syntax: glob
+
 debian/files
 debian/slaughter2-client/
 debian/*.log
 debian/*.debhelper
 debian/*.substvars
+
 .version
 slaughter.1
+*.bak
