@@ -1,0 +1,53 @@
+#!/bin/sh
+#
+#  If we have /etc/slaughter/slaughter-conf and this mentions both "prefix=" and "server"
+# we'll update this to refer to the HTML transport.  This should allow a seamless upgrade.
+#
+
+
+set -e
+file=/etc/slaughter/slaughter.conf
+
+#
+# Skip, if we are not in "configure" state
+#
+if [ "$1" != "configure" ]; then
+    echo "I: Skipping configuration"
+    exit 0
+fi
+
+
+#
+#  If we don't have a configuration file then we're done
+#
+if [ ! -e $file ]; then
+    echo "Configuration file not present - not upgrading: $file"
+    exit 0
+fi
+
+
+#
+#  Test that we're not already updated
+#
+if ( grep ^transport /tmp/slaughter.conf >/dev/null 2>/dev/null ); then
+    echo "The configuration file appears to be updated: $file"
+    exit 0
+fi
+
+#
+#  Look for the server & prefix - old-style
+#
+server=$(grep ^server $file | awk -F= '{print $2}' )
+prefix=$(grep ^prefix $file | awk -F= '{print $2}')
+
+if [ ! -z "$server" ]; then
+    if [ ! -z "$prefix" ]; then
+        echo "Updating the configuration file: $file"
+        echo "transport = http" >> $file
+        echo "prefix    = http://${server}/${prefix}" >> $file
+    fi
+fi
+
+exit 0
+
+
