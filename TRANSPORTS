@@ -9,7 +9,7 @@ The remote server might be :
 To specify which of these is being used the slaughter client needs to be
 configured with two things:
 
-    * THe method by which to fetch the files (HTTP-get, rsync clone, svn checkout).
+    * The method by which to fetch the files (HTTP-get, rsync clone, svn checkout).
     * The location of the files.
 
 The former is the "transport", the latter is the "server-prefix".
@@ -34,7 +34,7 @@ Then the client will be invoked like this:
 
     slaughter --transport=http --prefix=http://example.com/slaughter/
 
-Here the prefix is the URL which contains the subdirectories "files" and "policies".
+Here the prefix is the URL which contains the sub-directories "files" and "policies".
 You can test the transfer by running a command such as this:
 
     curl http://example.com/slaughter/policies/default.policy
@@ -45,7 +45,7 @@ You can test the transfer by running a command such as this:
 rsync transport
 ---------------
 
-rsync is an efficient protocol for transfering files, coping well with incremental
+rsync is an efficient protocol for transferring files, coping well with incremental
 fetches.
 
 Assuming the files are stored on the disk like this:
@@ -111,7 +111,7 @@ The client will be invoked:
 
     slaughter --transport=git --prefix=http://example.com/path/to/repo.git
 
-The client will invoke something similiar to this, which may be used to
+The client will invoke something similar to this, which may be used to
 test the path is correct:
 
      git clone http://example.com/path/to/repo.hg /tmp/foo
