@@ -82,7 +82,7 @@ sub new
 
 =head2 name
 
-return the name of this module.
+Return the name of this module.
 
 =cut
 
@@ -97,7 +97,7 @@ sub name
 
 Return whether this transport is available.
 
-As we're pure-perl it should be always available, so we unconditionally return 1.
+This module is pure-perl, so we unconditionally return 1.
 
 =cut
 
@@ -129,6 +129,9 @@ sub error
 =head2 fetchPolicies
 
 Fetch the policies which are required from local filesystem.
+
+This method returns "undef" on failure, otherwise the content of the
+policy, expanded as necessary.
 
 =cut
 
@@ -226,7 +229,7 @@ sub fetchPolicies
 
 =head2 fetchContents
 
-Fetch the contents of a remote URL, using HTTP basic-auth if we should
+Fetch the contents of the specified file, relative to the specified prefix.
 
 =cut
 
