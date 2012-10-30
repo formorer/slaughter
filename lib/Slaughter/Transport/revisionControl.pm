@@ -175,6 +175,17 @@ sub isAvailable
 {
     my ($self) = (@_);
 
+    #
+    #  If the _init method didn't get called we've not been subclassed,
+    # and that means we don't have the commands we should run setup.
+    #
+    if ( !$self->{ 'setup' } )
+    {
+        $self->{ 'error' } =
+          "This is a base-class, and should not be used directly\n";
+        return 0;
+    }
+
     if ( !-d $self->{ 'transportdir' } )
     {
         $self->{ 'error' } =
