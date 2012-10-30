@@ -66,7 +66,6 @@ use Slaughter::Private;
 
 
 
-
 =head2 Alert
 
 This method is a stub which does nothing but output a line of text to

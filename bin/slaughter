@@ -554,7 +554,7 @@ sub parseCommandLine
 
 Create a temporary directory for holding files, some transports need this.
 
-Note this directory will be removed when this process terminates unless
+B<NOTE>:  This directory will be removed when this process terminates unless
 slaughter was invoked with --no-delete.
 
 =end doc
