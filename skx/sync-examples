@@ -1,0 +1,2 @@
+#!/bin/sh
+rsync -vazr examples/* s-steve@steve.org.uk:htdocs/Software/slaughter/examples/

@@ -79,3 +79,5 @@ test:
 skx-test:
 	[ -d skx/ ] && for i in skx/test-*; do $$i ; done
 
+skx-sync-examples:
+	[ -d skx/ ] && ./skx/sync-examples
