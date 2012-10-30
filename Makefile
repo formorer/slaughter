@@ -70,14 +70,28 @@ release: tidy clean pod
 	echo $(VERSION) > .version
 
 
+test:
+	prove --shuffle t/
+
+
+
+
+#
+#  Anything below here is only useful if you're working with the remote
+# mercurial repository - because the ./skx/ directory is not bundled with
+# the tarball releases.
+#
+
+
 pod:
 	./skx/make-pod ./html
 
-test:
-	prove --shuffle t/
 
 skx-test:
 	[ -d skx/ ] && for i in skx/test-*; do $$i ; done
 
+
 skx-sync-examples:
 	[ -d skx/ ] && ./skx/sync-examples
+
+
