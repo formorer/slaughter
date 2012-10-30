@@ -234,7 +234,7 @@ sub fetchContents
 {
     my ( $self, $file ) = (@_);
 
-    my $complete = $self->{ 'transportdir' } . "/files/" . $file;
+    my $complete = $self->{ 'prefix' } . "/files/" . $file;
 
     return ( $self->readFile($complete) );
 }
