@@ -6,13 +6,37 @@ The remote server might be :
     * HTTP/HTTPS server.
     * Remote git/mercurial/subversion repository.
 
-To specify which of these is being used the slaughter client needs to be
+Additionally there is a NOP-transport which fetches files from the local
+filesystem, and requires no central server.  This is the "local" transport.
+
+To specify which of these transports is used the slaughter client needs to be
 configured with two things:
 
-    * The method by which to fetch the files (HTTP-get, rsync clone, svn checkout).
+    * The method by which to fetch the files (HTTP-get, rsync clone, etc).
     * The location of the files.
 
 The former is the "transport", the latter is the "server-prefix".
+
+
+
+local transport
+---------------
+
+The local-transport allows you to test against policies upon the local disk,
+without any remote fetching at all.  This is sufficient for testing purposes
+and to allow you to get your feet wet.
+
+Assuming you have the layout:
+
+   /root/tmp/
+   /root/slaughter/
+   /root/slaughter/files/
+   /root/slaughter/policies/
+   /root/slaughter/policies/default.policy
+
+You may execute the policy by running:
+
+    # slaughter --transport=local --prefix=/root/slaughter/
 
 
 
@@ -20,8 +44,8 @@ The former is the "transport", the latter is the "server-prefix".
 http transport
 --------------
 
-The HTTP-transport is the simplest.  All files are served via HTTP, on a remote
-server.
+The HTTP-transport is the simplest of those transports that fetches files
+from a remote location.  All files are retrieved over basic HTTP.
 
 Given this directory tree:
 
@@ -66,7 +90,7 @@ especially how it uses an ACL to prevent fetches from unknown machines:
         hosts allow = 1.2.3.0/24 *.example.com
 
 
-The client will be invoked:
+The client will be invoked as follows:
 
     slaughter --transport=rsync --prefix=rsync://example.com/slaughter/
 
@@ -86,7 +110,7 @@ Create a repository which contains the top-level directories "files/" and
 "policies/".  Host this repository somewhere that mercurial can pull it from,
 ideally via http/https.
 
-The client will be invoked:
+The client will be invoked like so:
 
     slaughter --transport=hg --prefix=http://example.com/path/to/repo.hg
 

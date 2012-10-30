@@ -60,6 +60,8 @@ several mechanisms:
 
 =item http
 
+=item local
+
 =item mercurial
 
 =item rsync
