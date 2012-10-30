@@ -644,6 +644,10 @@ EOF
         $CONFIG{ 'transport' } = "rsync"
           if ( $CONFIG{ 'prefix' } =~ /^rsync/i );
 
+        # Local policies will start with /
+        $CONFIG{ 'transport' } = "local"
+          if ( $CONFIG{ 'prefix' } =~ /^\// );
+
         # fall-back to HTTP.
         $CONFIG{ 'transport' } = "http" if ( !$CONFIG{ 'transport' } );
 
