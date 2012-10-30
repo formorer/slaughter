@@ -82,7 +82,7 @@ sub new
 
 =head2 name
 
-Return the name of this module.
+Return the name of this transport.
 
 =cut
 
