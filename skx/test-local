@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+# Test slaughter by running our sample code
+#
+
+#
+#  Now clone from that repository
+#
+sudo perl -I./lib ./bin/slaughter --transport=local --prefix=/home/skx/hg/slaughter/examples/file-copy/ --verbose --no-delete
