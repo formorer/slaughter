@@ -248,23 +248,7 @@ testEnvironment();
 #
 #  Attempt to load the transport the user has specified.
 #
-my $module = "Slaughter::Transport::$CONFIG{'transport'}";
-my $object = $module->new(%CONFIG);
-
-
-#
-# Test that the dependencies for the transport module are present.
-#
-if ( !$object->isAvailable() )
-{
-    print
-      "The transport module you've chosen - $module - doesn't seem to be available:\n";
-
-    print $object->error() . "\n";
-
-    exit(0);
-}
-
+my $object = loadTransport();
 
 #
 #  Now fetch the policies, expanding and recursing, where appropriate.
@@ -679,10 +663,29 @@ EOF
         exit 0;
     }
 
-    #
-    #  Attempt to load the transport module the user has specified
-    #
-    my $transport = "use Slaughter::Transport::$CONFIG{'transport'}";
+}
+
+
+
+=begin doc
+
+Load and return the transport the user wants, taking care to cover the
+case when either:
+
+=over 8
+
+=item  The transport named doesn't exist.
+
+=item  The transport named isn't available.
+
+=back
+
+=cut
+
+sub loadTransport
+{
+    my $module    = "Slaughter::Transport::$CONFIG{'transport'}";
+    my $transport = "use $module;";
 
     ## no critic (Eval)
     eval($transport);
@@ -690,12 +693,29 @@ EOF
 
     if ($@)
     {
-        print "The transport method you've chosen doesn't seem to exist.\n";
-        print $@;
-
+        print "The transport module you've chosen doesn't seem to exist.\n";
+        print "To see possible transports please run: slaughter --transports\n";
         exit(0);
     }
+
+    #
+    #  Create the helper, and test that the dependencies for the transport module are present.
+    #
+    my $object = $module->new(%CONFIG);
+    if ( !$object || !$object->isAvailable() )
+    {
+        print
+          "The transport module you've chosen doesn't seem to be available.\n\n";
+
+        print "$module:\n\t" . $object->error() . "\n\n" if ($object);
+
+        print "To see possible transports please run: slaughter --transports\n";
+        exit(0);
+    }
+
+    return ($object);
 }
+
 
 
 
