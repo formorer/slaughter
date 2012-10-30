@@ -13,6 +13,7 @@ slaughter - Perl Automation Tool
    --dump          Dump details of the local environment, and immediately exit.
    --no-delete     Don't delete the compiled perl post-execution.
    --no-execute    Don't actually execute the downloaded policy.
+   --transports    Dump the names of all available transports.
 
   File/Policy Fetching:
 
@@ -199,8 +200,10 @@ use strict;
 use warnings;
 
 use English;
-use File::Temp qw/ tempfile tempdir /;
+use File::Basename qw! basename !;
 use File::Path qw/ mkpath /;
+use File::Spec;
+use File::Temp qw/ tempfile tempdir /;
 use Getopt::Long;
 use Pod::Usage;
 
@@ -519,6 +522,7 @@ sub parseCommandLine
 
             # Flags
             "dump",       \$CONFIG{ 'dump' },
+            "transports", \$CONFIG{ 'transports' },
             "no-delete",  \$CONFIG{ 'nodelete' },
             "no-execute", \$CONFIG{ 'noexecute' },
             "verbose",    \$CONFIG{ 'verbose' },
@@ -550,6 +554,43 @@ sub parseCommandLine
         exit;
     }
 
+    #
+    #  Dump transport modules
+    #
+    if ( $CONFIG{ 'transports' } )
+    {
+
+        #
+        #  Look beneath each directory on the perl include path.
+        #
+        foreach my $dir (@INC)
+        {
+
+            #
+            #  Portable filename construction
+            #
+            my $guess = File::Spec->catfile( $dir, "Slaughter", "Transport" );
+
+            #
+            #  Found the module directory?
+            #
+            if ( -d $guess )
+            {
+                foreach my $pm ( sort( glob( $guess . "/*.pm" ) ) )
+                {
+
+                    # skip this base-calss
+                    next if ( $pm =~ /revisionControl\.pm/ );
+
+                    my $name = basename($pm);
+                    $name =~ s/\.pm$//gi;
+
+                    print $name . "\n";
+                }
+            }
+        }
+        exit;
+    }
 }
 
 
