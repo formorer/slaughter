@@ -8,7 +8,8 @@ Slaughter::API::linux - Perl Automation Tool Helper Linux implementation
 
 =head1 SYNOPSIS
 
-This module implements the Linux-specific versions of the Slaughter primitives.
+This module is the one that gets loaded upon Linux systems, and implements 100%
+of the available primitives for such systems.
 
 When the module "Slaughter;" is used what happens is that an OS-specific module
 is loaded:
@@ -20,8 +21,8 @@ is loaded:
 
 =for example end
 
-This module is the one that gets loaded upon Linux systems, and implements 100%
-of the available primitives for such systems.
+We also attempt to load Slaughter::API::Local::linux, where site-specific primitives
+may be implemented.  If the loading of this additional module fails we report no error/warning.
 
 =cut
 

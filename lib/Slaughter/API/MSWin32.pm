@@ -8,7 +8,8 @@ Slaughter::API::MSWin32 - Perl Automation Tool Helper Windows implementation
 
 =head1 SYNOPSIS
 
-This module implements the Win32-specific versions of the Slaughter primitives.
+This module is the one that gets loaded upon Windows systems, where it provides
+the Win32 implementation for the vast majority of the Slaughter primitives.
 
 When the module "Slaughter;" is used what happens is that an OS-specific module
 is loaded:
@@ -20,10 +21,10 @@ is loaded:
 
 =for example end
 
-This module is the one that gets loaded upon Windows systems, although it
-has only been tested under Strawberry Perl.
+We also attempt to load Slaughter::API::Local::MSWin32, where site-specific primitives
+may be implemented.  If the loading of this additional module fails we report no error/warning.
 
-The coverage is adequate, but package-related primitives are not implemented.
+The coverage of this module is adequate, but package-related primitives are not implemented.
 
 =cut
 
