@@ -684,6 +684,8 @@ case when either:
 
 =back
 
+=end doc
+
 =cut
 
 sub loadTransport
