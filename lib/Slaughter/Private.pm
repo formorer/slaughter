@@ -125,7 +125,7 @@ returning the result from the first one which is present.
 =for example end
 
 A single parameter is accepted which is the name of the file
-to has.
+to hash.
 
 On success the hash is returned, on failure undef is returned.
 
