@@ -1,11 +1,20 @@
 slaughter2 (2.0-1) stable; urgency=low
 
   * Updated to use a new system for fetching files/policies, using
-    pluggable transports.  These are described in the included file
-    TRANSPORTS.
-  * Renamed package to slaughter2 to avoid breakage on upgrade.
+    pluggable transports.  Available transports include:
+    - local
+    - http
+    - hg
+    - git
+    - rsync
+    - svn
+  * Renamed the client package to slaughter2 to avoid breakage on upgrade,
+    but also update the configuration file post-install, to mitigate against
+    this.
   * Updated to ensure that polices are unreadable to non-root users.
-  * More ..
+  * Updated correctness of several primitives.
+  * Updated documentation: 100% POD coverage.
+  * Added test-suite.
 
  -- Steve Kemp <steve@steve.org.uk>  Sun, 28 Oct 2012 23:33:43 +0000
 
