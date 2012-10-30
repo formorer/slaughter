@@ -47,6 +47,8 @@ use warnings;
 
 package Slaughter::Transport::http;
 
+use LWP::UserAgent;
+
 
 
 =head2 new
