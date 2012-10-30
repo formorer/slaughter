@@ -64,11 +64,15 @@ by the environment-specific lib/Slaughter/foo.pm helper.
 Hacking Directions
 ------------------
 
-Brief pointers on where you need to look to do different things:
+Brief pointers on where you need to look to do different things - note that
+each directory containing library code has a file API in it, describing the
+required methods.
+
+Here are pointers for adding new functionality to the slaughter tool:
 
    Hacking: Variables
    ------------------
-    If you'd like to make a new variable available to running scripts you'll
+    If you'd like to make a new variable available to all policy scripts you'll
    need to investigate the slaughter code if it is common to all environments
    (see the function "defaultOptions").  If the variable is specific to a
    particular operating-sytem it should be added to the relevant module beneath
@@ -76,7 +80,7 @@ Brief pointers on where you need to look to do different things:
 
    Hacking: Functions
    ------------------
-    If you'd like to make a new support function available implement it in
+    If you'd like to make a new support function available first implement it in
    lib/Slaughter/API/generic.pm to output an error - then in each of the available
    environment-specific libraries in that same directory.
 
@@ -91,7 +95,7 @@ Brief pointers on where you need to look to do different things:
     If you'd like to add a new transport mechanism you should be able to do
    so copying one of the libraries in lib/Slaughter/Transport/.  Implement
    the required methods, such that the test cases pass and you're golden.
-    Transports based on revision control software, are particularly trivial
+    Transports based on revision control software, or binaries, are particularly trivial
    to implement using the base-class provided.  (Consult git.pm/hg.pm for examples.)
 
 
