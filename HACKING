@@ -78,11 +78,14 @@ Here are pointers for adding new functionality to the slaughter tool:
    particular operating-sytem it should be added to the relevant module beneath
    lib/Slaughter/Info/*.pm.
 
-   Hacking: Functions
-   ------------------
-    If you'd like to make a new support function available first implement it in
+   Hacking: Primitives
+   -------------------
+    If you'd like to make a new primitive available first implement it in
    lib/Slaughter/API/generic.pm to output an error - then in each of the available
    environment-specific libraries in that same directory.
+    If your primitive(s) are purely local you may implement them in the
+   Slaughter::API::Local namespace where they will be automatically loaded.
+   (for example lib/Slaughter/API/Local/linux.pm)
 
    Hacking: Packages
    ------------------
