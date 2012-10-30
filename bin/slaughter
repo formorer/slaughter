@@ -106,14 +106,16 @@ included file TRANSPORTS.
 
 =head1 PRIMITIVES
 
-There are several primitives available to your code which are actually
-implemented in the Slaughter module.
+There are several primitives and variables available to your code which are
+made available by the various Slaughter modules.
 
-These primitives are more fully described online:
+These primitives and variables are described online:
 
 =for example begin
 
-  http://www.steve.org.uk/Software/slaughter/primitives.html
+  http://www.steve.org.uk/Software/slaughter/primitives/
+
+  http://www.steve.org.uk/Software/slaughter/variables/
 
 =for example end
 
