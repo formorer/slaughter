@@ -22,11 +22,14 @@ platform-specific implementations of the subroutines from another
 module, via the use of the perl $^O variable.
 
 So, for example, on a GNU/Linux system "use Slaughter" actually becomes
-"use Slaughter::API::linux".
-
-If no specific file may be found then the fall-back module
-Slaughter::API::generic is loaded - which print "Not implemented"
+"use Slaughter::API::linux".  If no specific file may be found then the
+fall-back module Slaughter::API::generic is loaded - which print "Not implemented"
 for each primitive.
+
+To allow users to provide their own local primitives the module also attempts
+to load the module "Slaughter::API::Local::$^O".  If this loading fails then
+no error or warning is reported - in the general case this module will not
+be present.
 
 
 
