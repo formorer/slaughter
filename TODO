@@ -39,6 +39,24 @@ Logging
     via mail, assuming we're launched via cron.  This needs to be updated.
 
 
+Misc
+----
+
+  Info modules need work:
+
+  * Support Slaughter::Info::Local:$^O - if present.
+
+  * Change API to be :
+
+               my $foo = Slaughter::Info::linux->new();
+               my $ref = $foo->getInformation();
+
+  * Update linux module to fetch:
+           - QEMU version, if running under it.
+           - Free RAM.
+           - Total RAM.
+           - Uptime, in seconds.
+
 Steve
 --
 
