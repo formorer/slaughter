@@ -132,11 +132,17 @@ sub MetaInformation
     #
     #  IP address(es).
     #
-    my $ip = undef;
+    my $ip = "ipconfig";
 
-    $ip = "ipconfig";
-
-    if ( defined($ip) )
+    #
+    #  This if-test should always succeed, or this module wouldn't be loaded
+    # for real.
+    #
+    #  It is present to skip this section of code when running the test-suite
+    # on a GNU/Linux host.
+    #
+    #
+    if ( $^O =~ /win32/i )
     {
         my $count = 1;
 
@@ -171,17 +177,25 @@ sub MetaInformation
 
 
     #
-    #  Find the name of our release
+    #  Find the name of our release.
     #
-    my @win_info = Win32::GetOSVersion();
-    my $version  = $win_info[0];
-    my $distrib  = Win32::GetOSName();
+    #  This if-test should always succeed, or this module wouldn't be loaded
+    # for real.
+    #
+    #  It is present to skip this section of code when running the test-suite
+    # on a GNU/Linux host.
+    #
+    if ( $^O =~ /win32/i )
+    {
+        my @win_info = Win32::GetOSVersion();
+        my $version  = $win_info[0];
+        my $distrib  = Win32::GetOSName();
 
-    # work around for historical reasons
-    $distrib = 'WinXP' if $distrib =~ /^WinXP/;
-    $ref->{ 'version' }      = $version;
-    $ref->{ 'distribution' } = $distrib;
-
+        # work around for historical reasons
+        $distrib = 'WinXP' if $distrib =~ /^WinXP/;
+        $ref->{ 'version' }      = $version;
+        $ref->{ 'distribution' } = $distrib;
+    }
 }
 
 
