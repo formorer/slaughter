@@ -35,11 +35,6 @@ ok( -d $dir, "We found the Info directory" );
 #
 foreach my $name ( sort( glob( $dir . "/*.pm" ) ) )
 {
-    #
-    #  Avoid warnings about unknown commands.
-    #
-    next if ( $name =~ /MSWin32/ );
-
     if ( $name =~ /(.*)\/(.*)\.pm/ )
     {
         #
