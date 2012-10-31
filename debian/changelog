@@ -11,6 +11,7 @@ slaughter2 (2.0-1) stable; urgency=low
   * Renamed the client package to slaughter2 to avoid breakage on upgrade,
     but also update the configuration file post-install, to mitigate against
     this.
+  * The information module determines IPv6 address details on Linux clients.
   * Updated to ensure that polices are unreadable to non-root users.
   * Updated correctness of several primitives.
   * Updated documentation: 100% POD coverage.

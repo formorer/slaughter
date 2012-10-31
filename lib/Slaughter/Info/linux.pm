@@ -217,41 +217,61 @@ sub MetaInformation
     $ip = "/sbin/ip" if ( -x "/sbin/ip" );
     $ip = "/bin/ip"  if ( -x "/bin/ip" );
 
+
     if ( defined($ip) )
     {
-        my $count = 1;
 
-        foreach my $line (
-                   split( /[\r\n]/, `$ip -o -f inet  addr show scope global` ) )
+        #
+        #  Two commands to find the IP addresses we have
+        #
+        my @cmd = ( " -o -f inet addr show scope global",
+                    " -o -f inet6 addr show scope global"
+                  );
+
+        #
+        #  Run each
+        #
+        foreach my $cmd (@cmd)
         {
-            next if ( !defined($line) || !length($line) );
-            chomp($line);
+            my $count  = 1;
+            my $family = "ip";
+            $family = "ip6" if ( $cmd =~ /inet6/i );
 
-            #
-            #  This matches something like:
-            #
-            #  2: eth0    inet 192.168.1.9/24 brd 192.168.1.255 scope global eth0
-            #
-            #
-            if ( $line =~ /^([0-9]+):[ \t]+([^ ]+)[ \t]*inet[ \t]+([0-9\.]+)/ )
+            foreach my $line ( split( /[\r\n]/, `$ip $cmd` ) )
             {
-                my $eth = $2;
-                my $ip  = $3;
+                next if ( !defined($line) || !length($line) );
+                chomp($line);
 
                 #
-                # Save away the IP address in "ip0", "ip1", "ip2" .. etc.
+                #  This matches something like:
                 #
-                $ref->{ "ip" . $count } = $ip;
-                $count += 1;
+                #  2: eth0    inet 192.168.1.9/24 brd 192.168.1.255 scope global eth0
+                #
+                #
+                if ( $line =~ /(inet|inet6)[ \t]+([^ \t+]+)/ )
+                {
+                    my $proto = $1;
+                    my $ip    = $2;
+
+                    #
+                    #  Strip off /24, /128, etc.
+                    #
+                    $ip =~ s/\/.*//g;
+
+                    #
+                    # Save away the IP address in "ip0", "ip1", "ip2" .. etc.
+                    #
+                    $ref->{ $family . $count } = $ip;
+                    $count += 1;
+                }
+            }
+
+            if ( $count > 0 )
+            {
+                $ref->{ $family . 'count' } = ( $count - 1 );
             }
         }
-
-        if ( $count > 0 )
-        {
-            $ref->{ 'ipcount' } = ( $count - 1 );
-        }
     }
-
 
     #
     #  Find the name of our release
