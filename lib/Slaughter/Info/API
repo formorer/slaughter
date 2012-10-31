@@ -2,5 +2,5 @@
 new()
   Constructor
 
-MetaInformation()
-  Populate the hash-reference with "interesting details" about the current system.
+getInformation()
+  Return a hash-reference with "interesting details" about the current system.
