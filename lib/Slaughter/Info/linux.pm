@@ -84,16 +84,23 @@ sub new
 }
 
 
-=head2 MetaInformation
+=head2 getInformation
 
 This function retrieves meta-information about the current host,
 and is invoked solely on Linux hosts.
 
+The return value is a hash-reference of data determined dynamically.
+
 =cut
 
-sub MetaInformation
+sub getInformation
 {
-    my ( $self, $ref ) = (@_);
+    my ($self) = (@_);
+
+    #
+    #  The data we will return.
+    #
+    my $ref;
 
     #
     #  Fully Qualified hostname
@@ -315,6 +322,7 @@ sub MetaInformation
     #  TODO: HP RAID?
     #
 
+    return ($ref);
 }
 
 

@@ -61,25 +61,25 @@ foreach my $name ( sort( glob( $dir . "/*.pm" ) ) )
         isa_ok( $handle, $module );
 
 
-        ok( UNIVERSAL::can( $handle, "MetaInformation" ),
-            "required method available - MetaInformation" );
+        ok( UNIVERSAL::can( $handle, "getInformation" ),
+            "required method available - getInformation" );
 
         #
         # Setup an empty hash.
         #
-        my %info;
-        ok( keys %info < 1,
+        my $info;
+        ok( keys %$info < 1,
             "Before calling Slaughter::Info::$module our info has is empty" );
 
         #
         # Call the function
         #
-        $handle->MetaInformation( \%info );
+        $info = $handle->getInformation();
 
         #
         # We should now find the hash has an entry or two.
         #
-        ok( keys %info >= 1,
+        ok( keys %$info >= 1,
             "After calling Slaughter::Info::$module our info hash was updated"
           );
 

@@ -84,11 +84,13 @@ sub new
 }
 
 
-=head2 MetaInformation
+=head2 getInformation
 
 This function retrieves meta-information about the current host,
-it is the fall-back module which is used if a system-specific
+and is the fall-back module which is used if a system-specific
 information module cannot be loaded.
+
+The return value is a hash-reference of data determined dynamically.
 
 Currently the following OS-specific modules exist:
 
@@ -102,11 +104,19 @@ Currently the following OS-specific modules exist:
 
 =cut
 
-sub MetaInformation
+sub getInformation
 {
-    my ( $self, $ref ) = (@_);
+    my ($self) = (@_);
+
+    #
+    #  The data we will return.
+    #
+    my $ref;
 
     $ref->{ 'unknown' } = "all";
+
+    # return the data.
+    return ($ref);
 }
 
 

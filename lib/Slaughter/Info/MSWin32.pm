@@ -85,18 +85,26 @@ sub new
 
 
 
-=head2 MetaInformation
+=head2 getInformation
 
 This function retrieves meta-information about the current host,
-and is invoked on Microsoft Windows systems.
+and is invoked solely on Linux hosts.
+
+The return value is a hash-reference of data determined dynamically.
+
 
 B<NOTE> This module has only been tested under Strawberry perl.
 
 =cut
 
-sub MetaInformation
+sub getInformation
 {
-    my ( $self, $ref ) = (@_);
+    my ($self) = (@_);
+
+    #
+    #  The data we will return
+    #
+    my $ref;
 
     #
     #  Kernel version.
@@ -196,6 +204,11 @@ sub MetaInformation
         $ref->{ 'version' }      = $version;
         $ref->{ 'distribution' } = $distrib;
     }
+
+    #
+    #  Return the data
+    #
+    return ($ref);
 }
 
 

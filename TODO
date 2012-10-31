@@ -46,11 +46,6 @@ Misc
 
   * Support Slaughter::Info::Local:$^O - if present.
 
-  * Change API to be :
-
-               my $foo = Slaughter::Info::linux->new();
-               my $ref = $foo->getInformation();
-
   * Update linux module to fetch:
            - QEMU version, if running under it.
            - Free RAM.

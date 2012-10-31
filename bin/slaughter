@@ -364,16 +364,17 @@ sub defaultOptions
         next if ($@);
 
         #
-        #  Update the information we already have with that from
-        # the module.
+        #  Fetch the system-information from the module.
         #
-        my $obj = $name->new();
-        $obj->MetaInformation( \%defs );
+        my $obj  = $name->new();
+        my $data = $obj->getInformation();
+        my %meta = %$data;
 
         #
-        #  Return the (hopefully updated) meta-information
+        #  Return the union of what we created, and the data returned
+        # from the module.
         #
-        return (%defs);
+        return ( %defs, %meta );
     }
 
 
