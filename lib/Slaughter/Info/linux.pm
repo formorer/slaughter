@@ -245,10 +245,13 @@ sub MetaInformation
                 #
                 #  This matches something like:
                 #
-                #  2: eth0    inet 192.168.1.9/24 brd 192.168.1.255 scope global eth0
+                #  eth0 inet 192.168.1.9/24 brd 192.168.1.255 scope global eth0
+                #
+                # or
+                #  eth0 inet6 2001:41c8:1:5abb::62/64 scope global valid_lft forever preferred_lft forever
                 #
                 #
-                if ( $line =~ /(inet|inet6)[ \t]+([^ \t+]+)/ )
+                if ( $line =~ /(inet|inet6)[ \t]+([^ \t+]+)[ \t]+/ )
                 {
                     my $proto = $1;
                     my $ip    = $2;
