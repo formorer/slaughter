@@ -8,7 +8,7 @@ Slaughter::Info::generic - Perl Automation Tool Helper generic info implementati
 
 =head1 SYNOPSIS
 
-This module is the generic versions of the Slaughter information-gathering
+This module is the generic version of the Slaughter information-gathering
 module.
 
 Modules beneath the C<Slaughter::Info> namespace are loaded when slaughter
