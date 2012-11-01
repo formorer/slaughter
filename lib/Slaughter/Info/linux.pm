@@ -273,14 +273,14 @@ sub getInformation
                     #
                     # Save away the IP address in "ip0", "ip1", "ip2" .. etc.
                     #
-                    $ref->{ $family . $count } = $ip;
+                    $ref->{ $family . "_" . $count } = $ip;
                     $count += 1;
                 }
             }
 
             if ( $count > 0 )
             {
-                $ref->{ $family . 'count' } = ( $count - 1 );
+                $ref->{ $family . '_count' } = ( $count - 1 );
             }
         }
     }
