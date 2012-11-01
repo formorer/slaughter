@@ -23,6 +23,12 @@ The tasks we support are pretty basic, but they include:
    6.  Checking disk space, and mount-points.
    7.  Sending alerts via email.
 
+The implementation is cleanly organized to allow it to be ported, tested,
+and used upon new systems easily.  Currently we support:
+
+    * GNU/Linux.
+    * OpenBSD.
+    * Microsoft Windows - using Strawberry perl.
 
 
 
@@ -52,6 +58,7 @@ The attraction of client-pull is that there is no need to maintain state
 on the central server, and each client can be trusted to schedule itself
 via a cron-like system.  The potential downside is that you might fail to
 notice if a client suddenly stops making appropriate requests.
+
 
 
 Policies
