@@ -8,7 +8,7 @@ Slaughter::Info::openbsd - Perl Automation Tool Helper openbsd info implementati
 
 =head1 SYNOPSIS
 
-This module is the openbsd versions of the Slaughter information-gathering
+This module is the openbsd version of the Slaughter information-gathering
 module.
 
 Modules beneath the C<Slaughter::Info> namespace are loaded when slaughter

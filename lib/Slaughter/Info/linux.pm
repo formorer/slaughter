@@ -8,7 +8,7 @@ Slaughter::Info::linux - Perl Automation Tool Helper linux info implementation
 
 =head1 SYNOPSIS
 
-This module is the GNU/Linux versions of the Slaughter information-gathering
+This module is the GNU/Linux version of the Slaughter information-gathering
 module.
 
 Modules beneath the C<Slaughter::Info> namespace are loaded when slaughter

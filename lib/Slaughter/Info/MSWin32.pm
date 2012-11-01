@@ -8,7 +8,7 @@ Slaughter::Info::MSWin32 - Perl Automation Tool Helper Windows info implementati
 
 =head1 SYNOPSIS
 
-This module is the Windows versions of the Slaughter information-gathering
+This module is the Windows version of the Slaughter information-gathering
 module.
 
 Modules beneath the C<Slaughter::Info> namespace are loaded when slaughter
