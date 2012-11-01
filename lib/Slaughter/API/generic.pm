@@ -261,7 +261,7 @@ For an implementation, and documentation, please consult Slaughter::API::linux
 
 =cut
 
-sub ReplaceRexexp
+sub ReplaceRegexp
 {
     print "ReplaceRegexp- not implemented for $^O\n";
 }
