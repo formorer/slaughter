@@ -8,10 +8,29 @@ Slaughter::Packages::openbsd - Abstractions for OpenBSD package management.
 
 =head1 DESCRIPTION
 
-This module contains code for dealing with system packages.
+This module contains code for dealing with system packages, using the system
+commands C<pkg_add>, C<pkg_info>, etc.
 
 =cut
 
+=head1 AUTHOR
+
+ Steve
+ --
+ http://www.steve.org.uk/
+
+=cut
+
+=head1 LICENSE
+
+Copyright (c) 2012 by Steve Kemp.  All rights reserved.
+
+This module is free software;
+you can redistribute it and/or modify it under
+the same terms as Perl itself.
+The LICENSE file contains the full text of the license.
+
+=cut
 
 
 package Slaughter::Packages::openbsd;
@@ -87,26 +106,34 @@ sub isInstalled
     my ( $self, $package ) = (@_);
 
     #
-    #  Get the type of the system.
+    #  Get the type of the system, to make sure we can continue.
     #
     my $type = $self->recognised();
     return 0 unless ( defined($type) );
 
+    #
+    #  Found it installed?
+    #
     my $found = 0;
 
+    #
+    #  Output the information about the package - this contains
+    # "inst:" if the package is installed locally.
+    #
     open my $handle, "-|", "/usr/sbin/pkg_info '$package'" or
       die "Failed to run pkg_info: $!";
 
     while ( my $line = <$handle> )
     {
         chomp($line);
-        if ( $line =~ /^Information for inst:/ )
-        {
-            $found = 1;
-        }
+
+        $found = 1 if ( $line =~ /^Information for inst:/ );
     }
     close($handle);
 
+    #
+    # Return the result.
+    #
     return ($found);
 }
 
@@ -125,11 +152,14 @@ sub installPackage
     my ( $self, $package ) = (@_);
 
     #
-    #  Get the type of the system.
+    #  Get the type of the system, to make sure we can continue.
     #
     my $type = $self->recognised();
     return 0 unless ( defined($type) );
 
+    #
+    #  Add the package.
+    #
     system( "/usr/sbin/pkg_add", $package );
 }
 
@@ -148,11 +178,14 @@ sub removePackage
     my ( $self, $package ) = (@_);
 
     #
-    #  Get the type of the system.
+    #  Get the type of the system, to make sure we can continue.
     #
     my $type = $self->recognised();
     return 0 unless ( defined($type) );
 
+    #
+    #  Remove the package
+    #
     system( "/usr/sbin/pkg_delete", $package );
 }
 
