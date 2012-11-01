@@ -25,10 +25,8 @@ Usage is:
 
      use Slaughter::Info::generic;
 
-     my %data;
-
-     my $obj = Slaughter::Info::generic->new();
-     $obj-> MetaInformation( \%data );
+     my $obj  = Slaughter::Info::generic->new();
+     my $data = $obj->getInformation();
 
 =for example end
 

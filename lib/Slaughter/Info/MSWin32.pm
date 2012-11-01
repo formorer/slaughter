@@ -24,13 +24,11 @@ Usage is:
 
     use Slaughter::Info::MSWin32;
 
-    my %data;
-
-    my $obj = Slaughter::Info::MSWin32->new();
-    $obj-> MetaInformation( \%data );
+    my $obj  = Slaughter::Info::MSWin32->new();
+    my $data = $obj->getInformation();
 
     # use info now ..
-    print $data{'arch'} . "-bit architecture\n";
+    print $data->{'arch'} . "-bit architecture\n";
 
 =for example end
 

@@ -24,13 +24,11 @@ Usage is:
 
     use Slaughter::Info::linux;
 
-    my %data;
-
-    my $obj = Slaughter::Info::linux->new();
-    $obj-> MetaInformation( \%data );
+    my $obj  = Slaughter::Info::linux->new();
+    my $data = $obj->getInformation();
 
     # use info now ..
-    print "We have software RAID\n" if $data{'softwareraid'};
+    print "We have software RAID\n" if ( $data->{'softwareraid'} );
 
 =for example end
 
