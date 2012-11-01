@@ -346,44 +346,103 @@ sub defaultOptions
     $defs{ 'os' } = $^O;
 
     #
-    #  Attempt to load a module which will add to the meta-information.
+    #  Attempt to load the environment-specific module, and return the
+    # information from it.
     #
-    #  We fall back to the ::generic version of the module if the
-    # platform-specific module fails to load.
-    #
-    my @modules;
-    push( @modules, "Slaughter::Info::$^O" );
-    push( @modules, "Slaughter::Info::generic" );
+    my $data = loadInfo("Slaughter::Info::$^O");
 
-    foreach my $name (@modules)
+    #
+    #  If that worked we'll augment our data further with any locally
+    # supplied data.
+    #
+    if ($data)
     {
-        ## no critic (Eval)
-        eval("use $name");
-        ## use critic
 
-        next if ($@);
+        #
+        #  This will probably fail, but allows overrides/changes.
+        #
+        my $local = loadInfo("Slaughter::Info::Local::$^O");
+
+        #
+        #  Convert both sets of data from hash-references to hashes.
+        #
+        my %data;
+        %data = %$data if ($data);
+
+        my %local;
+        %local = %$local if ($local);
+
+        #
+        #  Return the sum-total of all three references:
+        #
+        #  1.  The stub data we setup above.
+        #
+        #  2.  The OS-dependant data, found by ourselves.
+        #
+        #  3.  The OS-dependant data, found by the local module.
+        #
+        return ( %defs, %data, %local );
+    }
+
+    #
+    #  If we're here we're using the generic module
+    #
+    $data = loadInfo("Slaughter::Info::generic");
+    if ($data)
+    {
+        my %data = %$data;
+
+        return ( %defs, %data );
+    }
+    else
+    {
+
+        #
+        #  This means the generic module failed to load/return data.
+        #
+        print "Failed to use a module from the Slaughter::Info:: namespace\n";
+        exit(1);
+    }
+}
+
+
+
+=begin doc
+
+Load a given module from beneath the Slaughter::Info:: namespace, and return
+the result of calling "getInformation" on it.
+
+This is abstracted into a routine so that we can be conditional.
+
+Return value is undef on failure, or the populated hash-reference of system
+information on success.
+
+=end doc
+
+=cut
+
+sub loadInfo
+{
+    my ($module) = (@_);
+
+    my $data;
+
+    ## no critic (Eval)
+    eval("use $module");
+    ## use critic
+
+    if ( !$@ )
+    {
 
         #
         #  Fetch the system-information from the module.
         #
-        my $obj  = $name->new();
-        my $data = $obj->getInformation();
-        my %meta = %$data;
-
-        #
-        #  Return the union of what we created, and the data returned
-        # from the module.
-        #
-        return ( %defs, %meta );
+        my $obj = $module->new();
+        $data = $obj->getInformation();
     }
 
-
-    print
-      "Failed to load a suitable module from the Slaughter::Info:: namespace\n";
-    exit(1);
+    return ($data);
 }
-
-
 
 
 =begin doc
@@ -607,7 +666,8 @@ sub createTransportDir
 
 =begin doc
 
-Test the environment.
+Test the environment - which is a combination of the command line flags, and
+configuration file settings, and the local user.
 
 =end doc
 

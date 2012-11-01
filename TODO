@@ -44,8 +44,6 @@ Misc
 
   Info modules need work:
 
-  * Support Slaughter::Info::Local:$^O - if present.
-
   * Update linux module to fetch:
            - QEMU version, if running under it.
            - Free RAM.
