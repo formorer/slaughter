@@ -829,7 +829,8 @@ sub FindBinary
 =head2 InstallPackage
 
 The InstallPackage primitive will allow you to install a system package.
-Currently apt-get and yum are supported.
+
+This method uses C<Slaughter::Packages::openbsd>.
 
 =for example begin
 
@@ -929,6 +930,8 @@ sub Mounts
 =head2 PackageInstalled
 
 Test whether a given system package is installed.
+
+This method uses C<Slaughter::Packages::openbsd>.
 
 =for example begin
 
@@ -1144,6 +1147,8 @@ sub ReplaceRegexp
 =head2 RemovePackage
 
 Remove the specified system package from the system.
+
+This method uses C<Slaughter::Packages::openbsd>.
 
 =for example begin
 

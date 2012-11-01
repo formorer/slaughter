@@ -829,7 +829,8 @@ sub FindBinary
 =head2 InstallPackage
 
 The InstallPackage primitive will allow you to install a system package.
-Currently apt-get and yum are supported.
+
+Currently C<apt-get> and C<yum> are supported, via C<Slaughter::Packages::linux>.
 
 =for example begin
 
@@ -951,8 +952,7 @@ The name of the package to test.
 
 The return value will be a 0 if not installed, or 1 if it is.
 
-This primitive supports both RPM and Debian packages, when running
-on such a system.
+Currently C<apt-get> and C<yum> are supported, via C<Slaughter::Packages::linux>.
 
 =cut
 
@@ -1167,8 +1167,7 @@ The name of the package to remove.
 
 =back
 
-This primitive supports both RPM and Debian packages, when running
-on such a system.
+Currently C<apt-get> and C<yum> are supported, via C<Slaughter::Packages::linux>.
 
 =cut
 
