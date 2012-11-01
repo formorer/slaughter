@@ -914,10 +914,10 @@ sub Mounts
     {
         chomp($line);
 
-        if ( $line =~ /^([ \t]+)[ \t]+on^([ \t]+)[ \t]+/ )
+        if ( $line =~ /^([^ \t]+)[ \t]+on[ \t]+([^ \t]+)/ )
         {
             my ( $dev, $point ) = ( $1, $2 );
-            push( @results, $point );
+            push( @results, $point ) if ( $dev =~ /dev/ );
         }
     }
     close($handle);
