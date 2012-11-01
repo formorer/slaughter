@@ -37,6 +37,7 @@ foreach my $name ( sort( glob( $dir . "/*.pm" ) ) )
 {
     if ( $name =~ /(.*)\/(.*)\.pm/ )
     {
+
         #
         #  Name of the module implementation file.
         #
@@ -60,7 +61,9 @@ foreach my $name ( sort( glob( $dir . "/*.pm" ) ) )
         ok( $handle, "Calling the constructor succeeded." );
         isa_ok( $handle, $module );
 
-
+        #
+        #  Does the module implement our API?
+        #
         ok( UNIVERSAL::can( $handle, "getInformation" ),
             "required method available - getInformation" );
 
@@ -69,19 +72,19 @@ foreach my $name ( sort( glob( $dir . "/*.pm" ) ) )
         #
         my $info;
         ok( keys %$info < 1,
-            "Before calling Slaughter::Info::$module our info has is empty" );
+            "Before calling Slaughter::Info::$module our hash is empty" );
 
         #
         # Call the function
         #
         $info = $handle->getInformation();
+        ok( $info, "undef wasn't returned." );
 
         #
         # We should now find the hash has an entry or two.
         #
         ok( keys %$info >= 1,
-            "After calling Slaughter::Info::$module our info hash was updated"
-          );
+            "After calling Slaughter::Info::$module our hash is updated" );
 
     }
 }
