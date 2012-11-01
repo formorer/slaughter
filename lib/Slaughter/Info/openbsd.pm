@@ -28,7 +28,8 @@ Usage is:
     my $data = $obj->getInformation();
 
     # use info now ..
-    print "We have software RAID\n" if ( $data->{'softwareraid'} );
+    print "We have $data->{'ip_count'} IPv4 addresses.\n";o
+    print "We have $data->{'ip6_count'} IPv6 addresses.\n";o
 
 =for example end
 
@@ -171,6 +172,9 @@ sub getInformation
         }
     }
 
+    # counts of addresses
+    $ref->{'ip_count'}  = $ipv4;
+    $ref->{'ip6_count'} = $ipv6;
 
     return ($ref);
 }
