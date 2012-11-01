@@ -8,15 +8,15 @@ Slaughter::Info::linux - Perl Automation Tool Helper linux info implementation
 
 =head1 SYNOPSIS
 
-This module is the linux versions of the Slaughter information-gathering
+This module is the GNU/Linux versions of the Slaughter information-gathering
 module.
 
-Modules beneath the Slaughter::Info namespace are called when slaughter
-is executed, they are intended to populate a hash with system information
-about the current host.
+Modules beneath the C<Slaughter::Info> namespace are loaded when slaughter
+is executed, they are used to populate a hash with information about
+the current host.
 
 This module is loaded only on linux systems, and will determine such details
-as the localhost hostname, the free RAM, any IP addresses, etc.
+as the local hostname, the free RAM, any IP addresses, etc.
 
 Usage is:
 
@@ -31,6 +31,11 @@ Usage is:
     print "We have software RAID\n" if ( $data->{'softwareraid'} );
 
 =for example end
+
+When this module is used an attempt is also made to load the module
+C<Slaughter::Info::Local::linux> - if that succeeds it will be used to
+augment the information discovered and made available to slaughter
+policies.
 
 =cut
 
@@ -84,8 +89,7 @@ sub new
 
 =head2 getInformation
 
-This function retrieves meta-information about the current host,
-and is invoked solely on Linux hosts.
+This function retrieves meta-information about the current host.
 
 The return value is a hash-reference of data determined dynamically.
 

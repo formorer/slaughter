@@ -11,9 +11,9 @@ Slaughter::Info::MSWin32 - Perl Automation Tool Helper Windows info implementati
 This module is the Windows versions of the Slaughter information-gathering
 module.
 
-Modules beneath the Slaughter::Info namespace are called when slaughter
-is executed, they are intended to populate a hash with system information
-about the current host.
+Modules beneath the C<Slaughter::Info> namespace are loaded when slaughter
+is executed, they are used to populate a hash with information about
+the current host.
 
 This module is loaded only on Windows systems, and will determine such details
 as the operating system version, the processor type, etc.
@@ -31,6 +31,11 @@ Usage is:
     print $data->{'arch'} . "-bit architecture\n";
 
 =for example end
+
+When this module is used an attempt is also made to load the module
+C<Slaughter::Info::Local::MSWin32> - if that succeeds it will be used to
+augment the information discovered and made available to slaughter
+policies.
 
 =cut
 
@@ -85,8 +90,7 @@ sub new
 
 =head2 getInformation
 
-This function retrieves meta-information about the current host,
-and is invoked solely on Linux hosts.
+This function retrieves meta-information about the current host.
 
 The return value is a hash-reference of data determined dynamically.
 

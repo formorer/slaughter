@@ -11,9 +11,9 @@ Slaughter::Info::generic - Perl Automation Tool Helper generic info implementati
 This module is the generic versions of the Slaughter information-gathering
 module.
 
-Modules beneath the Slaughter::Info namespace are called when slaughter
-is executed, they are intended to populate a hash with system information
-about the current host.
+Modules beneath the C<Slaughter::Info> namespace are loaded when slaughter
+is executed, they are used to populate a hash with information about
+the current host.
 
 This module is loaded when no specific module matches the local system,
 and is essentially a no-operation module.
@@ -30,7 +30,7 @@ Usage is:
 
 =for example end
 
-The data retrieved by this generic module is almost nothing.
+B<NOTE>: The data retrieved by this generic module is almost empty.
 
 =cut
 
@@ -94,9 +94,9 @@ Currently the following OS-specific modules exist:
 
 =over 8
 
-=item Slaughter::Info::linux
+=item C<Slaughter::Info::linux>
 
-=item Slaughter::Info::MSWin32
+=item C<Slaughter::Info::MSWin32>
 
 =back
 

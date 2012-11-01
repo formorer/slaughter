@@ -21,7 +21,7 @@ is loaded:
 
 =for example end
 
-We also attempt to load Slaughter::API::Local::linux, where site-specific primitives
+We also attempt to load C<Slaughter::API::Local::linux>, where site-specific primitives
 may be implemented.  If the loading of this additional module fails we report no error/warning.
 
 =cut
