@@ -34,7 +34,7 @@ PackageInstalled
 PercentageUsed
   Determine how full a given filesystem is.
 
-ReplaceRexexp
+ReplaceRegexp
   Replace lines in a file matchign a given regexp.
 
 RemovePackage
