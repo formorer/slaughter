@@ -88,12 +88,16 @@ foreach my $module (qw! Digest::SHA Digest::SHA1 !)
     close($handle);
 
     #
-    #  Compare what we expected
+    #  Compare the hash we received with the one we've pre-calculated.
     #
     is( $hash->hexdigest(),
         "b57e303d4466e3aac4ea20f3935fb6d77951e2c4",
         "Our sample data received the correct result" );
 
+    #
+    #  Compare the pre-calculated hash against the result returned
+    # by Slaughter::Private
+    #
     is( "b57e303d4466e3aac4ea20f3935fb6d77951e2c4",
         checksumFile( $filename ),
         "Slaughter::Private agrees with the $module result." );
@@ -103,6 +107,5 @@ foreach my $module (qw! Digest::SHA Digest::SHA1 !)
 #  Cleanup
 #
 unlink($filename);
-
 ok( !-e $filename, "Post-test the temporary file is gone" );
 

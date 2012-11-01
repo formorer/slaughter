@@ -2,11 +2,12 @@
 #
 #  Some simple tests that validate the Slaughter code is correct.
 #
-#  Here we use the three API methods:
+#  Here we use the following API methods:
 #
 #    AppendIfMissing      +
 #    CommentLinesMatching +
-#    FileMatches
+#    FileMatches          +
+#    ReplaceRegexp
 #
 # Steve
 # --
