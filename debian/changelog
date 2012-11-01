@@ -16,6 +16,7 @@ slaughter2 (2.0-1) stable; urgency=low
   * Updated correctness of several primitives.
   * Updated documentation: 100% POD coverage.
   * Added test-suite.
+  * Implemented and tested our primitives and package-API on OpenBSD.
 
  -- Steve Kemp <steve@steve.org.uk>  Sun, 28 Oct 2012 23:33:43 +0000
 
