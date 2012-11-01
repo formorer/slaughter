@@ -55,14 +55,19 @@ You can find sample code in lib/Slaughter/Info/*.pm
 Package Installation
 --------------------
 
-Package installation is also abstracted into a library of its own:
+Package installation is also abstracted into a library of its own
+beneath the "Slaughter::Packages::" prefix.
+
+Currently we support two modules:
 
     Slaughter::Packages::linux
+     -> Recongizes apt-get + yum
 
-This is sufficient for the moment, as there is no non-Linux package
-management support present in slaughter.  If that changes there is
-obvious scope to add it into a new library - and that will be invoked
-by the environment-specific lib/Slaughter/foo.pm helper.
+    Slaughter::Packages::openbsd
+     -> Recognizes pkg_add/pkg_info/etc.
+
+Adding support for a new packaging system, in a new environment should
+be a simple task.
 
 
 
@@ -107,15 +112,27 @@ Here are pointers for adding new functionality to the slaughter tool:
     Transports based on revision control software, or binaries, are particularly trivial
    to implement using the base-class provided.  (Consult git.pm/hg.pm for examples.)
 
+   Hacking: Porting to new OS
+   --------------------------
+    First of all determine which operating system your perl installation calls itself:
+        perl -e 'print $^O . "\n"'
+    Whatever that name is you'll want to implement two/three modules with that name:
+        Slaughter::API::$name
+        Slaughter::Info::$name
+        Slaughter::Packages::$name  [optional]
+    Each of these can be modeled on the code already present in linux.pm/openbsd.pm
+   If you need help don't hesitate to get in touch though.
+
+
 
 
 Submitting Patches
 ------------------
 
-Patches are welcome.  Suggestions with no code are just as welcome.
+Patches are welcome, as are suggestions without any corresponding code.
 
-However note that patches will be significantly more likely to be accepted
-if they contain corresponding test-code, or test-cases.
+Note tthat patches will be more likely to be accepted if they contain
+corresponding test-code, test-cases, and documentation.
 
 
 
