@@ -15,6 +15,24 @@ distributions this should be the only place you need to touch.
 
 =cut
 
+=head1 AUTHOR
+
+ Steve
+ --
+ http://www.steve.org.uk/
+
+=cut
+
+=head1 LICENSE
+
+Copyright (c) 2010-2012 by Steve Kemp.  All rights reserved.
+
+This module is free software;
+you can redistribute it and/or modify it under
+the same terms as Perl itself.
+The LICENSE file contains the full text of the license.
+
+=cut
 
 
 package Slaughter::Packages::linux;
@@ -102,7 +120,7 @@ sub isInstalled
     my ( $self, $package ) = (@_);
 
     #
-    #  Get the type of the system.
+    #  Get the type of the system, to make sure we can continue.
     #
     my $type = $self->recognised();
     return 0 unless ( defined($type) );
@@ -177,7 +195,7 @@ sub installPackage
     my ( $self, $package ) = (@_);
 
     #
-    #  Get the type of the system.
+    #  Get the type of the system, to make sure we can continue.
     #
     my $type = $self->recognised();
     return 0 unless ( defined($type) );
@@ -190,7 +208,6 @@ sub installPackage
         $ENV{ 'DEBIAN_FRONTEND' } = "noninteractive";
         my $cmd = "apt-get -q -y install $package";
         system($cmd );
-        return;
     }
 
     #
@@ -200,7 +217,6 @@ sub installPackage
     {
         my $cmd = "yum install -y $package";
         system($cmd );
-        return;
     }
 }
 
@@ -219,7 +235,7 @@ sub removePackage
     my ( $self, $package ) = (@_);
 
     #
-    #  Get the type of the system.
+    #  Get the type of the system, to make sure we can continue.
     #
     my $type = $self->recognised();
     return 0 unless ( defined($type) );
@@ -232,7 +248,6 @@ sub removePackage
         $ENV{ 'DEBIAN_FRONTEND' } = "noninteractive";
         my $cmd = "apt-get -q -y remove $package";
         system($cmd );
-        return;
     }
 
     #
@@ -242,7 +257,6 @@ sub removePackage
     {
         my $cmd = "rpm -e $package";
         system($cmd );
-        return;
     }
 
 }
