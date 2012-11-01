@@ -173,8 +173,8 @@ sub getInformation
     }
 
     # counts of addresses
-    $ref->{'ip_count'}  = $ipv4;
-    $ref->{'ip6_count'} = $ipv6;
+    $ref->{ 'ip_count' }  = $ipv4;
+    $ref->{ 'ip6_count' } = $ipv6;
 
     return ($ref);
 }
