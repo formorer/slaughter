@@ -907,19 +907,20 @@ sub Mounts
 {
     my @results;
 
-    if ( open( my $handle, "<", "/proc/mounts" ) )
+    open my $handle, "-|", "mount" or
+      die "Failed to run mount: $!";
+
+    while ( my $line = <$handle> )
     {
-        foreach my $line (<$handle>)
+        chomp($line);
+
+        if ( $line =~ /^([ \t]+)[ \t]+on^([ \t]+)[ \t]+/ )
         {
-            chomp($line);
-            my ( $dev, $point, $type ) = split( / /, $line );
-            if ( $dev =~ /^\/dev/ )
-            {
-                push( @results, $point );
-            }
+            my ( $dev, $point ) = ( $1, $2 );
+            push( @results, $point );
         }
-        close($handle);
     }
+    close($handle);
 
     return (@results);
 }
