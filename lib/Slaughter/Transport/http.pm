@@ -16,7 +16,7 @@ This transport is slightly different to the others, as each file is fetched
 on-demand, with no local filesystem access and no caching.
 
 If HTTP Basic-Auth is required the appropriate details should be passed to
-slaughter with the "--username" & "--password" flags.
+slaughter with the "C<--username>" & "C<--password>" flags.
 
 =cut
 

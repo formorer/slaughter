@@ -11,7 +11,7 @@ This transport copes with cloning a remote Mercurial repository to the local fil
 
 =head1 DESCRIPTION
 
-This module uses the Slaughter::Transport::revisionControl base-class in such
+This module uses the C<Slaughter::Transport::revisionControl> base-class in such
 a way as to offer a Mercurial-based transport.
 
 All the implementation, except for the setup of some variables, comes from that
@@ -27,19 +27,19 @@ The following values are set in the L</_init> method:
 
 =item cmd_clone
 
-This is set to "hg clone".
+This is set to "C<hg clone>".
 
 =item cmd_update
 
-This is set to "hg pull --update".
+This is set to "C<hg pull --update>".
 
 =item cmd_version
 
-This is set to "hg --version".
+This is set to "C<hg --version>".
 
 =item name
 
-This is set to "hg".
+This is set to "C<hg>".
 
 =back
 

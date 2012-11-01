@@ -11,7 +11,7 @@ This transport copes with cloning a remote GIT repository to the local filesyste
 
 =head1 DESCRIPTION
 
-This module uses the Slaughter::Transport::revisionControl base-class in such
+This module uses the C<Slaughter::Transport::revisionControl> base-class in such
 a way as to offer a git-based transport.
 
 All the implementation, except for the setup of some variables, comes from that
@@ -27,19 +27,19 @@ The following commands are set in the L</_init> method:
 
 =item cmd_clone
 
-This is set to "git clone".
+This is set to "C<git clone>".
 
 =item cmd_update
 
-This is set to "git pull".
+This is set to "C<git pull>".
 
 =item cmd_version
 
-This is set to "git --version".
+This is set to "C<git --version>".
 
 =item name
 
-This is set to "git".
+This is set to "C<git>".
 
 =back
 

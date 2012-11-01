@@ -11,7 +11,7 @@ This transport copes with cloning a remote Subversion repository to the local fi
 
 =head1 DESCRIPTION
 
-This module uses the Slaughter::Transport::revisionControl base-class in such
+This module uses the C<Slaughter::Transport::revisionControl> base-class in such
 a way as to offer a Subversion-based transport.
 
 All the implementation, except for the setup of some variables, comes from that
@@ -27,19 +27,19 @@ The following commands are set in the L</_init> method:
 
 =item cmd_clone
 
-This is set to "svn checkout".
+This is set to "C<svn checkout>".
 
 =item cmd_update
 
-This is set to "svn update".
+This is set to "C<svn update>".
 
 =item cmd_version
 
-This is set to "svn --version".
+This is set to "C<svn --version>".
 
 =item name
 
-This is set to "svn".
+This is set to "C<svn>".
 
 =back
 

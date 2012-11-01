@@ -25,8 +25,8 @@ command such as:
 
 =for example end
 
-In our derived Mercurical class we set the command to "hg clone", similarly
-in the GIT class we use "git clone".  Finally although it isn't a revision
+In our derived Mercurical class we set the command to "C<hg clone>", similarly
+in the GIT class we use "C<git clone>".  Finally although it isn't a revision
 control system our rsync implementation works via a subclass precisely
 because it is possible to fetch a remote tree using a simple command,
 in that case it is:
@@ -48,32 +48,32 @@ repository to be uploaded in-place.
 =head1 SUBCLASSING
 
 If you wish to write your own transport for a revision control tool,
-or similar command that will fetch a remote repository, you must 
-subclass this class, and populate the options in the <L/_init/> method.
+or similar command that will fetch a remote repository, you must
+subclass this class and implement the C<_init> method.
 
 The following expected parameters should be filled:
 
 =over 8
 
-=item  cmd_clone
+=item C<cmd_clone>
 
-The command to clone the repository.  This will have the repository location, as specified by "--prefix", and the destination directory appended to it.
+The command to clone the repository.  This will have the repository location, as specified by "C<--prefix>", and the destination directory appended to it.
 
-=item cmd_update
+=item C<cmd_update>
 
 A command to call to update an I<existing> repository.  Currently each time slaughter runs it will pull the remote repository from scratch to a brand new temporary directory, it is possible in the future we will work with a local directory that persists - at that point having the ability to both checkout and update a remote repository will be useful.
 
-=item cmd_version
+=item C<cmd_version>
 
 A command to call which will output the version of the revision control system.   This may be any command which outputs text, as the output is discarded.  The purposes is to ensure that the binary required for cloning is present on the system.
 
-=item name
+=item C<name>
 
 The name of the transport.
 
 =back
 
-For sample implementations please consult, for example, Slaughter::Transport::git.
+For sample implementations please consult, for example, C<Slaughter::Transport::git>.
 
 =cut
 
@@ -110,7 +110,7 @@ package Slaughter::Transport::revisionControl;
 
 Create a new instance of this object.
 
-This constructor calls the "_init" method of any derived class, which is
+This constructor calls the "C<_init>" method of any derived class, which is
 where we'll expect them to setup their revision-specific commands.
 
 =cut
@@ -223,13 +223,13 @@ sub error
 
 Fetch the policies which are required from the remote server.
 
-This method begins by looking for the file "default.policy" within
+This method begins by looking for the file "C<default.policy>" within
 the top-level policies sub-directory of the repository.  Additional
 included policies are fetched and interpolated.
 
 Fetching of the policies involves first cloning the remote repository,
 using the command specified in L</cmd_clone>, then looking beneath
-the repository for the policies/ subdirectory.
+the repository for the C<policies/> subdirectory.
 
 =cut
 
