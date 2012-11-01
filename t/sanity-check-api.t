@@ -24,13 +24,22 @@ use Test::More qw( no_plan );
 #
 # Find the directory
 #
-my $base = "./lib";
-if ( !-d $base ) {$base = "../lib/";}
+#
+#  Find the location of the transport modules on disk.
+#
+my $base = undef;
 
+$base = "./lib"  if ( -d "./lib/" );
+$base = "../lib" if ( -d "../lib/" );
+ok( $base,    "We found a library directory." );
+ok( -d $base, "The library directory exists." );
 
+#
+#  Work with both sets of modules.
+#
 foreach my $dir (qw! Slaughter/API Slaughter/Info !)
 {
-    ok( -d ( $base . "/" . $dir ), "Directory present" );
+    ok( -d ( $base . "/" . $dir ), "Directory present: $base/$dir" );
 
     # open the generic module - and count the subroutines
     my $expected = countSubs("$base/$dir/generic.pm");
