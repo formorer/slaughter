@@ -138,12 +138,39 @@ sub getInformation
     #
     #  Are we i386/amd64?
     #
-    $ref->{'arch'} = `uname -p`;
-    chomp( $ref->{'arch'} );
+    $ref->{ 'arch' } = `uname -p`;
+    chomp( $ref->{ 'arch' } );
 
     #
-    #  TODO IPv4/IPv6 addresses
+    #  Count of IPv4/IPv6 addresses.
     #
+    my $ipv4 = 1;
+    my $ipv6 = 1;
+
+    #
+    #  Parse the output of /sbin/ifconfig.
+    #
+    foreach my $line ( split( /[\r\n]/, `ifconfig` ) )
+    {
+        chomp($line);
+        next unless ( $line =~ /(inet|inet6)/ );
+
+        if ( $line =~ /inet ([^ \t]+)/ )
+        {
+            my $addr = $1;
+            next if ( $addr =~ /^127\./i );
+            $ref->{ 'ip_' . $ipv4 } = $addr;
+            $ipv4 += 1;
+        }
+        if ( $line =~ /inet6 ([^ \t]+)/ )
+        {
+            my $addr = $1;
+            next if ( $addr =~ /fe80/i );
+            $ref->{ 'ip6_' . $ipv6 } = $addr;
+            $ipv6 += 1;
+        }
+    }
+
 
     return ($ref);
 }
