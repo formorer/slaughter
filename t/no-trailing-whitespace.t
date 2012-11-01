@@ -90,6 +90,7 @@ sub countTrailing
       die "Cannot open $file - $!";
     foreach my $line (<FILE>)
     {
+
         # If we found a line with any then increase the count by one
         # rather than the number of characters found.
         if ( $line =~ /^(.*)([\t ]+)$/ )

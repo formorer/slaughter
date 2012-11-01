@@ -15,7 +15,7 @@ use Test::More qw( no_plan );
 #  The prefix to test from
 #
 my $prefix = undef;
-$prefix = "." if ( -d "bin/" && -d "lib/" );
+$prefix = "."   if ( -d "bin/"    && -d "lib/" );
 $prefix = "../" if ( -d "../bin/" && -d "../lib/" );
 ok( $prefix, "We found a prefix : $prefix" );
 
@@ -28,7 +28,7 @@ find( { wanted => \&checkFile, no_chdir => 1 }, $prefix );
 #
 #  Now check other files too.
 #
-checkPOD( "$prefix/bin/slaughter" );
+checkPOD("$prefix/bin/slaughter");
 
 #
 #  Check a file.
@@ -36,12 +36,13 @@ checkPOD( "$prefix/bin/slaughter" );
 #
 sub checkFile
 {
+
     # The file.
     my $file = $File::Find::name;
 
     if ( $file =~ /\.pm$/ )
     {
-        checkPOD( $file );
+        checkPOD($file);
     }
 }
 
@@ -56,7 +57,7 @@ Check the POD contents of the named file.
 
 sub checkPOD
 {
-    my( $file ) = ( @_ );
+    my ($file) = (@_);
 
     ok( -e $file,  "$file" );
     ok( !-d $file, " File is not a directory: $file" );
@@ -69,7 +70,6 @@ sub checkPOD
     my $output = `$cmd 2>&1`;
     chomp($output);
 
-    is( $output,
-        "$file pod syntax OK.",
+    is( $output, "$file pod syntax OK.",
         " File has correct POD syntax: $file" );
 }

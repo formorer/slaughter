@@ -10,67 +10,67 @@
 
 use Test::More qw( no_plan );
 
-BEGIN{ use_ok( 'base' ); }
-require_ok( 'base' );
+BEGIN {use_ok('base');}
+require_ok('base');
 
 
-BEGIN{ use_ok( 'English' ); }
-require_ok( 'English' );
+BEGIN {use_ok('English');}
+require_ok('English');
 
 
-BEGIN{ use_ok( 'File::Basename' ); }
-require_ok( 'File::Basename' );
+BEGIN {use_ok('File::Basename');}
+require_ok('File::Basename');
 
 
-BEGIN{ use_ok( 'File::Copy' ); }
-require_ok( 'File::Copy' );
+BEGIN {use_ok('File::Copy');}
+require_ok('File::Copy');
 
 
-BEGIN{ use_ok( 'File::Find' ); }
-require_ok( 'File::Find' );
+BEGIN {use_ok('File::Find');}
+require_ok('File::Find');
 
 
-BEGIN{ use_ok( 'File::Path' ); }
-require_ok( 'File::Path' );
+BEGIN {use_ok('File::Path');}
+require_ok('File::Path');
 
 
-BEGIN{ use_ok( 'File::Temp' ); }
-require_ok( 'File::Temp' );
+BEGIN {use_ok('File::Temp');}
+require_ok('File::Temp');
 
 
-BEGIN{ use_ok( 'Getopt::Long' ); }
-require_ok( 'Getopt::Long' );
+BEGIN {use_ok('Getopt::Long');}
+require_ok('Getopt::Long');
 
 
-BEGIN{ use_ok( 'LWP::UserAgent' ); }
-require_ok( 'LWP::UserAgent' );
+BEGIN {use_ok('LWP::UserAgent');}
+require_ok('LWP::UserAgent');
 
 
-BEGIN{ use_ok( 'Pod::Simple::HTML' ); }
-require_ok( 'Pod::Simple::HTML' );
+BEGIN {use_ok('Pod::Simple::HTML');}
+require_ok('Pod::Simple::HTML');
 
 
-BEGIN{ use_ok( 'Pod::Usage' ); }
-require_ok( 'Pod::Usage' );
+BEGIN {use_ok('Pod::Usage');}
+require_ok('Pod::Usage');
 
 
-BEGIN{ use_ok( 'strict' ); }
-require_ok( 'strict' );
+BEGIN {use_ok('strict');}
+require_ok('strict');
 
 
-BEGIN{ use_ok( 'Test::More' ); }
-require_ok( 'Test::More' );
+BEGIN {use_ok('Test::More');}
+require_ok('Test::More');
 
 
-BEGIN{ use_ok( 'Text::Template' ); }
-require_ok( 'Text::Template' );
+BEGIN {use_ok('Text::Template');}
+require_ok('Text::Template');
 
 
-BEGIN{ use_ok( 'vars' ); }
-require_ok( 'vars' );
+BEGIN {use_ok('vars');}
+require_ok('vars');
 
 
-BEGIN{ use_ok( 'warnings' ); }
-require_ok( 'warnings' );
+BEGIN {use_ok('warnings');}
+require_ok('warnings');
 
 

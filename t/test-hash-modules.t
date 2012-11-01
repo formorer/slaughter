@@ -99,7 +99,7 @@ foreach my $module (qw! Digest::SHA Digest::SHA1 !)
     # by Slaughter::Private
     #
     is( "b57e303d4466e3aac4ea20f3935fb6d77951e2c4",
-        checksumFile( $filename ),
+        checksumFile($filename),
         "Slaughter::Private agrees with the $module result." );
 }
 

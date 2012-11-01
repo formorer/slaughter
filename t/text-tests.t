@@ -151,16 +151,27 @@ is( FileMatches( File => $filename, Pattern => " isn't " ),
 #  Now do a replacement with lower-casing - to test the /eval modifier.
 #
 is( FileMatches( File => $filename, Pattern => "^[A-Z]+\$" ),
-    1, "Before down-casing there is a line consisting solely of upper-case letters" );
+    1,
+    "Before down-casing there is a line consisting solely of upper-case letters"
+  );
 is( FileMatches( File => $filename, Pattern => "^[a-z]+\$" ),
-    0, "Before down-casing there is no line consisting solely of lower-case letters" );
+    0,
+    "Before down-casing there is no line consisting solely of lower-case letters"
+  );
 
-ReplaceRegexp( File => $filename, Pattern => "^([A-Z]+)\$", Replace => "lc(\$1)" );
+ReplaceRegexp( File    => $filename,
+               Pattern => "^([A-Z]+)\$",
+               Replace => "lc(\$1)"
+             );
 
 is( FileMatches( File => $filename, Pattern => "^[A-Z]+\$" ),
-    0, "After down-casing there is no line consisting solely of upper-case letters" );
+    0,
+    "After down-casing there is no line consisting solely of upper-case letters"
+  );
 is( FileMatches( File => $filename, Pattern => "^[a-z]+\$" ),
-    1, "After down-casing there is a line consisting solely of lower-case letters" );
+    1,
+    "After down-casing there is a line consisting solely of lower-case letters"
+  );
 
 
 #
