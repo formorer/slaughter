@@ -189,7 +189,7 @@ sub getInformation
     if ( $^O =~ /freebsd/ )
     {
         $ref->{ 'load_average' } = `sysctl -n vm.loadavg`;
-        $ref->{ 'load_average' } =~ s/[\{\}]//g
+        $ref->{ 'load_average' } =~ s/[\{\}]//g;
         chomp( $ref->{ 'load_average' } );
     }
 
