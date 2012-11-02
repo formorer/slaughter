@@ -182,10 +182,15 @@ sub getInformation
     $ref->{ 'ip6_count' } = $ipv6;
 
     #
-    # Load Average
+    # Load Average - This test will always succeed on an OpenBSD
+    # system, but it is here to allow the module to be loaded/tested
+    # upon a GNU/Linux host
     #
-    $ref->{ 'load_average' } = `sysctl -n vm.loadavg`;
-    chomp( $ref->{ 'load_average' } );
+    if ( $^O =~ /openbsd/ )
+    {
+        $ref->{ 'load_average' } = `sysctl -n vm.loadavg`;
+        chomp( $ref->{ 'load_average' } );
+    }
 
     return ($ref);
 }
