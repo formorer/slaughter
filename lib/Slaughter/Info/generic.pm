@@ -111,7 +111,15 @@ sub getInformation
     #
     my $ref;
 
+    #
+    # We're unknown..?
+    #
     $ref->{ 'unknown' } = "all";
+
+    #
+    # This should be portable.
+    #
+    $ref->{ 'path' } = $ENV{ 'PATH' };
 
     # return the data.
     return ($ref);

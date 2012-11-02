@@ -155,6 +155,10 @@ sub getInformation
         $ref->{ 'domain' }   = $ref->{ 'fqdn' };
     }
 
+    #
+    # This should be portable.
+    #
+    $ref->{ 'path' } = $ENV{ 'PATH' };
 
     #
     #  Is this a xen host, or guest?
@@ -323,6 +327,20 @@ sub getInformation
     #
     #  TODO: HP RAID?
     #
+
+    #
+    # Load Average
+    #
+    my $uptime = `uptime`;
+    chomp($uptime);
+    if ( $uptime =~ /load average:[ \t]*(.*)/ )
+    {
+        $uptime = $1;
+        $uptime =~ s/,//g;
+        $ref->{ 'load_average' } = $uptime
+
+    }
+
 
     return ($ref);
 }

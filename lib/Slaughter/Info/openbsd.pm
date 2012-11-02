@@ -143,6 +143,11 @@ sub getInformation
     chomp( $ref->{ 'arch' } );
 
     #
+    # This should be portable.
+    #
+    $ref->{ 'path' } = $ENV{ 'PATH' };
+
+    #
     #  Count of IPv4/IPv6 addresses.
     #
     my $ipv4 = 1;
@@ -175,6 +180,12 @@ sub getInformation
     # counts of addresses
     $ref->{ 'ip_count' }  = $ipv4;
     $ref->{ 'ip6_count' } = $ipv6;
+
+    #
+    # Load Average
+    #
+    $ref->{ 'load_average' } = `sysctl -n vm.loadavg`;
+    chomp( $ref->{ 'load_average' } );
 
     return ($ref);
 }

@@ -137,7 +137,10 @@ sub getInformation
         $ref->{ 'bits' } = 0;
     }
 
-
+    #
+    # This should be portable.
+    #
+    $ref->{ 'path' } = $ENV{ 'PATH' };
 
     #
     #  IP address(es).
