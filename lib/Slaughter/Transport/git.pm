@@ -112,9 +112,11 @@ sub _init
     #
     #  The command to clone the remote repository
     #
-    $self->{ 'cmd_clone' } = "git clone ";
+    $self->{ 'cmd_clone' } = "git clone";
     $self->{ 'cmd_clone' } .= " $self->{'transportargs'} "
       if ( $self->{ 'transportargs' } );
+    $self->{ 'cmd_clone' } .= " #SRC# #DST#";
+
 
     #
     #  The command to update our repository - NOT USED

@@ -114,9 +114,10 @@ sub _init
     #
     # The command to clone our remote repository.
     #
-    $self->{ 'cmd_clone' } = "hg clone ";
+    $self->{ 'cmd_clone' } = "hg clone";
     $self->{ 'cmd_clone' } .= " $self->{'transportargs'} "
       if ( $self->{ 'transportargs' } );
+    $self->{ 'cmd_clone' } .= " #SRC# #DST#";
 
 
     #

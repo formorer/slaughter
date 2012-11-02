@@ -51,13 +51,24 @@ If you wish to write your own transport for a revision control tool,
 or similar command that will fetch a remote repository, you must
 subclass this class and implement the C<_init> method.
 
-The following expected parameters should be filled:
+The following parameters should be populated in your derived class:
 
 =over 8
 
 =item C<cmd_clone>
 
 The command to clone the repository.  This will have the repository location, as specified by "C<--prefix>", and the destination directory appended to it.
+
+The command will have with the strings "C<#SRC#>" and "C<#DST#>" replaced with the source of the fetch and the destination into which to fetch it repectively.
+
+The following, taken from C<Slaughter::Transport::hg>, demonstrates this:
+
+=for example begin
+
+    $self->{ 'cmd_clone' } = "hg clone #SRC# #DST#";
+
+=for example end
+
 
 =item C<cmd_update>
 
@@ -73,7 +84,7 @@ The name of the transport.
 
 =back
 
-For sample implementations please consult, for example, C<Slaughter::Transport::git>.
+For a sample implementation please consult C<Slaughter::Transport::hg>.
 
 =cut
 
@@ -110,8 +121,8 @@ package Slaughter::Transport::revisionControl;
 
 Create a new instance of this object.
 
-This constructor calls the "C<_init>" method of any derived class, which is
-where we'll expect them to setup their revision-specific commands.
+This constructor calls the "C<_init>" method of any derived class, if present,
+which is where we'll expect the setup menioned in L</SUBCLASSING> to take place.
 
 =cut
 
@@ -246,9 +257,14 @@ sub fetchPolicies
     $self->{ 'verbose' } && print "Fetching $repo into $dst\n";
 
     #
-    #  Do the cloning
+    #  Convert "#SRC#" and "#DST#" into the appropriate args from our
+    # cloning command, and then execute it.
     #
-    if ( system("$self->{'cmd_clone'} $repo $dst") != 0 )
+    my $cmd = $self->{ 'cmd_clone' };
+    $cmd =~ s/#SRC#/$repo/g;
+    $cmd =~ s/#DST#/$dst/g;
+
+    if ( system("$cmd") != 0 )
     {
         $self->{ 'verbose' } && print "FAILED TO FETCH POLICY";
         return undef;
