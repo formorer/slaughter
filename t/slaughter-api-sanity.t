@@ -1,16 +1,21 @@
 #!/usr/bin/perl -w
 #
-#  Because we have a generic module which throws "Not implemented" errors
-# we expect that every platform-specific module will implement each of those
-# same functions to get 100% functional.
+#  We have four sets of modules beneath the Slaughter namespace:
 #
-#  This test checks that the modules in :
+#    Slaughter::API::*
+#    Slaughter::Info::*
+#    Slaughter::Packages::*
+#    Slaughter::Transport::*
 #
-#     /lib/Slaughter/API/
-#     /lib/Slaughter/Info/
+#  Test that each such module implements every method mentioned in the API file,
+# and no more.
 #
-#  Contain the same number of subroutines as present in the generic.pm
-#  module in that same directory.
+#  There are two exceptions:
+#
+#    1.  Any class which is derived is excluded from the test.  Because the
+#       parent "probably" implemenets missing methods.
+#
+#    2.  Any method which is prefixed with "_" is considered internal/extra.
 #
 # Steve
 # --
@@ -22,66 +27,138 @@ use Test::More qw( no_plan );
 
 
 #
-# Find the directory
-#
-#
-#  Find the location of the transport modules on disk.
+#  Find the location of the modules on disk.
 #
 my $base = undef;
 
-$base = "./lib"  if ( -d "./lib/" );
-$base = "../lib" if ( -d "../lib/" );
+$base = "./lib/Slaughter"  if ( -d "./lib/Slaughter" );
+$base = "../lib/Slaughter" if ( -d "../lib/Slaughter" );
 ok( $base,    "We found a library directory." );
 ok( -d $base, "The library directory exists." );
 
-#
-#  Work with both sets of modules.
-#
-foreach my $dir (qw! Slaughter/API Slaughter/Info !)
-{
-    ok( -d ( $base . "/" . $dir ), "Directory present: $base/$dir" );
 
-    # open the generic module - and count the subroutines
-    my $expected = countSubs("$base/$dir/generic.pm");
-    ok( $expected,
-        "We found a number of subroutines in $base/$dir/generic.pm [$expected]"
-      );
+#
+#  For each subdirectory:
+#
+foreach my $dir ( sort( glob( $base . "/*/" ) ) )
+{
+    ok( -d $dir , " Found subdirectory: $dir" );
 
     #
-    #  Now that value should be present in every other file.
+    #  Look for the API file
     #
-    foreach my $file ( sort( glob("$base/$dir/*.pm") ) )
+    my $api = $dir . "API";
+    ok( -e $api , "Found corresponding API file: $api" );
+
+    #
+    #  Count the subroutines named in the API file
+    #
+    #  The format of the API file is:
+    #  /
+    #  |methodName
+    #  |  Mathod Description, prefixed by two spaces.
+    #  \
+    #
+    my %API;
+
+    open( my $handle, "<", $api )
+      or die "Failed to open $api - $!";
+    while( my $line = <$handle> )
     {
-        next if ( $file =~ /generic.pm/ );
-
-        my $found = countSubs($file);
-        is( $found, $expected, "Number of subroutines matches in $file" );
+        chomp( $line );
+        if ( $line =~ /^([_a-zA-Z]+)/ )
+        {
+            $API{$1} = 1;
+            ok( $1, "\tAPI documents function: $1" );
+        }
     }
-}
+    close( $handle );
 
-
-
-=begin doc
-
-Count the number of subroutines in the specified perl file.
-
-=end doc
-
-=cut
-
-sub countSubs
-{
-    my ($file) = (@_);
-
-    my $count = 0;
-
-    open( FILE, "<", "$file" ) or
-      die "Failed to open $file - $!";
-    while ( my $line = <FILE> )
+    #
+    #  Now ensure that each function is implemented
+    #
+    foreach my $pm ( sort( glob( $dir . "*.pm" ) ) )
     {
-        $count += 1 if ( $line =~ /^[ \t]*sub / );
-    }
-    close(FILE);
+        #
+        #  We found a library.
+        #
+        ok( -e $pm , "Found library: $pm" );
 
-    return ($count);
+
+        #
+        #  Copy of the expected functions we expect to find
+        # implemented.  Here so that we can delete them
+        # as we find them.
+        #
+        my %EXPECTED = %API;
+
+
+        #
+        #  Is this a derived class?  If so we'll be less strict
+        # about the API implementation.
+        #
+        my $derived = 0;
+
+
+        #
+        #  Open the library.
+        #
+        open( my $handle, "<", $pm )
+          or die "Failed open library file $pm - $!";
+        while( my $line = <$handle> )
+        {
+            chomp $line;
+
+            #
+            #  Look for derived classes - they don't need to implement
+            # the full API, because their parent will supply the bits they
+            # don't implement.
+            #
+            $derived = 1 if ( $line =~ /^use parent/i );
+
+            #
+            #  Look for subroutine definitions.
+            #
+            if ( $line =~ /^sub ([_a-zA-Z]*)/ )
+            {
+                my $sub = $1;
+
+                #
+                #  Skip methods prefixed with "_".
+                #
+                if ( $sub !~ /^_/ )
+                {
+                    #
+                    #  OK we have a subroutine in the library.
+                    #
+                    #  If this subroutine name doesn't match one mentioned in
+                    # the API then it is a bug.
+                    #
+                    #  Additional/Local/Private methods must be prefixed with "_".
+                    #
+                    ok( $EXPECTED{$sub}, "The subroutine $sub is required and present" );
+                    delete $EXPECTED{$sub};
+                }
+            }
+        }
+        close( $handle );
+
+        #
+        #  At this point we've deleted all the functions we found that
+        # were documented - so our hash should be empty.
+        #
+        #  However it might not be if the class is a derived one - because
+        # the derived class might assume the parent implements them.
+        #
+        next if ( $derived );
+        is( scalar %EXPECTED, 0, "There were no functions left over!");
+
+        #
+        #  Error on the functions that were missing.
+        #
+        foreach my $key ( keys %EXPECTED )
+        {
+            ok( ! $key, "Function $key not found in $pm " );
+        }
+    }
 }
