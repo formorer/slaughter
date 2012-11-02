@@ -65,7 +65,7 @@ use strict;
 use warnings;
 
 
-package Slaughter::Info::openbsd;
+package Slaughter::Info::freebsd;
 
 
 
@@ -182,13 +182,14 @@ sub getInformation
     $ref->{ 'ip6_count' } = $ipv6;
 
     #
-    # Load Average - This test will always succeed on an OpenBSD
+    # Load Average - This test will always succeed on an FreeBSD
     # system, but it is here to allow the module to be loaded/tested
     # upon a GNU/Linux host
     #
-    if ( $^O =~ /openbsd/ )
+    if ( $^O =~ /freebsd/ )
     {
         $ref->{ 'load_average' } = `sysctl -n vm.loadavg`;
+        $ref->{ 'load_average' } =~ s/[\{\}]//g
         chomp( $ref->{ 'load_average' } );
     }
 
