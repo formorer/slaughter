@@ -2,7 +2,7 @@ new
   Constructor
 
 recognised
-  Is the current system one for which we recognize a packaging system.
+  Is the current system one for which we recognize a packaging system?
 
 isInstalled
   Is the named package installed?
