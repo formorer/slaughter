@@ -112,9 +112,28 @@ sub isInstalled
     return 0 unless ( defined($type) );
 
     #
-    ## TODO
+    #  Found it installed?
     #
-    print "TODO\n";
+    my $found = 0;
+
+    #
+    #  Output the information about all installed package.
+    #
+    open my $handle, "-|", "/usr/sbin/pkg_info" or
+      die "Failed to run pkg_info: $!";
+
+    while ( my $line = <$handle> )
+    {
+        chomp($line);
+
+        $found = 1 if ( $line =~ /^\Q$package\E/ );
+    }
+    close($handle);
+
+    #
+    # Return the result.
+    #
+    return ($found);
 
 }
 
@@ -139,9 +158,10 @@ sub installPackage
     return 0 unless ( defined($type) );
 
     #
-    ## TODO
+    # Install
     #
-    print "TODO\n";
+    system( "/usr/sbin/pkgp_add", "-r", $package );
+
 
 }
 
@@ -166,9 +186,9 @@ sub removePackage
     return 0 unless ( defined($type) );
 
     #
-    ## TODO
+    #  Remove the package
     #
-    print "TODO\n";
+    system( "/usr/sbin/pkg_delete", $package );
 }
 
 
