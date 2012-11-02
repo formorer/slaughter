@@ -63,7 +63,12 @@ Installation
 
 
 
+  $cmd->{'clone'} + $cmd->{'update'} should setup _SRC_ _DST_ to be replaced with
+ the real values.
+
 Steve
 --
+
+
 
 
