@@ -27,7 +27,7 @@ install: build
 	dh_clean -k
 	dh_installdirs
 	make test
-	make install prefix=`pwd`/debian/slaughter2-client
+	make install BIN_PREFIX=`pwd`/debian/slaughter2-client/sbin/  LIB_PREFIX=`pwd`/debian/slaughter2-client/usr/share/perl5/ ETC_PREFIX=`pwd`/debian/slaughter2-client/etc/slaughter
 
 	mkdir -p `pwd`/debian/slaughter2-client/usr/share/man/man8/
 	pod2man ./bin/slaughter --official --section=8 > slaughter.1

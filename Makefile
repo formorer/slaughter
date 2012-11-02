@@ -13,6 +13,14 @@ DIST_PREFIX = ${TMP}
 VERSION     = 1.7
 BASE        = slaughter
 
+#
+#  Where we install the modules we provide, the binaries, and the config directory.
+#
+BIN_PREFIX  = /sbin
+ETC_PREFIX  = /etc
+LIB_PREFIX  = `perl -MConfig -e 'print $$Config{'vendorlib'}'`
+
+
 
 clean:
 	-find . -name '*~' -delete
@@ -30,28 +38,35 @@ tidy:
 
 
 install: clean
-	mkdir -p $(prefix)/usr/share/perl5/ || true
-	cp lib/Slaughter.pm $(prefix)/usr/share/perl5/
-	mkdir -p $(prefix)/usr/share/perl5/Slaughter || true
-	cp lib/Slaughter/*.pm  $(prefix)/usr/share/perl5/Slaughter/
-	mkdir -p $(prefix)/usr/share/perl5/Slaughter/API || true
-	cp lib/Slaughter/API/*.pm  $(prefix)/usr/share/perl5/Slaughter/API/
-	mkdir -p $(prefix)/usr/share/perl5/Slaughter/Transport || true
-	cp lib/Slaughter/Transport/*.pm  $(prefix)/usr/share/perl5/Slaughter/Transport/
-	mkdir -p $(prefix)/usr/share/perl5/Slaughter/Info || true
-	cp lib/Slaughter/Info/*.pm  $(prefix)/usr/share/perl5/Slaughter/Info/
-	mkdir -p $(prefix)/usr/share/perl5/Slaughter/Packages/ || true
-	cp lib/Slaughter/Packages/*.pm  $(prefix)/usr/share/perl5/Slaughter/Packages/
-	mkdir $(prefix)/sbin/ || true
-	cp ./bin/slaughter         $(prefix)/sbin/
-	mkdir -p $(prefix)/etc/slaughter || true
+	mkdir -p $(LIB_PREFIX) || true
+	cp lib/Slaughter.pm ${LIB_PREFIX}/
+
+	mkdir -p $(LIB_PREFIX)/Slaughter || true
+	cp lib/Slaughter/*.pm ${LIB_PREFIX}/Slaughter/
+
+	mkdir -p $(LIB_PREFIX)/Slaughter/API || true
+	cp lib/Slaughter/API/*.pm ${LIB_PREFIX}/Slaughter/API/
+
+	mkdir -p $(LIB_PREFIX)/Slaughter/Info || true
+	cp lib/Slaughter/Info/*.pm ${LIB_PREFIX}/Slaughter/Info/
+
+	mkdir -p $(LIB_PREFIX)/Slaughter/Transport || true
+	cp lib/Slaughter/Transport/*.pm ${LIB_PREFIX}/Slaughter/Transport/
+
+	mkdir -p $(LIB_PREFIX)/Slaughter/Packages || true
+	cp lib/Slaughter/Packages/*.pm ${LIB_PREFIX}/Slaughter/Packages/
+
+	mkdir -p $(BIN_PREFIX) || true
+	cp ./bin/slaughter $(BIN_PREFIX)/
+
+	mkdir -p $(ETC_PREFIX) || true
 
 
 uninstall:
-	rm -f  $(prefix)/usr/share/perl5/Slaughter.pm
-	rm -rf $(prefix)/usr/share/perl5/Slaughter/
-	rm -f  $(prefix)/sbin/slaughter
-	rm -rf $(prefix)/etc/slaughter
+	rm -f  $(LIB_PREFIX)/Slaughter.pm
+	rm -rf $(LIB_PREFIX)/Slaughter/
+	rm -f  $(BIN_PREFIX)/slaughter
+	rm -rf $(ETC_PREFIX)/slaughter
 
 
 release: tidy clean pod
