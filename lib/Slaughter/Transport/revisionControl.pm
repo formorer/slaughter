@@ -319,7 +319,7 @@ sub fetchPolicies
             #
             #  Now fetch it, resolved or relative.
             #
-            my $policy = $self->readFile( $dst . "/policies/" . $inc );
+            my $policy = $self->_readFile( $dst . "/policies/" . $inc );
             if ( defined($policy) )
             {
                 $content .= $policy;
@@ -367,7 +367,7 @@ named file - or undef on error.
 
 =cut
 
-sub readFile
+sub _readFile
 {
     my ( $self, $file ) = (@_);
 
