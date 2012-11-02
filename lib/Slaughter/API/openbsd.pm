@@ -2,13 +2,13 @@
 
 =head1 NAME
 
-Slaughter::API::openbsd - Perl Automation Tool Helper openbsd implementation
+Slaughter::API::openbsd - Perl Automation Tool Helper OpenBSD implementation
 
 =cut
 
 =head1 SYNOPSIS
 
-This module is the one that gets loaded upon openbsd systems, and implements 100%
+This module is the one that gets loaded upon OpenBSD systems, and implements 100%
 of the available primitives for such systems.
 
 When the module "Slaughter;" is used what happens is that an OS-specific module

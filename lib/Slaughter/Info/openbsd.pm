@@ -2,20 +2,20 @@
 
 =head1 NAME
 
-Slaughter::Info::openbsd - Perl Automation Tool Helper openbsd info implementation
+Slaughter::Info::openbsd - Perl Automation Tool Helper OpenBSD info implementation
 
 =cut
 
 =head1 SYNOPSIS
 
-This module is the openbsd version of the Slaughter information-gathering
+This module is the OpenBSD version of the Slaughter information-gathering
 module.
 
 Modules beneath the C<Slaughter::Info> namespace are loaded when slaughter
 is executed, they are used to populate a hash with information about
 the current host.
 
-This module is loaded only on openbsd systems, and will determine such details
+This module is loaded only on OpenBSD systems, and will determine such details
 as the local hostname, the free RAM, any IP addresses, etc.
 
 Usage is:
