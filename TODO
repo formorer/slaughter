@@ -9,9 +9,28 @@ Primitives
     NOTE:  We could and should do this, but the package handling is going to
     be non-portable regardless.
 
-  * Make Slaughter::API::generic a base-class?
+    Make Slaughter::API::generic a base-class?
+    -> DEFINITELY:  These files barely differ at all.
+         lib/Slaughter/linux.pm
+         lib/Slaughter/freebsd.pm
+         lib/Slaughter/openbsd.pm
 
-  * Add GPG validation for file downloads?
+     If we did make generic a base-class that would mean new "ports" would
+   fall-back to implementing Slaughter::Info:: + Slaughter::Packages:: modules
+   only.
+
+
+
+Validation
+----------
+
+  We want a step 2.5 in this list:
+
+   1.  Get system info.
+   2.  Download policies.
+   3.  Execute policies.
+
+  To validate policies/whatever.  GPG validation?  Something else?
 
        e.g. when fetching /default.policy also fetch /default.policy.sig
             and only accept if signature is valid.
@@ -58,8 +77,7 @@ Installation
 
   Currently using a hack to install into 'vendorlib'.  Need to either:
 
-    a) Test this works on OpenBSD
-    b) Look at a perl-alike installer.  (perl Makefile.PL && make install, etc).
+    a) Test this works on OpenBSD b) Look at a perl-alike installer.  (perl Makefile.PL && make install, etc).
 
 
 
