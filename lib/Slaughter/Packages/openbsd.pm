@@ -120,7 +120,7 @@ sub isInstalled
     #  Output the information about the package - this contains
     # "inst:" if the package is installed locally.
     #
-    open my $handle, "-|", "/usr/sbin/pkg_info '$package'" or
+    open my $handle, "-|", "/usr/sbin/pkg_info '$package' 2>/dev/null" or
       die "Failed to run pkg_info: $!";
 
     while ( my $line = <$handle> )
