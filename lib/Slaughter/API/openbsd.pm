@@ -44,7 +44,6 @@ package Slaughter::API::openbsd;
 
 
 
-
 #
 #  Package abstraction helpers.
 #

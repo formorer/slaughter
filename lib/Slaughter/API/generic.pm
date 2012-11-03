@@ -608,7 +608,8 @@ sub FetchFile
     }
     else
     {
-        $::verbose && print "\tUsing contents literally; no template expansion\n";
+        $::verbose &&
+          print "\tUsing contents literally; no template expansion\n";
     }
 
 
@@ -648,7 +649,8 @@ sub FetchFile
         }
         else
         {
-            $::verbose && print "\tCurrent file equals new one - not replacing\n";
+            $::verbose &&
+              print "\tCurrent file equals new one - not replacing\n";
         }
     }
 

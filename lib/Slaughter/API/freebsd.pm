@@ -43,7 +43,6 @@ package Slaughter::API::freebsd;
 
 
 
-
 #
 #  Package abstraction helpers.
 #
