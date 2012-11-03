@@ -78,16 +78,16 @@ sub fetchFromTransport
     #
     my @urls;
 
-    push( @urls, $url . "." . $fqdn );
-    push( @urls, $url . "." . $hostname );
-    push( @urls, $url . "." . $os );
-    push( @urls, $url . "." . $arch );
+    push( @urls, $url . "." . $::fqdn );
+    push( @urls, $url . "." . $::hostname );
+    push( @urls, $url . "." . $::os );
+    push( @urls, $url . "." . $::arch );
     push( @urls, $url );
 
 
     foreach my $attempt (@urls)
     {
-        my $content = $TRANSPORT->fetchContents($attempt);
+        my $content = $::TRANSPORT->fetchContents($attempt);
 
         if ( defined($content) )
         {
