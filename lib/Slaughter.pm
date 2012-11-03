@@ -83,12 +83,12 @@ BEGIN
 {
 
     #
-    #  The generic module which is always available
+    #  The generic module which is always available.
     #
     my $generic = "use Slaughter::API::generic";
 
     #
-    #  Replacement implementations which are OS-specific
+    #  Replacement implementations which are OS-specific.
     #
     my $specific = "use Slaughter::API::$^O;";
 
@@ -101,7 +101,8 @@ BEGIN
     ## use critic
 
     #
-    # If there were no errors we'll look for a local extension module too:
+    # If there were no errors in loading the OS-specific module we'll continue
+    # and look for a local extension module too:
     #
     if ( !$@ )
     {
