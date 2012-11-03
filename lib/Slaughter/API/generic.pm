@@ -847,7 +847,7 @@ sub FindBinary
 This method is a stub which does nothing but output a line of text to
 inform the caller that the method is not implemented.
 
-For an implementation, and documentation, please consult Slaughter::API::linux
+For an implementation, and documentation, please consult C<Slaughter::API::linux>.
 
 =cut
 
@@ -863,7 +863,7 @@ sub InstallPackage
 This method is a stub which does nothing but output a line of text to
 inform the caller that the method is not implemented.
 
-For an implementation, and documentation, please consult Slaughter::API::linux
+For an implementation, and documentation, please consult C<Slaughter::API::linux>.
 
 =cut
 
@@ -880,7 +880,7 @@ sub Mounts
 This method is a stub which does nothing but output a line of text to
 inform the caller that the method is not implemented.
 
-For an implementation, and documentation, please consult Slaughter::API::linux
+For an implementation, and documentation, please consult C<Slaughter::API::linux>.
 
 =cut
 
@@ -895,7 +895,7 @@ sub PackageInstalled
 This method is a stub which does nothing but output a line of text to
 inform the caller that the method is not implemented.
 
-For an implementation, and documentation, please consult Slaughter::API::linux
+For an implementation, and documentation, please consult C<Slaughter::API::linux>.
 
 =cut
 
@@ -910,7 +910,7 @@ sub PercentageUsed
 This method is a stub which does nothing but output a line of text to
 inform the caller that the method is not implemented.
 
-For an implementation, and documentation, please consult Slaughter::API::linux
+For an implementation, and documentation, please consult C<Slaughter::API::linux>.
 
 =cut
 
