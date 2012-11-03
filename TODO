@@ -1,22 +1,4 @@
 
-Primitives
-----------
-
-  * Our primitives are mostly written in pure-perl.  If we made them
-    entirely pure-perl we'd be able to implement the majority of our
-    primitives in Slaughter/AP/generic.
-
-    We're going to have three issues here:
-
-        1.  The packaging is system-dependant, and will require new
-            implementations.
-
-        2.  We're not using classes, the API methods are exported directly
-            into the caller's namespace.
-
-        3.  I don't believe we can use use inheritance due to 2.
-
-
 
 Validation
 ----------
