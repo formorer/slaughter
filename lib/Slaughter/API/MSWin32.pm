@@ -37,6 +37,38 @@ The LICENSE file contains the full text of the license.
 =cut
 
 
+package Slaughter::API::MSWin32;
+
+
+
+
+=begin doc
+
+Export all subs in this package into the main namespace.
+
+This is nasty.
+
+=end doc
+
+=cut
+
+sub import
+{
+    no strict 'refs';
+
+    my $caller = caller;
+
+    while ( my ( $name, $symbol ) = each %{ __PACKAGE__ . '::' } )
+    {
+        next if $name eq 'BEGIN';     # don't export BEGIN blocks
+        next if $name eq 'import';    # don't export this sub
+        next unless *{ $symbol }{ CODE };    # export subs only
+
+        my $imported = $caller . '::' . $name;
+        *{ $imported } = \*{ $symbol };
+    }
+}
+
 
 
 =head2 Alert
