@@ -1,4 +1,31 @@
 #!/usr/bin/perl -I../lib -Ilib
+#
+#  Test the packaging API looks at least slightly reasonable.
+#
+#  Example runs:
+#
+#      [steve@medium ~/hg/slaughter]$ ./skx/test-packaging
+#      We're running on a system that identifies itself as: freebsd
+#      Installed: bash
+#      Installed: sudo
+#      Installed: screen
+#
+#      skx@precious:~/hg/slaughter$ ./skx/test-packaging
+#      We're running on a system that identifies itself as: linux
+#      Installed: bash
+#      Installed: sudo
+#      Installed: screen
+#
+#      -bash-4.2$ ./skx/test-packaging  2>/dev/null
+#      We're running on a system that identifies itself as: openbsd
+#      Installed: bash
+#      Missing: sudo
+#      Installed: screen
+#
+# Steve
+# --
+
+
 
 use strict;
 use warnings;
