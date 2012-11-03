@@ -417,7 +417,7 @@ sub fetchContents
 
     my $complete = $self->{ 'transportdir' } . "/files/" . $file;
 
-    return ( $self->readFile($complete) );
+    return ( $self->_readFile($complete) );
 }
 
 
