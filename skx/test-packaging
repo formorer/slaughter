@@ -1,0 +1,36 @@
+#!/usr/bin/perl -I../lib -Ilib
+
+use strict;
+use warnings;
+
+
+
+#
+#  Show the OS
+#
+print "We're running on a system that identifies itself as: $^O\n";
+
+#
+#  Load the module
+#
+my $api = "use Slaughter::API::$^O;";
+
+## no critic (Eval)
+eval($api);
+## use critic
+
+
+#
+#  Test for packages
+#
+foreach my $package (qw! bash sudo screen !)
+{
+    if ( PackageInstalled( Package => $package ) )
+    {
+        print "Installed: $package\n";
+    }
+    else
+    {
+        print "Missing: $package\n";
+    }
+}
