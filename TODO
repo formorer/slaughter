@@ -38,25 +38,13 @@ Logging
 
 
 
-Misc
-----
-
-  Info modules need work:
-
-  * Update linux module to fetch:
-           - QEMU version, if running under it.
-           - Free RAM.
-           - Total RAM.
-           - Uptime, in seconds.
-
-
-
 Installation
 ------------
 
   Currently using a hack to install into 'vendorlib'.  Need to either:
 
-    a) Test this works on OpenBSD b) Look at a perl-alike installer.  (perl Makefile.PL && make install, etc).
+    a) Test this works on OpenBSD.
+    b) Look at a perl-alike installer.  (perl Makefile.PL && make install, etc).
 
 
 Steve
