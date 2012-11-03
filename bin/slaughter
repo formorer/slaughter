@@ -128,13 +128,13 @@ These primitives and variables are described online:
 =head1 DEBUGGING
 
 The simplest way to debug a potential problem is to execute slaughter
-with both the B<--no-delete> and B<--verbose> options.  This will ensure that
+with both the C<--no-delete> and C<--verbose> options.  This will ensure that
 once the policy/policies are downloaded and compiled they will be kept.
 
 The result should be that you'll be shown the name of a file - this file
 may be executed interactively to see what is going on.
 
-You may also invoke slaughter with the B<--dump> flag which will cause
+You may also invoke slaughter with the C<--dump> flag which will cause
 it to display the environmental details it has discovered, and which will
 be compiled into the policy prior to execution.
 
@@ -143,12 +143,12 @@ be compiled into the policy prior to execution.
 
 =head1 CONFIGURATION
 
-Most of the configuration of this tool may be carried out via the
-command line, however some options may be more naturally supplied
-in the system-wide configuration file.
+The configuration of this tool may be carried out via the command line,
+however some options may be more naturally supplied in the system-wide
+configuration file.
 
 For Unix platforms the global configuration file is located at
-B</etc/slaughter/slaughter.conf>, and it may be found at B<C:/slaughter.conf>
+C</etc/slaughter/slaughter.conf>, and it may be found at C<C:/slaughter.conf>
 for Microsoft Windows systems.
 
 A fully-featured file might look something like this:
