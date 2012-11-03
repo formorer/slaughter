@@ -8,18 +8,9 @@ Slaughter::API::openbsd - Perl Automation Tool Helper OpenBSD implementation
 
 =head1 SYNOPSIS
 
-This module is the one that gets loaded upon OpenBSD systems, and implements 100%
-of the available primitives for such systems.
 
-When the module "Slaughter;" is used what happens is that an OS-specific module
-is loaded:
-
-=for example begin
-
-  my $module = "Slaughter::API::$^O";
-  print "We'd load $module\n";
-
-=for example end
+This module is the one that gets loaded upon OpenBSD systems, after the generic
+API implementation.  It implements the platform-specific parts of our primitives.
 
 We also attempt to load C<Slaughter::API::Local::openbsd>, where site-specific primitives
 may be implemented.  If the loading of this additional module fails we report no error/warning.
