@@ -597,9 +597,8 @@ sub FetchFile
           Text::Template->new( TYPE   => 'string',
                                SOURCE => $content );
 
-        $content = $template->fill_in( HASH => \%template,
-                                       PACKAGE => "main",
-                                     );
+        $content = $template->fill_in( HASH    => \%template,
+                                       PACKAGE => "main", );
 
         if ( !$content )
         {
