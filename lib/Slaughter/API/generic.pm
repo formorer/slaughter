@@ -360,7 +360,7 @@ sub DeleteFilesMatching
     my $pattern = $params{ 'Pattern' } || return;
     my $removed = 0;
 
-    $verbose && print "Removing files matching $pattern from $root\n";
+    $::verbose && print "Removing files matching $pattern from $root\n";
 
     #
     #  Reference to our routine.
@@ -372,7 +372,7 @@ sub DeleteFilesMatching
             unlink($file);
 
             $removed += 1;
-            $verbose &&
+            $::verbose &&
               print "\tRemoving $file\n";
         }
     };
@@ -431,7 +431,7 @@ sub DeleteOldFiles
     my $age  = $params{ 'Age' }  || return;
     my $removed = 0;
 
-    $verbose && print "Removing files older than $age days from $root\n";
+    $::verbose && print "Removing files older than $age days from $root\n";
 
     #
     #  Find each file.
@@ -446,7 +446,7 @@ sub DeleteOldFiles
 
         if ( $fage >= $age )
         {
-            $verbose &&
+            $::verbose &&
               print "\tRemoving $file age $fage is >= $age\n";
 
             unlink($file);
@@ -454,7 +454,7 @@ sub DeleteOldFiles
         }
     }
 
-    $verbose && print "\tRemoved $removed files\n";
+    $::verbose && print "\tRemoved $removed files\n";
 
     return $removed;
 }
@@ -562,14 +562,14 @@ sub FetchFile
 {
     my (%params) = (@_);
 
-    $verbose && print "FetchFile( $params{'Source'} );\n";
+    $::verbose && print "FetchFile( $params{'Source'} );\n";
 
     my $src = $params{ 'Source' };
     my $dst = $params{ 'Dest' };
 
     if ( !$src || !$dst )
     {
-        $verbose && print "\tMissing source or destination.\n";
+        $::verbose && print "\tMissing source or destination.\n";
         return 0;
     }
 
@@ -581,7 +581,7 @@ sub FetchFile
 
     if ( !defined($content) )
     {
-        $verbose && print "\tFailed to fetch.\n";
+        $::verbose && print "\tFailed to fetch.\n";
         return 0;
     }
 
@@ -591,7 +591,7 @@ sub FetchFile
     #
     if ( ( defined $params{ 'Expand' } ) && ( $params{ 'Expand' } =~ /true/i ) )
     {
-        $verbose && print "\tExpanding content with Text::Template\n";
+        $::verbose && print "\tExpanding content with Text::Template\n";
 
         my $template =
           Text::Template->new( TYPE   => 'string',
@@ -608,7 +608,7 @@ sub FetchFile
     }
     else
     {
-        $verbose && print "\tUsing contents literally; no template expansion\n";
+        $::verbose && print "\tUsing contents literally; no template expansion\n";
     }
 
 
@@ -632,7 +632,7 @@ sub FetchFile
 
     if ( !-e $dst )
     {
-        $verbose && print "\tDestination not already present.\n";
+        $::verbose && print "\tDestination not already present.\n";
         $replace = 1;
     }
     else
@@ -644,11 +644,11 @@ sub FetchFile
         {
             $replace = 1;
 
-            $verbose && print "\tContents don't match - will replace\n";
+            $::verbose && print "\tContents don't match - will replace\n";
         }
         else
         {
-            $verbose && print "\tCurrent file equals new one - not replacing\n";
+            $::verbose && print "\tCurrent file equals new one - not replacing\n";
         }
     }
 
@@ -659,7 +659,7 @@ sub FetchFile
     {
         if ( -e $dst )
         {
-            $verbose && print "\tMoving existing file out of the way.\n";
+            $::verbose && print "\tMoving existing file out of the way.\n";
             RunCommand( Cmd => "mv $dst $dst.old" );
         }
 
@@ -674,7 +674,7 @@ sub FetchFile
         }
 
 
-        $verbose && print "\tReplacing $dst\n";
+        $::verbose && print "\tReplacing $dst\n";
         RunCommand( Cmd => "mv $name $dst" );
     }
 
@@ -1058,7 +1058,7 @@ sub RunCommand
         $cmd .= "  1>&2";
     }
 
-    $verbose && print "runCommand( $cmd )\n";
+    $::verbose && print "runCommand( $cmd )\n";
 
     return ( system($cmd ) );
 }
@@ -1133,7 +1133,7 @@ sub SetPermissions
         $uid = getpwnam($owner);
         return -2 if ( !defined($uid) );
 
-        $verbose && print "Owner:$owner -> UID:$uid\n";
+        $::verbose && print "Owner:$owner -> UID:$uid\n";
     }
 
     # invalid group?
@@ -1141,7 +1141,7 @@ sub SetPermissions
     {
         $gid = getgrnam($group);
         return -2 if ( !defined($gid) );
-        $verbose && print "Group:$group -> GID:$gid\n";
+        $::verbose && print "Group:$group -> GID:$gid\n";
     }
 
     my $changed = 0;
@@ -1158,7 +1158,7 @@ sub SetPermissions
              $ctime,    $blksize, $blocks
            ) = stat($file);
 
-        $verbose && print "\tSetting owner to $owner/$uid\n";
+        $::verbose && print "\tSetting owner to $owner/$uid\n";
         chown( $uid, $orig_gid, $file );
 
         $changed += 1;
@@ -1175,19 +1175,19 @@ sub SetPermissions
              $ctime,    $blksize, $blocks
            ) = stat($file);
 
-        $verbose && print "\tSetting group to $group/$gid\n";
+        $::verbose && print "\tSetting group to $group/$gid\n";
         chown( $orig_uid, $gid, $file );
 
         $changed += 1;
     }
     if ( $params{ 'Mode' } )
     {
-        $verbose && print "\tSetting mode to $mode\n";
+        $::verbose && print "\tSetting mode to $mode\n";
         my $mode = $params{ 'Mode' };
         if ( $mode !~ /^0/ )
         {
             $mode = oct("0$mode");
-            $verbose && print "\tOctal mode is now $mode\n";
+            $::verbose && print "\tOctal mode is now $mode\n";
         }
         chmod( $mode, $file );
         $changed += 1;
