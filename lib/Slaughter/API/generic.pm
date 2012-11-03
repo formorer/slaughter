@@ -9,7 +9,7 @@ Slaughter::API::generic - Perl Automation Tool Helper generic implementation
 =head1 SYNOPSIS
 
 This module implements most of our primitives in a portable fashion, allowing
-other modules in the c<Slaughter::API::> namespace to implement the rest.
+other modules in the C<Slaughter::API::> namespace to implement the rest.
 
 When this module is loaded it promotes each of the subroutines in the package
 into the C<main::> namespace, to allow calling code to use the functions directly
@@ -543,7 +543,7 @@ Template template expansion involves the use of the L<Text::Template> module, of
 
 =for example begin
 
-   # This is the config file for SSHD on ${fqdn}
+   # This is the config file for SSHD on {$fqdn}
 
 =for example end
 
@@ -869,53 +869,18 @@ For an implementation, and documentation, please consult Slaughter::API::linux
 
 sub Mounts
 {
-    my @results;
-
-    if ( open( my $handle, "<", "/proc/mounts" ) )
-    {
-        foreach my $line (<$handle>)
-        {
-            chomp($line);
-            my ( $dev, $point, $type ) = split( / /, $line );
-            if ( $dev =~ /^\/dev/ )
-            {
-                push( @results, $point );
-            }
-        }
-        close($handle);
-    }
-
-    return (@results);
+    print "Mounts - not implemented for $^O\n";
 }
 
 
 
 =head2 PackageInstalled
 
-Test whether a given system package is installed.
 
-=for example begin
+This method is a stub which does nothing but output a line of text to
+inform the caller that the method is not implemented.
 
-  if ( PackageInstalled( Package => "exim4-config" ) )
-  {
-      print "$package installed\n";
-  }
-
-=for example end
-
-The following parameters are supported:
-
-=over 8
-
-=item Package
-
-The name of the package to test.
-
-=back
-
-The return value will be a 0 if not installed, or 1 if it is.
-
-This function is OS-specific and thus not implemented in the generic module.
+For an implementation, and documentation, please consult Slaughter::API::linux
 
 =cut
 
@@ -942,28 +907,10 @@ sub PercentageUsed
 
 =head2 RemovePackage
 
-Remove the specified system package from the system.
+This method is a stub which does nothing but output a line of text to
+inform the caller that the method is not implemented.
 
-=for example begin
-
-  if ( PackageInstalled( Package => 'telnetd' ) )
-  {
-      RemovePackage( Package => 'telnetd' );
-  }
-
-=for example end
-
-The following parameters are supported:
-
-=over 8
-
-=item Package
-
-The name of the package to remove.
-
-=back
-
-This is OS-dependant and thus not implemented in the generic module.
+For an implementation, and documentation, please consult Slaughter::API::linux
 
 =cut
 
