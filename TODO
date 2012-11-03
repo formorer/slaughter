@@ -3,21 +3,18 @@ Primitives
 ----------
 
   * Our primitives are mostly written in pure-perl.  If we made them
-    entirely pure-perl we'd be able to drop Slaughter/linux, and
-    Slaughter/generic - just merging things together.
+    entirely pure-perl we'd be able to implement the majority of our
+    primitives in Slaughter/AP/generic.
 
-    NOTE:  We could and should do this, but the package handling is going to
-    be non-portable regardless.
+    We're going to have three issues here:
 
-    Make Slaughter::API::generic a base-class?
-    -> DEFINITELY:  These files barely differ at all.
-         lib/Slaughter/linux.pm
-         lib/Slaughter/freebsd.pm
-         lib/Slaughter/openbsd.pm
+        1.  The packaging is system-dependant, and will require new
+            implementations.
 
-     If we did make generic a base-class that would mean new "ports" would
-   fall-back to implementing Slaughter::Info:: + Slaughter::Packages:: modules
-   only.
+        2.  We're not using classes, the API methods are exported directly
+            into the caller's namespace.
+
+        3.  I don't believe we can use use inheritance due to 2.
 
 
 
@@ -79,10 +76,6 @@ Installation
 
     a) Test this works on OpenBSD b) Look at a perl-alike installer.  (perl Makefile.PL && make install, etc).
 
-
-
-  $cmd->{'clone'} + $cmd->{'update'} should setup _SRC_ _DST_ to be replaced with
- the real values.
 
 Steve
 --
