@@ -37,19 +37,5 @@ Logging
     via mail, assuming we're launched via cron.  This needs to be updated.
 
 
-
-Installation
-------------
-
-  Currently using a hack to install into 'vendorlib'.  Need to either:
-
-    a) Test this works on OpenBSD.
-    b) Look at a perl-alike installer.  (perl Makefile.PL && make install, etc).
-
-
 Steve
 --
-
-
-
-

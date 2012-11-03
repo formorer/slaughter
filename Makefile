@@ -18,7 +18,13 @@ BASE        = slaughter
 #
 BIN_PREFIX  = /sbin
 ETC_PREFIX  = /etc
-LIB_PREFIX  = `perl -MConfig -e 'print $$Config{'vendorlib'}'`
+
+#
+#  We install to /usr/share/perl5 if it exists.  Otherwise to wherever
+# the perl 'sitelib' value points.
+#
+LIB_PREFIX=`test -d /usr/share/perl5 && echo /usr/share/perl5 || perl -MConfig -e 'print $$Config{'sitelib'}'`
+
 
 
 
@@ -35,6 +41,10 @@ clean:
 
 tidy:
 	perltidy ./bin/slaughter $$(find . -name '*.pm' -print) || true
+
+
+test-install:
+	@echo "We'll install into: $(LIB_PREFIX)"
 
 
 install: clean
