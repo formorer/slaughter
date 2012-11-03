@@ -24,9 +24,14 @@ This usage actually dynamically loads the appropriate module from beneath the
 Slaughter::API namespace - which will contain the implementation of the primitives
 distributed with Slaughter.
 
-If no appropriate module is located to match the current system then the fall-backup
-module (Slaughter::API::generic) is loaded.  The generic module contains stub
-primitives which merely output the message:
+Initially we load the Slaughter::API::generic module which contains pure-perl
+implemenations of our primitives, and then after that we load the OS-specific
+module.
+
+Assuming that the OS-specific module, e.g. C<Slaughter::API::linux>, is loaded
+successfully we then load any local OS-specific module.  (e.g. C<Slaughter::API::Local::linux>.)
+
+Fallback implementations in our generic module merely output this:
 
 =for example begin
 
@@ -77,8 +82,19 @@ use warnings;
 BEGIN
 {
 
-    my $generic  = "use Slaughter::API::generic";
+    #
+    #  The generic module which is always available
+    #
+    my $generic = "use Slaughter::API::generic";
+
+    #
+    #  Replacement implementations which are OS-specific
+    #
     my $specific = "use Slaughter::API::$^O;";
+
+    ## no critic (Eval)
+    eval($generic);
+    ## use critic
 
     ## no critic (Eval)
     eval($specific);
@@ -99,17 +115,6 @@ BEGIN
         #  We don't care if the local-module fails to load because we expect
         # it to be missing in the general case.
         #
-    }
-    else
-    {
-
-        #
-        #  We found errors so we'll fall-back to the generic implementation
-        #
-
-        ## no critic (Eval)
-        eval($generic);
-        ## use critic
     }
 }
 
