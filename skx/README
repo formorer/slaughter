@@ -1,12 +1,29 @@
 
-Small collection of scripts that will create/trash/re-create random
-policy-sets and use them, via the appropriate transports.
+Simple collection of scripts and utilities useful to the author.
 
-Usage:
 
-  ./skx/test-http
-  ./skx/test-git
-  ./skx/test-git
+Contents
+--------
 
-These will create/directories so read them before using them.  Even
-better don't touch!
+make-pod
+  Make POD documentation from our library files.
+
+sync-examples
+  Use rsync to promote our examples to the slaughter website.
+
+test-packaging
+  Test that the packaging primitives can be used to detect package
+  installation.  Added after the API was reworked to ease my concerns.
+
+test-git-transport
+test-hg-transport
+test-http-transport
+test-local-transport
+test-rsync-transport
+  Test the transport referenced in the name of the script by creating
+  and using a trash repository built on the fly.
+
+  NOTE: These will create/delete files/directories so read source before invoking.
+
+
+
