@@ -91,9 +91,10 @@ Here are pointers for adding new functionality to the slaughter tool:
 
    Hacking: Primitives
    -------------------
-    If you'd like to make a new primitive available first implement it in
-   lib/Slaughter/API/generic.pm to output an error - then in each of the available
-   environment-specific libraries in that same directory.
+   If you'd like to make a new primitive available you have two choices:
+    1.  Implement it in 100% pure & portable perl in Slaughter::API::generic
+    2.  Implement it in an OS-specific fashion in Slaughter::API::* - after
+      making the generic module merely output an error message.
     If your primitive(s) are purely local you may implement them in the
    Slaughter::API::Local namespace where they will be automatically loaded.
    (for example lib/Slaughter/API/Local/linux.pm)
