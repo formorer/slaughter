@@ -23,6 +23,8 @@ ETC_PREFIX  = /etc
 #  We install to /usr/share/perl5 if it exists.  Otherwise to wherever
 # the perl 'sitelib' value points.
 #
+#  NOTE: We deliberately avoided using "ifeq" - it isn't portable.
+#
 LIB_PREFIX=`test -d /usr/share/perl5 && echo /usr/share/perl5 || perl -MConfig -e 'print $$Config{'sitelib'}'`
 
 
