@@ -337,7 +337,15 @@ sub getInformation
     {
         $uptime = $1;
         $uptime =~ s/,//g;
-        $ref->{ 'load_average' } = $uptime
+        $ref->{ 'load_average' } = $uptime;
+
+        #
+        #  Split into per-minute values.
+        #
+        my @avg = split( /[ \t]/, $ref->{'load_average'} );
+        $ref->{ 'load_average_1'  } = $avg[0];
+        $ref->{ 'load_average_5'  } = $avg[1];
+        $ref->{ 'load_average_15' } = $avg[2];
 
     }
 

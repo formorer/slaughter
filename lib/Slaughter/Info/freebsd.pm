@@ -199,6 +199,15 @@ sub getInformation
         # remove leading/trailing whitespace.
         $ref->{ 'load_average' } =~ s/^\s+|\s+$//g;
 
+        #
+        #  Split into per-minute values.
+        #
+        my @avg = split( /[ \t]/, $ref->{'load_average'} );
+        $ref->{ 'load_average_1'  } = $avg[0];
+        $ref->{ 'load_average_5'  } = $avg[1];
+        $ref->{ 'load_average_15' } = $avg[2];
+
+
     }
 
     return ($ref);
