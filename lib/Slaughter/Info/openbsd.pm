@@ -194,9 +194,9 @@ sub getInformation
         #
         #  Split into per-minute values.
         #
-        my @avg = split( /[ \t]/, $ref->{'load_average'} );
-        $ref->{ 'load_average_1'  } = $avg[0];
-        $ref->{ 'load_average_5'  } = $avg[1];
+        my @avg = split( /[ \t]/, $ref->{ 'load_average' } );
+        $ref->{ 'load_average_1' }  = $avg[0];
+        $ref->{ 'load_average_5' }  = $avg[1];
         $ref->{ 'load_average_15' } = $avg[2];
 
     }
