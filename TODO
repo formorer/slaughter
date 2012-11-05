@@ -55,7 +55,9 @@ Logging
 |            This was warning two.
 \--
 
-     Question:  Is this sufficient, or should it be explicitly sent by email?
+     This is now pending a commit, but I want to think about it first.  If there
+    is no --mail=user@host the output is printed.  If there is a mail address
+    specified it is sent there.
 
 
 Steve
