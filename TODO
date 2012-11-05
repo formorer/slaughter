@@ -36,6 +36,27 @@ Logging
   * Logging has been exorcised from slaughter 2.x - instead output will go
     via mail, assuming we're launched via cron.  This needs to be updated.
 
+    Possible solution is to implement:
+
+        LogMessage( { Message => "This was warning one", Severity => "warning" } );
+        LogMessage( { Message => "This was warning two", Severity => "warning" } );
+        LogMessage( { Message => "This is a message", Severity => "fatal" } );
+
+    At the end of the run we could have output like this - i.e. sorted by priority:
+
+/--
+|        Your script output the following messages:
+|
+|        Fatal:
+|            This is a message.
+|
+|        Warning:
+|            This was warning one.
+|            This was warning two.
+\--
+
+     Question:  Is this sufficient, or should it be explicitly sent by email?
+
 
 Steve
 --
