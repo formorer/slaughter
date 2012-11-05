@@ -314,10 +314,11 @@ sub fetchContents
     }
 
     #
-    #  Failed
+    #  Failed?
     #
     $self->{ 'verbose' } &&
-      print "\tFailed to fetch: $url\n";
+      print "\tFailed to fetch: $url - " . $response->status_line . "\n";
+
     return undef;
 }
 

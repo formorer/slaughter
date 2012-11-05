@@ -164,7 +164,11 @@ sub checksumFile
 
             $hash = $object->hexdigest();
         }
+    }
 
+    unless ( defined $hash )
+    {
+        die "Failed to calculate hash of $file - internal error.";
     }
 
     return ($hash);
