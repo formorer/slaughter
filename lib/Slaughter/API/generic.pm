@@ -1336,6 +1336,53 @@ sub UserDetails
 }
 
 
+=head2 LogMessage
+
+This primitive is used to store a log-worthy message.  Whenever slaughter
+finishes executing it will output a summary of all log-messages which were
+encountered, sorted by priority.
+
+=for example begin
+
+ LogMessage( Message => "Server on fire: $hostname",
+             Level   => "normal" );
+
+=for example end
+
+The following parameters are available:
+
+=over
+
+=item Level [default: "normal"]
+
+The log-level of the message.  You may choose whichever level you prefer.
+
+=item Message [mandatory]
+
+The content of the message to send
+
+=back
+
+=cut
+
+sub LogMessage
+{
+    my (%params) = (@_);
+
+    #
+    # Get the log-level & message contents.
+    #
+    my $level = $params{ 'Level' }   || "normal";
+    my $msg   = $params{ 'Message' } || "no message";
+
+    #
+    # Store in the global-hash.  Post-execution these will be
+    # dumped, via the slaughter wrapper-code.
+    #
+    push( @{ $::LOG{ $level } }, $msg );
+}
+
+
 
 
 1;

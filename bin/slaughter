@@ -863,7 +863,7 @@ use English;
 use Slaughter;
 
 #
-#  1/5:
+#  1/6:
 #
 # Generated output of the form:
 #   our \$var = 'value';
@@ -871,14 +871,14 @@ use Slaughter;
 $keys
 
 #
-#  2/5:
+#  2/6:
 #
 # Generated output in the form of a hash:
 #
 $line
 
 #
-#  3/5:
+#  3/6:
 #
 # Setup of the transport, for fetching files.
 #
@@ -886,7 +886,14 @@ use Slaughter::Transport::$CONFIG{'transport'};
 our \$TRANSPORT = Slaughter::Transport::$CONFIG{'transport'}->new( \%template );
 
 #
-#  4/5:
+#  4/6:
+#
+# Setup a hash to store the messages created in LogMessages
+#
+our \%LOG;
+
+#
+#  4/6:
 #
 # Sanity check prior to execution
 #
@@ -899,13 +906,45 @@ EOFF
 }
 
 #
-#  5/5:
+#  5/6:
 #
 #  User-supplied policies.
 #
 
 $txt
 
+
+#
+#  6/6:
+#
+#  Post-Execution log-output
+#
+my \$logOutput = "";
+
+foreach my \$level ( keys \%LOG )
+{
+    my \$msg = \$LOG{\$level};
+
+    \$logOutput .= "\$msg\\n";
+    foreach my \$txt ( \@\$msg )
+    {
+        \$logOutput .= \$txt . "\\n";
+    }
+}
+
+if ( length( \$logOutput ) )
+{
+   if ( \$template{'mail'} )
+   {
+        Alert( Email => \$template{'mail'},
+               Message => \$logOutput,
+               Subject => "Output from slaughter on \$fqdn\\n" );
+   }
+   else
+   {
+      print \$logOutput;
+   }
+}
 EOF
 
     #
