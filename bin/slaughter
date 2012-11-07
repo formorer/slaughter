@@ -11,6 +11,7 @@ slaughter - Perl Automation Tool
   General Options:
 
    --dump          Dump details of the local environment, and immediately exit.
+   --mail          Email the output of any LogMessages to the given address.
    --no-delete     Don't delete the compiled perl post-execution.
    --no-execute    Don't actually execute the downloaded policy.
    --transports    Dump the names of all available transports.
@@ -565,6 +566,7 @@ sub parseCommandLine
             "password=s", \$CONFIG{ 'password' },
 
             # Flags
+            "mail",       \$CONFIG{ 'mail' },
             "dump",       \$CONFIG{ 'dump' },
             "transports", \$CONFIG{ 'transports' },
             "no-delete",  \$CONFIG{ 'nodelete' },
