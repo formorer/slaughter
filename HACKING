@@ -17,7 +17,7 @@ which become available due to this in the wrapped file:
 
     use Slaughter;
 
-The Slaughter module is a stub which loads a generic implementation
+The Slaughter module is a stub which loads the pure-perl implementation
 of our primitives from Slaughter::API::generic, and then attempts to
 load a platform-specific implementations module, via the use of the
  perl $^O variable.
@@ -47,12 +47,14 @@ the host it is executing upon.
 
 All the meta-information is gleaned at runtime, by loading a specific
 module, which must provide the method "getInfomration" to populate and
-return a hash-reference of system-information.
+return a hash-reference of system-information.  Again the provided information
+may be augmented by the use of a module in the Slaughter::Info::Local
+namespace.
 
 The type of information is not specified, but we assume that it contains
 at least basic information about the current system.
 
-You can find sample code in lib/Slaughter/Info/*.pm
+You can view the implementation in lib/Slaughter/Info/*.pm
 
 
 
@@ -63,12 +65,13 @@ Package Installation
 Package installation is also abstracted into a library of its own
 beneath the "Slaughter::Packages::" prefix.
 
-Currently we support two modules:
+Currently we support several systems :
 
     Slaughter::Packages::linux
      -> Recongizes apt-get + yum
 
     Slaughter::Packages::openbsd
+    Slaughter::Packages::netbsd
      -> Recognizes pkg_add/pkg_info/etc.
 
 Adding support for a new packaging system, in a new environment should
@@ -106,9 +109,10 @@ Here are pointers for adding new functionality to the slaughter tool:
 
    Hacking: Packages
    ------------------
-    The interface to the system's packaging is currently only implemented
-   for GNU/Linux, via lib/Slaughter/Packages/linux.pm.  I'd suggest if you
-   add support for another platform you follow a similar naming scheme.
+    The interface to the system's packaging is implemented in a module
+   beneath the Slaughter::Packages:: namespace.  If you add support for
+   another platform you follow a similar naming scheme.  You'll need to
+   update the platform-specific module to invoke your local package module.
 
    Hacking: Transports
    -------------------
@@ -126,7 +130,7 @@ Here are pointers for adding new functionality to the slaughter tool:
         Slaughter::API::$name
         Slaughter::Info::$name
         Slaughter::Packages::$name  [optional]
-    Each of these can be modeled on the code already present in linux.pm/openbsd.pm
+    Each of these can be modelled on the code already present in linux.pm/openbsd.pm
    If you need help don't hesitate to get in touch though.
 
 
