@@ -10,6 +10,7 @@ slaughter - Perl Automation Tool
 
   General Options:
 
+   --delay         Delay for up to N seconds prior to launching.   Useful if you have a lot of clients.
    --dump          Dump details of the local environment, and immediately exit.
    --mail          Email the output of any LogMessages to the given address.
    --no-delete     Don't delete the compiled perl post-execution.
@@ -166,7 +167,16 @@ A fully-featured file might look something like this:
   verbose = 0
 
   #
-  # Fetch the default policy from: http://example.com/slaughter/policies/default.policy
+  #  Sleep for up to 60 seconds prior to working.
+  #
+  #  This is useful if you have many clients all hitting the same
+  # central server at the same time (due to NTP and hourly cron
+  # scheduling for example).
+  #
+  delay = 60
+
+  #
+  # Fetch the default policy from http://example.com/slaughter/policies/default.policy
   #
   # NOTE: "policies/default.policy" is automatically appended.
   ##
@@ -244,6 +254,17 @@ createTransportDir();
 #  Ensure we're root, and ensure that we have the options setup that we need.
 #
 testEnvironment();
+
+#
+# Splay-time, if set.  The default is -1 == no delay.
+#
+if ( $CONFIG{ 'delay' } > 0 )
+{
+    my $rand = int( rand( $CONFIG{ 'delay' } ) );
+    $CONFIG{ 'verbose' } &&
+      print "Sleeping for $rand seconds - from max delay of $CONFIG{'delay'}\n";
+    sleep($rand);
+}
 
 
 #
@@ -338,6 +359,7 @@ sub defaultOptions
                  transportargs => '',
                  nodelete      => 0,
                  noexecute     => 0,
+                 delay         => -1,
                );
 
 
@@ -568,6 +590,7 @@ sub parseCommandLine
             # Flags
             "mail",       \$CONFIG{ 'mail' },
             "dump",       \$CONFIG{ 'dump' },
+            "delay=i",    \$CONFIG{ 'delay' },
             "transports", \$CONFIG{ 'transports' },
             "no-delete",  \$CONFIG{ 'nodelete' },
             "no-execute", \$CONFIG{ 'noexecute' },
