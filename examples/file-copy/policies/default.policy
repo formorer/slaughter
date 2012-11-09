@@ -21,5 +21,6 @@ if ( FetchFile( Source => "/etc/motd",
                 Group  => "root",
                 Mode   => "644" ) )
 {
-    print "The local file /etc/motd was updated\n";
+    LogMessage( Message => "The local file /etc/motd was updated.",
+                Severity => "FetchFile" );
 }
