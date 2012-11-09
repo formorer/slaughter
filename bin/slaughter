@@ -950,10 +950,10 @@ foreach my \$level ( keys \%LOG )
 {
     my \$msg = \$LOG{\$level};
 
-    \$logOutput .= "\$msg\\n";
+    \$logOutput .= "\$level\\n";
     foreach my \$txt ( \@\$msg )
     {
-        \$logOutput .= \$txt . "\\n";
+        \$logOutput .= "\\t" . \$txt . "\\n";
     }
 }
 
@@ -967,6 +967,7 @@ if ( length( \$logOutput ) )
    }
    else
    {
+      print "Output from slaughter on \$fqdn\\n";
       print \$logOutput;
    }
 }
