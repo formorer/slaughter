@@ -9,8 +9,7 @@ slaughter2 (2.0-1) stable; urgency=low
     - rsync
     - svn
   * Renamed the client package to slaughter2 to avoid breakage on upgrade,
-    but also update the configuration file post-install, to mitigate against
-    this.
+    but also update the configuration file post-install, to mitigate against this.
   * The information module determines IPv6 address details on Linux clients.
   * Updated to ensure that polices are unreadable to non-root users.
   * Updated correctness of several primitives.
@@ -18,6 +17,7 @@ slaughter2 (2.0-1) stable; urgency=low
   * Added test-suite.
   * Implemented and tested our primitives and package-API on OpenBSD.
   * Implemented and tested our primitives and package-API on FreeBSD.
+  * New primitive LogMessage, which can be sent by email.
 
  -- Steve Kemp <steve@steve.org.uk>  Sun, 28 Oct 2012 23:33:43 +0000
 
