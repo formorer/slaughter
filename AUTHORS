@@ -29,3 +29,4 @@ Contributions
    - Implemented --agent.
    - Implemented strict/non-strict SSL-checking.  (Disable with --mitmok).
    - Fixed Debian packages to include (new) ::API:: modules.
+   - Much useful advice, and suggestions, in the transition from 1.x to 2.x.
