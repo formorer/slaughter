@@ -163,7 +163,12 @@ are implemented and exported to the perl script).
 Finally the locally written script will be made executable and
 directly executed, before being removed.
 
-The output of the script will be saved to a logfile.
+After your script(s) have executed any messages saved with the
+LogMessage function will be displayed, or sent via email.
+
+(Any literal output your script might have written with "print" will
+be sent to STDOUT, as expected.)
+
 
 Steve
 --
