@@ -8,9 +8,8 @@ Slaughter - Perl Automation Tool Helper
 
 =head1 SYNOPSIS
 
-This module is the distribution and architecture independant library
-which is used to abstract away platform differences for the Slaughter
-administration tool.
+This module is the platform-independant library which is used to abstract
+the implementations of the Slaughter primitives.
 
 It is loaded via:
 
@@ -21,12 +20,10 @@ It is loaded via:
 =for example end
 
 This usage actually dynamically loads the appropriate module from beneath the
-Slaughter::API namespace - which will contain the implementation of the primitives
-distributed with Slaughter.
+Slaughter::API namespace - which will contain the primitive implementation.
 
 Initially we load the Slaughter::API::generic module which contains pure-perl
-implemenations of our primitives, and then after that we load the OS-specific
-module.
+implemenation, and then we load the OS-specific module.
 
 Assuming that the OS-specific module, e.g. C<Slaughter::API::linux>, is loaded
 successfully we then load any local OS-specific module.  (e.g. C<Slaughter::API::Local::linux>.)

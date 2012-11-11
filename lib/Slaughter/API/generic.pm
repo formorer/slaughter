@@ -908,18 +908,58 @@ sub LogMessage
 
 
 
+
 =head2 Mounts
 
-This method is a stub which does nothing but output a line of text to
-inform the caller that the method is not implemented.
+Return a list of all the mounted filesystems upon the current system.
 
-For an implementation, and documentation, please consult C<Slaughter::API::linux>.
+=for example begin
+
+  my @mounts = Mounts();
+
+=for example end
+
+No parameters are required or supported in this method, and the
+return value is an array of all mounted filesystems upon this
+host.
+
+B<NOTE>: This primitive invoke C<mount> and parses the output.  This
+is reasonably portable, but will fail upon systems which have no "mount"
+binary.  In that case the method will output a stub message to complain
+that the function is not implemented.
 
 =cut
 
 sub Mounts
 {
-    print "Mounts - not implemented for $^O\n";
+    my $path = FindBinary( Binary => "mount" );
+
+    if ($path)
+    {
+        my @results;
+
+        open my $handle, "-|", $path or
+          die "Failed to run mount: $!";
+
+        while ( my $line = <$handle> )
+        {
+            chomp($line);
+
+            if ( $line =~ /^([^ \t]+)[ \t]+on[ \t]+([^ \t]+)/ )
+            {
+                my ( $dev, $point ) = ( $1, $2 );
+                push( @results, $point ) if ( $dev =~ /dev/ );
+            }
+        }
+        close($handle);
+
+        return (@results);
+
+    }
+    else
+    {
+        print "Mounts - not implemented for $^O\n";
+    }
 }
 
 

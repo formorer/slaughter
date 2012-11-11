@@ -137,45 +137,6 @@ sub InstallPackage
 
 
 
-=head2 Mounts
-
-Return a list of all the mounted filesystems upon the current system.
-
-=for example begin
-
-  my @mounts = Mounts();
-
-=for example end
-
-No parameters are required or supported in this method, and the
-return value is an array of all mounted filesystems upon this
-host.
-
-=cut
-
-sub Mounts
-{
-    my @results;
-
-    if ( open( my $handle, "<", "/proc/mounts" ) )
-    {
-        foreach my $line (<$handle>)
-        {
-            chomp($line);
-            my ( $dev, $point, $type ) = split( / /, $line );
-            if ( $dev =~ /^\/dev/ )
-            {
-                push( @results, $point );
-            }
-        }
-        close($handle);
-    }
-
-    return (@results);
-}
-
-
-
 =head2 PackageInstalled
 
 Test whether a given system package is installed.
