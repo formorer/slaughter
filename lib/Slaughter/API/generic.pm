@@ -860,6 +860,54 @@ sub InstallPackage
 
 
 
+=head2 LogMessage
+
+This primitive is used to store a log-worthy message.  Whenever slaughter
+finishes executing it will output a summary of all log-messages which were
+encountered, sorted by priority.
+
+=for example begin
+
+ LogMessage( Message => "Server on fire: $hostname",
+             Level   => "normal" );
+
+=for example end
+
+The following parameters are available:
+
+=over
+
+=item Level [default: "normal"]
+
+The log-level of the message.  You may choose whichever level you prefer.
+
+=item Message [mandatory]
+
+The content of the message to send
+
+=back
+
+=cut
+
+sub LogMessage
+{
+    my (%params) = (@_);
+
+    #
+    # Get the log-level & message contents.
+    #
+    my $level = $params{ 'Level' }   || "normal";
+    my $msg   = $params{ 'Message' } || "no message";
+
+    #
+    # Store in the global-hash.  Post-execution these will be
+    # dumped, via the slaughter wrapper-code.
+    #
+    push( @{ $::LOG{ $level } }, $msg );
+}
+
+
+
 =head2 Mounts
 
 This method is a stub which does nothing but output a line of text to
@@ -1200,52 +1248,6 @@ sub SetPermissions
 
 
 
-=head2 UserExists
-
-This primitive will test to see whether the given local user exists.
-
-=for example begin
-
-   if ( UserExists( User => "skx" ) )
-   {
-      # skx exists
-   }
-
-=for example end
-
-The following parameters are available:
-
-=over
-
-=item User [mandatory]
-
-The unix username to test for.
-
-=back
-
-The return value of this function is 1 if the user exists, and 0 otherwise.
-
-=cut
-
-
-sub UserExists
-{
-    my (%params) = (@_);
-
-    my ( $login, $pass, $uid, $gid ) = getpwnam( $params{ 'User' } );
-
-    if ( !defined($login) )
-    {
-        return 0;
-    }
-    else
-    {
-        return 1;
-    }
-}
-
-
-
 =head2 UserDetails
 
 This primitive will return a hash of data about the local Unix user
@@ -1336,16 +1338,17 @@ sub UserDetails
 }
 
 
-=head2 LogMessage
 
-This primitive is used to store a log-worthy message.  Whenever slaughter
-finishes executing it will output a summary of all log-messages which were
-encountered, sorted by priority.
+=head2 UserExists
+
+This primitive will test to see whether the given local user exists.
 
 =for example begin
 
- LogMessage( Message => "Server on fire: $hostname",
-             Level   => "normal" );
+   if ( UserExists( User => "skx" ) )
+   {
+      # skx exists
+   }
 
 =for example end
 
@@ -1353,33 +1356,31 @@ The following parameters are available:
 
 =over
 
-=item Level [default: "normal"]
+=item User [mandatory]
 
-The log-level of the message.  You may choose whichever level you prefer.
-
-=item Message [mandatory]
-
-The content of the message to send
+The unix username to test for.
 
 =back
 
+The return value of this function is 1 if the user exists, and 0 otherwise.
+
 =cut
 
-sub LogMessage
+
+sub UserExists
 {
     my (%params) = (@_);
 
-    #
-    # Get the log-level & message contents.
-    #
-    my $level = $params{ 'Level' }   || "normal";
-    my $msg   = $params{ 'Message' } || "no message";
+    my ( $login, $pass, $uid, $gid ) = getpwnam( $params{ 'User' } );
 
-    #
-    # Store in the global-hash.  Post-execution these will be
-    # dumped, via the slaughter wrapper-code.
-    #
-    push( @{ $::LOG{ $level } }, $msg );
+    if ( !defined($login) )
+    {
+        return 0;
+    }
+    else
+    {
+        return 1;
+    }
 }
 
 
