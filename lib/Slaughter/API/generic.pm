@@ -46,6 +46,7 @@ package Slaughter::API::generic;
 #
 use File::Basename qw! basename dirname !;
 use File::Find;
+use File::Path qw/ mkpath /;
 use File::Temp qw/ tempfile /;
 use Text::Template;
 
