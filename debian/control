@@ -12,6 +12,7 @@ Provides: slaughter, slaughter2
 Replaces: slaughter-client
 Architecture: all
 Depends: ${misc:Depends}, libdigest-sha-perl | libdigest-sha1-perl, libwww-perl, libtext-template-perl, perl-modules
+Suggests: libmojolicious-perl (>> 2.98)
 Description: Automation tool to perform system administration remotely
  This package contains a client which will connect to a central server
  and fetch policies to execute.
