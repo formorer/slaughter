@@ -76,6 +76,12 @@ sub new
     $self->{ 'error' } = undef;
 
     bless( $self, $class );
+
+    #
+    # Ensure our eval loads.
+    #
+    $self->isAvailable();
+
     return $self;
 
 }
