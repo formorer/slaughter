@@ -47,8 +47,6 @@ use warnings;
 
 package Slaughter::Transport::http;
 
-use LWP::UserAgent;
-
 
 
 =head2 new
@@ -101,7 +99,7 @@ sub name
 
 Return whether this transport is available.
 
-As we're pure-perl it should be always available, so we unconditionally return 1.
+As we're pure-perl it should be always available if the C<LWP::UserAgent> module is available.
 
 =cut
 
@@ -109,6 +107,20 @@ sub isAvailable
 {
     my ($self) = (@_);
 
+    my $lwp = "use use LWP::UserAgent;";
+
+    ## no critic (Eval)
+    eval($lwp);
+    ## use critic
+
+    if ($@)
+    {
+        return 0;
+    }
+
+    #
+    # Module loading succeeded; we're available.
+    #
     return 1;
 }
 

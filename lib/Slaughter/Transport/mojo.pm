@@ -53,7 +53,6 @@ use warnings;
 
 package Slaughter::Transport::mojo;
 
-use Mojo::UserAgent;
 
 
 
@@ -107,7 +106,8 @@ sub name
 
 Return whether this transport is available.
 
-As we're pure-perl it should be always available, so we unconditionally return 1.
+As we're pure-perl it should be always available if the C<Mojo::UserAgent> module is
+present.
 
 =cut
 
@@ -115,6 +115,20 @@ sub isAvailable
 {
     my ($self) = (@_);
 
+    my $mojo = "use Mojo::UserAgent;";
+
+    ## no critic (Eval)
+    eval($mojo);
+    ## use critic
+
+    if ($@)
+    {
+        return 0;
+    }
+
+    #
+    # Module loading succeeded; we're available.
+    #
     return 1;
 }
 
