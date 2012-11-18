@@ -83,14 +83,7 @@ sub new
     $self->{ 'error' } = undef;
 
     bless( $self, $class );
-
-    #
-    #  Ensure our eval() gets called.
-    #
-    $self->isAvailable();
-
     return $self;
-
 }
 
 
@@ -129,6 +122,7 @@ sub isAvailable
 
     if ($@)
     {
+        $self->{'error'} = "Mojo::UserAgent module not available.";
         return 0;
     }
 

@@ -76,14 +76,7 @@ sub new
     $self->{ 'error' } = undef;
 
     bless( $self, $class );
-
-    #
-    # Ensure our eval loads.
-    #
-    $self->isAvailable();
-
     return $self;
-
 }
 
 
@@ -113,7 +106,7 @@ sub isAvailable
 {
     my ($self) = (@_);
 
-    my $lwp = "use use LWP::UserAgent;";
+    my $lwp = "use LWP::UserAgent;";
 
     ## no critic (Eval)
     eval($lwp);
@@ -121,6 +114,7 @@ sub isAvailable
 
     if ($@)
     {
+        $self->{'error'} = "LWP::UserAgent module not available.";
         return 0;
     }
 

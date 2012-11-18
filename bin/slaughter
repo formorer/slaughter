@@ -905,10 +905,11 @@ $line
 #
 #  3/6:
 #
-# Setup of the transport, for fetching files.
+# Setup of the transport, for fetching files and policies.
 #
 use Slaughter::Transport::$CONFIG{'transport'};
 our \$TRANSPORT = Slaughter::Transport::$CONFIG{'transport'}->new( \%template );
+die "Transport unavailable: \$TRANSPORT->error()" unless( \$TRANSPORT->isAvailable() );
 
 #
 #  4/6:
