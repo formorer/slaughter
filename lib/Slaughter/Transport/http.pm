@@ -114,7 +114,7 @@ sub isAvailable
 
     if ($@)
     {
-        $self->{'error'} = "LWP::UserAgent module not available.";
+        $self->{ 'error' } = "LWP::UserAgent module not available.";
         return 0;
     }
 

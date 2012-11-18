@@ -122,7 +122,7 @@ sub isAvailable
 
     if ($@)
     {
-        $self->{'error'} = "Mojo::UserAgent module not available.";
+        $self->{ 'error' } = "Mojo::UserAgent module not available.";
         return 0;
     }
 
