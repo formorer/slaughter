@@ -648,9 +648,10 @@ sub parseCommandLine
                 foreach my $pm ( sort( glob( $guess . "/*.pm" ) ) )
                 {
 
-                    # skip this base-calss
+                    # skip the base-class
                     next if ( $pm =~ /revisionControl\.pm/ );
 
+                    # strip the directory name + suffix
                     my $name = basename($pm);
                     $name =~ s/\.pm$//gi;
 
