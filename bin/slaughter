@@ -16,6 +16,7 @@ slaughter - Perl Automation Tool
    --no-delete     Don't delete the compiled perl post-execution.
    --no-execute    Don't actually execute the downloaded policy.
    --transports    Dump the names of all available transports.
+   --include       Include the specified file in our wrapper content.
 
   File/Policy Fetching:
 
@@ -587,6 +588,9 @@ sub parseCommandLine
             "username=s", \$CONFIG{ 'username' },
             "password=s", \$CONFIG{ 'password' },
 
+            # wrapper flags
+            "include=s", \$CONFIG{ 'include' },
+
             # Flags
             "mail",       \$CONFIG{ 'mail' },
             "dump",       \$CONFIG{ 'dump' },
@@ -661,6 +665,7 @@ sub parseCommandLine
         }
         exit;
     }
+
 }
 
 
@@ -752,6 +757,16 @@ EOF
         print
           "(You can use the configuration file /etc/slaughter/slaughter.conf if you prefer.)\n";
         exit 0;
+    }
+
+
+    #
+    #  If an include file is specified it must exist.
+    #
+    if ( ( $CONFIG{ 'include' } ) && ( !-e $CONFIG{ 'include' } ) )
+    {
+        print "Ignoring the include file - doesn't exist: $CONFIG{'include'}\n";
+        $CONFIG{ 'include' } = undef;
     }
 
 }
