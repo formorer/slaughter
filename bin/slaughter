@@ -853,6 +853,20 @@ sub writeoutPolicy
         chmod( 0700, $name );
     }
 
+    #
+    #  The user might have specified an include-file to be added
+    # to the wrapper.  Here we load that, if present.
+    #
+    my $include = "";
+    if ( $CONFIG{ 'include' } && ( -e $CONFIG{ 'include' } ) )
+    {
+        open( my $inc, "<", $CONFIG{ 'include' } );
+        while ( my $line = <$inc> )
+        {
+            $include .= $line;
+        }
+        close($inc);
+    }
 
     #
     #  Two lines we output into the generated script.
@@ -904,7 +918,7 @@ use English;
 use Slaughter;
 
 #
-#  1/6:
+#  1/7:
 #
 # Generated output of the form:
 #   our \$var = 'value';
@@ -912,14 +926,14 @@ use Slaughter;
 $keys
 
 #
-#  2/6:
+#  2/7:
 #
 # Generated output in the form of a hash:
 #
 $line
 
 #
-#  3/6:
+#  3/7:
 #
 # Setup of the transport, for fetching files and policies.
 #
@@ -928,14 +942,14 @@ our \$TRANSPORT = Slaughter::Transport::$CONFIG{'transport'}->new( \%template );
 die "Transport unavailable: \$TRANSPORT->error()" unless( \$TRANSPORT->isAvailable() );
 
 #
-#  4/6:
+#  4/7:
 #
 # Setup a hash to store the messages created in LogMessages
 #
 our \%LOG;
 
 #
-#  4/6:
+#  4/7:
 #
 # Sanity check prior to execution
 #
@@ -948,7 +962,7 @@ EOFF
 }
 
 #
-#  5/6:
+#  5/7:
 #
 #  User-supplied policies.
 #
@@ -957,7 +971,7 @@ $txt
 
 
 #
-#  6/6:
+#  6/7:
 #
 #  Post-Execution log-output
 #
@@ -988,6 +1002,13 @@ if ( length( \$logOutput ) )
       print \$logOutput;
    }
 }
+
+#
+#  7/7 - User-include file
+#
+
+$include
+
 EOF
 
     #
