@@ -18,8 +18,9 @@ slaughter2 (2.0-1) stable; urgency=low
   * Implemented and tested our primitives and package-API on OpenBSD.
   * Implemented and tested our primitives and package-API on FreeBSD.
   * New primitive LogMessage, which can be sent by email.
+  * New primitive UserCreate.
 
- -- Steve Kemp <steve@steve.org.uk>  Sun, 28 Oct 2012 23:33:43 +0000
+ -- Steve Kemp <steve@steve.org.uk>  Mon, 03 Dec 2012 08:20:08 +0000
 
 slaughter (1.7-1) stable; urgency=low
 
