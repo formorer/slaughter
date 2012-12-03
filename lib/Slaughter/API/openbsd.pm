@@ -313,6 +313,61 @@ sub RemovePackage
 }
 
 
+=head2 UserCreate
 
+Create a new user for the system.
+
+=for example begin
+
+  # TODO
+
+=for example end
+
+The following parameters are required:
+
+=over 8
+
+=item Login
+
+The username to create.
+
+=item UID
+
+The UID for the user.
+
+=item GID
+
+The primary GID for the user.
+
+=back
+
+You may optionally specify the GCos field to use.
+
+=cut
+
+sub UserCreate
+{
+    my (%params) = (@_);
+    if ( !defined( $params{ 'Login' } ) or
+         !defined( $params{ 'UID' } ) or
+         !defined
+         ( $params{ 'GID' } ) )
+    {
+        return undef;
+    }
+
+    #
+    #  If the GCos field isn't set then define it.
+    #
+    $params{ 'Gcos' } = $params{ 'Login' } if ( !$params{ 'Gcos' } );
+
+
+    my $cmd =
+      "useradd -vc \"$params{ 'Gcos' }\"" . " -g =uid" . " -G wheel" . " -m" .
+      " -u $params{ 'UID' }" . " -L staff" . " $params{ 'Login' }";
+
+    # useradd -c name -d /home/user -g adm -m -u 801 user
+    RunCommand( Cmd => $cmd );
+}
 
 1;

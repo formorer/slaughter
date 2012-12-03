@@ -1427,4 +1427,45 @@ sub UserExists
 
 
 
+=head2 UserCreate
+
+Create a new user for the system.
+
+=for example begin
+
+  # TODO
+
+=for example end
+
+The following parameters are required:
+
+=over 8
+
+=item Login
+
+The username to create.
+
+=item UID
+
+The UID for the user.
+
+=item GID
+
+The primary GID for the user.
+
+=back
+
+You may optionally specify the GCos field to use.
+
+=cut
+
+sub UserCreate
+{
+    print "UserCreate - not implemented for $^O\n";
+}
+
+
+
+
+
 1;

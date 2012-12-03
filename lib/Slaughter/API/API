@@ -51,3 +51,7 @@ UserExists
 
 UserDetails
   Get the user details.
+
+UserCreate
+  Create a new system user.
+
