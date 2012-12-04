@@ -983,16 +983,80 @@ sub PackageInstalled
 
 =head2 PercentageUsed
 
-This method is a stub which does nothing but output a line of text to
-inform the caller that the method is not implemented.
+Return the percentage of space used in in the given mounted-device.
 
-For an implementation, and documentation, please consult C<Slaughter::API::linux>.
+=for example begin
+
+  foreach my $point ( Mounts() )
+  {
+     if ( PercentageUsed( Path => $point ) > 80 )
+     {
+        Alert( To      => "root",
+               From    => "root",
+               Subject => "$server is running out of space on $point",
+               Message => "This is a friendly warning." );
+     }
+  }
+
+=for example end
+
+The following parameters are supported:
+
+=over 8
+
+=item Path
+
+The mount-point to the filesystem in question.
+
+=back
+
+The return value will be a percentage in the range 0-100.
+
+B<NOTE>: This primitive invokes C<df> and parses the output.  This
+is reasonably portable, but will fail upon systems which have no "df"
+binary.  In that case the method will output a stub message to complain
+that the function is not implemented.
 
 =cut
 
 sub PercentageUsed
 {
-    print "PercentageUsed - not implemented for $^O\n";
+    my (%params) = (@_);
+
+    #
+    # Ensure we have a 'df' binary.
+    #
+    my $path = FindBinary( Binary => "df" );
+    if ( !$path )
+    {
+        print "PercentageUsed - not implemented for $^O\n";
+    }
+
+
+    #
+    #  The mount-point
+    #
+    my $point = $params{ 'Path' } || "/";
+    my $perc = 0;
+
+
+    #
+    #  Call df to get the output, use posix mode.
+    #
+    my $out = `$path -P $point`;
+
+    foreach my $line ( split( /[\r\n]/, $out ) )
+    {
+        next unless ( $line =~ /%/ );
+
+        if ( $line =~ /[ \t]([0-9]*)%[ \t]/ )
+        {
+            $perc = $1;
+        }
+    }
+
+    return ($perc);
+
 }
 
 
@@ -1463,7 +1527,6 @@ sub UserCreate
 {
     print "UserCreate - not implemented for $^O\n";
 }
-
 
 
 

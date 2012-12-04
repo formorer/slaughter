@@ -15,14 +15,6 @@ Validation
             and only accept if signature is valid.
 
 
-PercentageUsed
---------------
-
-  Identical in linux/openbsd/freebsd.  Move to generic where it will be
- "portable".  If "df" isn't found revert back to the output of the failure
- message.
-
-
 Server-Driver
 -------------
 
