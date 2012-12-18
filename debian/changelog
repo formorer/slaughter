@@ -1,3 +1,10 @@
+slaughter2 (2.1-1) stable; urgency=low
+
+  * Updated to extend the information available to the clients
+    This now includes "memtotal", "memfree", and CPU counts.
+
+ -- Steve Kemp <steve@steve.org.uk>  Tue, 18 Dec 2012 08:33:08 +0000
+
 slaughter2 (2.0-1) stable; urgency=low
 
   * Updated to use a new system for fetching files/policies, using

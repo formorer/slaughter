@@ -166,15 +166,28 @@ sub getInformation
     $ref->{ 'xen' } = 1 if -d "/proc/xen/capabilities";
 
     #
-    #  KVM / Qemu?
+    #  Detect virtualized CPU, as well as processor counts.
     #
     if ( open( my $cpu, "<", "/proc/cpuinfo" ) )
     {
+        $ref->{ 'cpu_count' } = -1;
+
         foreach my $line (<$cpu>)
         {
             chomp($line);
             $ref->{ 'kvm' } = 1 if ( $line =~ /model/ && $line =~ /qemu/i );
+
+            if ( $line =~ /model name\s+: (.*)$/ )
+            {
+                $ref->{ 'cpumodel' } = $1;
+            }
+            if ( $line =~ /processor\s+: (\d+)/ )
+            {
+                $ref->{ 'cpu_count' } = $1 if ( $ref->{ 'cpu_count' } < $1 );
+            }
         }
+
+        $ref->{ 'cpu_count' }++;
         close($cpu);
     }
 
@@ -198,6 +211,27 @@ sub getInformation
             }
             close($mdstat);
         }
+    }
+
+
+    #
+    #  Memory total and memory free.
+    #
+    if ( open( my $mem, "<", "/proc/meminfo" ) )
+    {
+        foreach my $line (<$mem>)
+        {
+            chomp($line);
+            if ( $line =~ /MemTotal:\s+(\d+) kB/ )
+            {
+                $ref->{ 'memtotal' } = $1;
+            }
+            if ( $line =~ /MemFree:\s+(\d+) kB/ )
+            {
+                $ref->{ 'memfree' } = $1;
+            }
+        }
+        close($mem);
     }
 
 
