@@ -462,6 +462,95 @@ sub DeleteOldFiles
 
 
 
+=head2 IdenticalContents
+
+The IdenticalContents primitive is used to compare whether two
+filenames have identical contents.
+
+The following is an example of usage:
+
+=for example begin
+
+=for example end
+
+The following parameters are available:
+
+=over
+
+=item File1 [mandatory]
+
+The first file to complare.
+
+=item File2 [mandatory]
+
+The second file to complare.
+
+=back
+
+The return value will depend on the matching:
+
+=over 8
+
+=item -1
+
+Returned on error; either missing parameters, or non-existing files.
+
+=item 0
+
+The files are different.
+
+=item 1
+
+The files are identical.
+
+=back
+
+=cut
+
+sub IdenticalContents
+{
+    my( %params ) = ( @_ );
+
+    #
+    #  The files we'll compare
+    #
+    my $a = $params{ 'File1' };
+    my $b = $params{ 'File2' };
+
+    if ( !$a || !$b )
+    {
+        $::verbose && print "\tMissing File1 or File2.\n";
+        return -1;
+    }
+
+    #
+    #  Missing files are an error
+    #
+    return -1 unless ( -e $a );
+    return -1 unless ( -e $b );
+
+    #
+    #  Same size?  If not then they can't have the same
+    # contents.
+    #
+    my $size_a = -s $a;
+    my $size_b = -s $b;
+    return 0 if ( $size_a != $size_b );
+
+    #
+    #  Same hash?
+    #
+    my $sum_a = checksumFile( $a );
+    my $sum_b = checksumFile( $b );
+    return 0 if ( $sum_a ne $sum_b );
+
+    #
+    #  OK they're "identical".
+    #
+    return 1;
+}
+
+
 
 =head2 FetchFile
 
