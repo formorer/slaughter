@@ -509,7 +509,7 @@ The files are identical.
 
 sub IdenticalContents
 {
-    my( %params ) = ( @_ );
+    my (%params) = (@_);
 
     #
     #  The files we'll compare
@@ -540,8 +540,8 @@ sub IdenticalContents
     #
     #  Same hash?
     #
-    my $sum_a = checksumFile( $a );
-    my $sum_b = checksumFile( $b );
+    my $sum_a = checksumFile($a);
+    my $sum_b = checksumFile($b);
     return 0 if ( $sum_a ne $sum_b );
 
     #
