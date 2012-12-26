@@ -1,4 +1,4 @@
-slaughter2 (2.1-2) stable; urgency=low
+slaughter2 (2.2-1) stable; urgency=low
 
   * Added new primitive "IdenticalContents" to compare file bodies.
 
