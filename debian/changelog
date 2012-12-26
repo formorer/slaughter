@@ -1,6 +1,8 @@
 slaughter2 (2.2-1) stable; urgency=low
 
   * Added new primitive "IdenticalContents" to compare file bodies.
+  * Updated dependencies so that we can build upon squeeze hosts,
+    that just means added "libparent-perl".
 
  -- Steve Kemp <steve@steve.org.uk>  Wed, 26 Dec 2012 05:44:50 +0000
 

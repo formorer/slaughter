@@ -2,7 +2,7 @@ Source: slaughter2
 Section: admin
 Priority: optional
 Maintainer: Steve Kemp <steve@steve.org.uk>
-Build-Depends: debhelper (>> 5.0.0), libwww-perl | libmojolicious-perl (>> 2.98) , libdigest-sha-perl | libdigest-sha1-perl, perl-modules, libtext-template-perl
+Build-Depends: debhelper (>> 5.0.0), libwww-perl | libmojolicious-perl (>> 2.98) , libdigest-sha-perl | libdigest-sha1-perl, perl-modules (>> 5.10.1~rc2-1) | libparent-perl, libtext-template-perl
 Standards-Version: 3.9.1
 Homepage: http://www.steve.org.uk/Software/slaughter/
 
@@ -11,7 +11,7 @@ Package: slaughter2-client
 Provides: slaughter, slaughter2
 Replaces: slaughter-client
 Architecture: all
-Depends: ${misc:Depends}, libdigest-sha-perl | libdigest-sha1-perl, libwww-perl | libmojolicious-perl (>> 2.98) , libtext-template-perl, perl-modules
+Depends: ${misc:Depends}, libdigest-sha-perl | libdigest-sha1-perl, libwww-perl | libmojolicious-perl (>> 2.98) , libtext-template-perl, perl-modules (>> 5.10.1~rc2-1) | libparent-perl
 Description: Automation tool to perform system administration remotely
  This package contains a client which will connect to a central server
  and fetch policies to execute.
