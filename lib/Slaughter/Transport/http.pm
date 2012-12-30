@@ -180,6 +180,12 @@ sub fetchPolicies
             if ( $line =~ /FetchPolicy([ \t]+)(.*)[ \t]*\;/i )
             {
                 my $inc = $2;
+
+                #
+                #  Strip leading/trailing quotes and whitespace.
+                #
+                $inc =~ s/^(["' \t]+)|(['" \t]+)$//g;
+
                 $self->{ 'verbose' } &&
                   print "\tFetching include: $inc\n";
 
