@@ -230,7 +230,7 @@ my $VERSION = '__UNRELEASED__';
 #
 #  Setup default options - include meta-data about the current host.
 #
-my %CONFIG = defaultOptions();
+our %CONFIG = defaultOptions();
 
 
 #

@@ -48,6 +48,12 @@ use warnings;
 package Slaughter::Transport::http;
 
 
+#
+#  For "expandPolicyInclusion".
+#
+use Slaughter::Private;
+
+
 
 =head2 new
 
@@ -177,72 +183,46 @@ sub fetchPolicies
             # Skip blank lines
             next if ( length($line) < 1 );
 
-            if ( $line =~ /FetchPolicy([ \t]+)(.*)[ \t]*\;/i )
+            if ( $line =~ /FetchPolicy/ )
             {
-                my $inc = $2;
+                my $inc = expandPolicyInclusion($line);
 
-                #
-                #  Strip leading/trailing quotes and whitespace.
-                #
-                $inc =~ s/^(["' \t]+)|(['" \t]+)$//g;
-
-                $self->{ 'verbose' } &&
-                  print "\tFetching include: $inc\n";
-
-                ##
-                ## If this doesn't look like a fully qualified URL ..
-                ##
-                if ( $inc !~ /^https?:\/\//i )
-                {
-
-                    #
-                    #  Try to resolve the path.
-                    #
-                    if ( $url =~ /^(.*)\/([^\/]+)$/ )
-                    {
-                        $inc = $1 . "/" . $inc;
-
-                        $self->{ 'verbose' } &&
-                          print "\tTurned relative URL into: $inc\n";
-                    }
-                }
-
-                #
-                #  OK this is an icky thing ..
-                #
-                if ( $inc =~ /\$/ )
+                if ($inc)
                 {
                     $self->{ 'verbose' } &&
-                      print "\tTemplate expanding URL: $inc\n";
+                      print "\tFetching include: $inc\n";
 
-                    #
-                    #  Looks like the policy has a template variable in
-                    # it.  We might be wrong.
-                    #
-                    foreach my $key ( sort keys %$self )
+                    ##
+                    ## If this doesn't look like a fully qualified URL ..
+                    ##
+                    if ( $inc !~ /^https?:\/\//i )
                     {
-                        while ( $inc =~ /(.*)\$\Q$key\E(.*)/ )
+
+                        #
+                        #  Try to resolve the path.
+                        #
+                        if ( $url =~ /^(.*)\/([^\/]+)$/ )
                         {
-                            $inc = $1 . $self->{ $key } . $2;
+                            $inc = $1 . "/" . $inc;
 
                             $self->{ 'verbose' } &&
-                              print
-                              "\tExpanded '\$$key' into '$self->{$key}' giving: $inc\n";
+                              print "\tTurned relative URL into: $inc\n";
                         }
                     }
-                }
 
-                #
-                #  Now fetch it, resolved or relative.
-                #
-                my $policy = $self->fetchContents($inc);
-                if ( defined($policy) )
-                {
-                    $ret .= $policy;
-                }
-                else
-                {
-                    $self->{ 'verbose' } && print "Policy inclusion failed\n";
+                    #
+                    #  Now fetch it, resolved or relative.
+                    #
+                    my $policy = $self->fetchContents($inc);
+                    if ( defined($policy) )
+                    {
+                        $ret .= $policy;
+                    }
+                    else
+                    {
+                        $self->{ 'verbose' } &&
+                          print "Policy inclusion failed\n";
+                    }
                 }
             }
             else

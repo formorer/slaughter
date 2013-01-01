@@ -176,5 +176,59 @@ sub checksumFile
 
 
 
+#
+#  Handle "parsing" a FetchPolicy statement.
+#
+sub expandPolicyInclusion
+{
+    my ($line) = (@_);
+
+    my $include = undef;
+
+    #
+    #  Does it contain FetchPolicy ...;
+    #
+    if ( $line =~ /FetchPolicy(.*);*/i )
+    {
+
+        #
+        #  Get the initial value.
+        #
+        $include = $1;
+
+        #
+        #  Strip the trailing ";".
+        #
+        $include =~ s/;$//g;
+
+        #
+        #  Strip leading/trailing whitespace + quotes + "(" + ")".
+        #
+        $include =~ s/^([("' \t]+)|(['" \t)]+)$//g;
+
+    }
+
+    #
+    #  Look for variable expansion
+    #
+    if ( $include && ( $include =~ /\$/ ) )
+    {
+        $::CONFIG{'verbose'} && print "Expanding from: $include\n";
+
+        foreach my $key ( sort keys %::CONFIG )
+        {
+            while ( $include =~ /(.*)\$\Q$key\E(.*)/ )
+            {
+                $include = $1 . $::CONFIG{ $key } . $2;
+            }
+        }
+
+        $::CONFIG{'verbose'} && print "Expanded into: $include\n";
+
+    }
+
+    return ($include);
+
+}
 
 1;

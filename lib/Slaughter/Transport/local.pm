@@ -45,6 +45,11 @@ use warnings;
 
 package Slaughter::Transport::local;
 
+#
+#  For "expandPolicyInclusion".
+#
+use Slaughter::Private;
+
 
 
 =head2 new
@@ -168,49 +173,29 @@ sub fetchPolicies
         # Skip blank lines
         next if ( length($line) < 1 );
 
-        if ( $line =~ /FetchPolicy([ \t]+)(.*)[ \t]*\;/i )
+        if ( $line =~ /FetchPolicy/ )
         {
-            my $inc = $2;
-            $self->{ 'verbose' } &&
-              print "\tFetching include: $inc\n";
+            my $inc = expandPolicyInclusion($line);
 
-            #
-            #  OK this is an icky thing ..
-            #
-            if ( $inc =~ /\$/ )
+            if ($inc)
             {
                 $self->{ 'verbose' } &&
-                  print "\tTemplate expanding file: $inc\n";
+                  print "\tFetching include: $inc\n";
 
                 #
-                #  Looks like the policy has a template variable in
-                # it.  We might be wrong.
+                #  Now fetch it, resolved or relative.
                 #
-                foreach my $key ( sort keys %$self )
+                my $policy =
+                  $self->_readFile( $self->{ 'prefix' } . "/policies/" . $inc );
+                if ( defined($policy) )
                 {
-                    while ( $inc =~ /(.*)\$\Q$key\E(.*)/ )
-                    {
-                        $inc = $1 . $self->{ $key } . $2;
-
-                        $self->{ 'verbose' } &&
-                          print
-                          "\tExpanded '\$$key' into '$self->{$key}' giving: $inc\n";
-                    }
+                    $content .= $policy;
                 }
-            }
-
-            #
-            #  Now fetch it, resolved or relative.
-            #
-            my $policy =
-              $self->_readFile( $self->{ 'prefix' } . "/policies/" . $inc );
-            if ( defined($policy) )
-            {
-                $content .= $policy;
-            }
-            else
-            {
-                $self->{ 'verbose' } && print "Policy inclusion failed: $inc\n";
+                else
+                {
+                    $self->{ 'verbose' } &&
+                      print "Policy inclusion failed: $inc\n";
+                }
             }
         }
         else
