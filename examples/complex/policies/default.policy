@@ -10,22 +10,22 @@
 #
 #  Ensure slaughter runs on each node once an hour.
 #
-FetchPolicy  slaughter.policy;
+FetchPolicy  "slaughter.policy";
 
 
 #
 #  Alert if any partition is getting too full.
 #
-FetchPolicy disk-check.policy;
+FetchPolicy "disk-check.policy";
 
 
 #
 #  Misc Cleanup
 #
-FetchPolicy tidy.policy;
+FetchPolicy "tidy.policy";
 
 
 #
 #  Update /etc/motd
 #
-FetchPolicy motd.policy;
+FetchPolicy "motd.policy";
