@@ -61,11 +61,13 @@ ok( -s $filename, "Our output file grew - showing an error" );
 # a message from the shell along the lines of:
 #
 #    /missing/command/or/file: not found
+#    /missing/command/or/file: No such file or directory
+#
 #
 open( my $file, "<", $filename );
 while ( my $line = <$file> )
 {
-    ok( $line =~ /not found/, "Output file contained an error" );
+    ok( $line =~ /(no such file|not found)/, "Output file contained an error" );
 }
 close($file);
 
