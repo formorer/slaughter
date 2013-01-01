@@ -213,7 +213,7 @@ sub expandPolicyInclusion
     #
     if ( $include && ( $include =~ /\$/ ) )
     {
-        $::CONFIG{'verbose'} && print "Expanding from: $include\n";
+        $::CONFIG{ 'verbose' } && print "Expanding from: $include\n";
 
         foreach my $key ( sort keys %::CONFIG )
         {
@@ -223,7 +223,7 @@ sub expandPolicyInclusion
             }
         }
 
-        $::CONFIG{'verbose'} && print "Expanded into: $include\n";
+        $::CONFIG{ 'verbose' } && print "Expanded into: $include\n";
 
     }
 
