@@ -46,7 +46,7 @@ When the slaughter client runs it gathers some meta-information about
 the host it is executing upon.
 
 All the meta-information is gleaned at runtime, by loading a specific
-module, which must provide the method "getInfomration" to populate and
+module, which must provide the method "getInformation" to populate and
 return a hash-reference of system-information.  Again the provided information
 may be augmented by the use of a module in the Slaughter::Info::Local
 namespace.
