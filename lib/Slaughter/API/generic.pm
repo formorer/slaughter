@@ -603,10 +603,10 @@ be passed through the perl "oct" function.
 
 The Unix owner who should own the file.
 
-=item Source [mandatory]
+=item Source [default: value of Dest]
 
 The path to the remote file.  This is relative to the /files/ prefix beneath
-the transport root.
+the transport root.  If no value is specified the destination path is used.
 
 =back
 
@@ -652,17 +652,16 @@ sub FetchFile
 {
     my (%params) = (@_);
 
-    $::verbose && print "FetchFile( $params{'Source'} );\n";
-
-    my $src = $params{ 'Source' };
     my $dst = $params{ 'Dest' };
+    my $src = $params{ 'Source' } || $dst;
 
-    if ( !$src || !$dst )
+    if ( !$dst )
     {
-        $::verbose && print "\tMissing source or destination.\n";
-        return 0;
+        $::verbose && print "\tMissing destination file.\n";
+        return -1;
     }
 
+    $::verbose && print "FetchFile( $src, $dst );\n";
 
     #
     #  Fetch the source.
