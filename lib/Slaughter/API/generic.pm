@@ -645,6 +645,25 @@ To the following, assuming the local host is called "precious.my.flat":
 
 =for example end
 
+The return value of this function is will depend upon the
+action carried out:
+
+=over 8
+
+=item -1
+
+Returned on error; either missing parameters, or failure to perform
+the fetch.
+
+=item 0
+
+The fetch resulted in no change.
+
+=item 1
+
+The local file was replaced with the remote one.
+
+=back
 
 =cut
 
@@ -671,7 +690,7 @@ sub FetchFile
     if ( !defined($content) )
     {
         $::verbose && print "\tFailed to fetch.\n";
-        return 0;
+        return 1;
     }
 
 
@@ -692,6 +711,7 @@ sub FetchFile
         if ( !$content )
         {
             print "Template expansion failed " . $Text::Template::ERROR . "\n";
+            return -1;
         }
 
     }
