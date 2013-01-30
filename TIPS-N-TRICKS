@@ -1,0 +1,36 @@
+
+Persistant Transports
+---------------------
+
+Each time you run slaughter on a system it will fetch the files/polices,
+from the master, from scratch whether via:
+
+    * git clone ...
+    * hg clone ..
+    * svn ...
+    * rsync ...
+    * HTTP-fetch
+
+It isn't obvious to me, yet, if this is a bug or not.  However you
+can emulate a persistant transport by cloning your policies onto
+each node, and then using the "local" transport.
+
+I do this to ensure that I only ever pull changes, and if that pull
+fails there will still be *something* executed.
+
+The rough recipe looks like this:
+
+    * Slaughter is installed upon a host.
+
+    * The initial policies are checked out to /srv/slaughter/ from the
+      master location.
+
+    * Slaughter is configured to run via an hourly cronjob with:
+            slaughter --transport=local --prefix=/srv/slaughter ...
+
+    * A second cronjob updates /srv/slaughter from the master repostiory
+      ensuring new policy changes are implemented.
+
+
+
+
