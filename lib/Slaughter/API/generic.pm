@@ -471,6 +471,20 @@ The following is an example of usage:
 
 =for example begin
 
+    #
+    #  If the current contents don't match then move into place.
+    #
+    if (
+         1 != IdenticalContents( File1 => $tmp,
+                                 File2 => $dest ) )
+    {
+        system( "cp", $tmp, $dest );
+    }
+    else
+    {
+        unlink( $tmp );
+    }
+
 =for example end
 
 The following parameters are available:
