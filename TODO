@@ -20,6 +20,19 @@ We'll implement this via:
 
 Then concatenate to the end of the generated slaughter-script.
 
+  1.  Change each transports to remove the files/ prefix from
+     fetch contents.
+
+  2.  Change policy fetching to happen in slaughter, via fetchContents
+     with prefix of /policies/
+
+  3.  Add module handling in slaughter too, via the same mechanism.
+
+This cuts down on the use of expandpolicyinclusion, and removes
+the distinction in the transports between "file" and "policy" fetches
+to avoid having three special cases (files, policies, and modules).
+
+
 
 
 Validation
