@@ -63,7 +63,7 @@ sub fetchFromTransport
 {
     my ($url) = (@_);
 
-    $verbose && print "\tfetchFromTransport( $url ) \n";
+    $::template{ 'verbose' } && print "\tfetchFromTransport( $url ) \n";
 
     #
     #  Make requests for:
@@ -91,20 +91,22 @@ sub fetchFromTransport
 
         if ( defined($content) )
         {
-            $verbose && print "\t$attempt OK\n";
+            $::template{ 'verbose' } && print "\t$attempt OK\n";
             return ($content);
         }
         else
         {
-            $verbose && print "\t$attempt failed - continuing\n";
+            $::template{ 'verbose' } &&
+              print "\t$attempt failed - continuing\n";
         }
     }
 
     #
     #  Failed
     #
-    $verbose && print "\tFailed to fetch any of our attempts for $url\n";
-    return;
+    $::template{ 'verbose' } &&
+      print "\tFailed to fetch any of our attempts for $url\n";
+    return undef;
 }
 
 
@@ -213,7 +215,7 @@ sub expandPolicyInclusion
     #
     if ( $include && ( $include =~ /\$/ ) )
     {
-        $::CONFIG{ 'verbose' } && print "Expanding from: $include\n";
+        $::template{ 'verbose' } && print "Expanding from: $include\n";
 
         foreach my $key ( sort keys %::CONFIG )
         {
@@ -223,7 +225,7 @@ sub expandPolicyInclusion
             }
         }
 
-        $::CONFIG{ 'verbose' } && print "Expanded into: $include\n";
+        $::template{ 'verbose' } && print "Expanded into: $include\n";
 
     }
 
