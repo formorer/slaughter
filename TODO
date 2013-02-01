@@ -1,4 +1,26 @@
 
+Modules
+-------
+
+It would be useful to allow Perl modules/classes to be distributed
+alongside polices.  These could allow abstractions and local
+helpers to be written.
+
+For example:
+
+  package Apache2;
+
+  sub sites()
+  sub enabled()
+  sub enableSite( $name );
+
+We'll implement this via:
+
+    FetchModule( "name" );
+
+Then concatenate to the end of the generated slaughter-script.
+
+
 
 Validation
 ----------
