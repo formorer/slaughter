@@ -269,24 +269,13 @@ if ( $CONFIG{ 'delay' } > 0 )
 
 
 #
-#  Attempt to load the transport the user has specified.
+#  Attempt to load the policy from the remote source.
 #
-my $object = loadTransport();
-
 #
-#  Now fetch the policies, expanding and recursing, where appropriate.
-#
-my $policy = $object->fetchContents( prefix => "/policies/",
-                                     file   => "default.policy" );
-
-
-#
-#  Policy failure?
-#
+my $policy = loadPolicy();
 if ( !$policy )
 {
-    print
-      "Failed to fetch policy - Re-run with \"--verbose\" for more details.\n";
+    print      "Failed to fetch policy from server.\n";
     exit 0;
 }
 
@@ -824,6 +813,38 @@ sub loadTransport
 
     return ($object);
 }
+
+
+
+
+=begin doc
+
+Load the default policy "/policies/default.policy", via the transport
+and then expand that for any policy inclusions.
+
+=end doc
+
+=cut
+
+sub loadPolicy
+{
+    my $object = loadTransport();
+
+    #
+    #  Now fetch the policies, expanding and recursing, where appropriate.
+    #
+    my $policy = $object->fetchContents( prefix => "/policies/",
+                                         file   => "default.policy" );
+
+    return $policy if ( ! $policy );
+
+    #
+    #  TODO: Expand inclusions here.
+    #
+    return( $policy );
+
+}
+
 
 
 
