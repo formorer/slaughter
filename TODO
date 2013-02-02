@@ -10,9 +10,10 @@ For example:
 
   package Apache2;
 
-  sub sites()
-  sub enabled()
-  sub enableSite( $name );
+  sub sites() { sort(glob( "/etc/apache2/sites-available/*" ) );}
+  sub enabled() { sort(glob( "/etc/apache2/sites-enabled/*" ) );}
+  sub enableSite( $name ) { .. }
+  sub disableSite( $name ) { .. }
 
 We'll implement this via:
 
