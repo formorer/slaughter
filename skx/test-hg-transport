@@ -20,6 +20,7 @@ mkdir -p $hg
 #
 mkdir -p $hg/files/
 mkdir -p $hg/policies/
+mkdir -p $hg/modules/
 cat > $hg/policies/default.policy <<EOF
 
 #
@@ -31,6 +32,11 @@ FetchPolicy \$fqdn.policy;
 #  Fetch a shell command policy
 #
 FetchPolicy cmd.policy;
+
+#
+#  Load a module for working with apache
+#
+FetchModule "apache.pm";
 
 #
 #  Copy a file
@@ -60,6 +66,16 @@ if ( FetchFile( Source  => "/etc/motd",
 }
 EOF
 
+
+cat > $hg/modules/apache.pm <<EOF
+
+package Apache;
+
+sub new() {  };
+sub installed() { };
+
+EOF
+
 mkdir -p $hg/files/etc/
 
 cat > $hg/files/etc/motd <<EOF
@@ -73,6 +89,7 @@ EOF
 pushd $hg && hg init && popd
 pushd $hg && hg add files && popd
 pushd $hg && hg add policies && popd
+pushd $hg && hg add modules && popd
 pushd $hg && hg commit "-m added" && popd
 
 
