@@ -68,11 +68,12 @@ foreach my $dir ( sort( glob( $base . "/*/" ) ) )
     #
     #  The format of the API file is:
     #  /
-    #  |methodName
+    #  |methodName [optional]
     #  |  Mathod Description, prefixed by two spaces.
     #  \
     #
     my %API;
+    my %OPTIONAL;
 
     open( my $handle, "<", $api )
       or die "Failed to open $api - $!";
@@ -83,6 +84,11 @@ foreach my $dir ( sort( glob( $base . "/*/" ) ) )
         {
             $API{$1} = 1;
             ok( $1, "\tAPI documents function: $1" );
+        }
+        if ( $line =~ /^([_a-zA-Z]+) optional/ )
+        {
+            $OPTIONAL{$1} = 1;
+            ok( $1, "\tAPI optional function: $1" );
         }
     }
     close( $handle );
@@ -164,6 +170,20 @@ foreach my $dir ( sort( glob( $base . "/*/" ) ) )
         # the derived class might assume the parent implements them.
         #
         next if ( $derived );
+
+        #
+        #  Handle any optional functions.
+        #
+        foreach my $key ( keys %OPTIONAL )
+        {
+            if ( $EXPECTED{$key} )
+            {
+                ok( 1, "Optional function present: $key" );
+            }
+            delete $EXPECTED{$key};
+        }
+
+
         is( scalar %EXPECTED, 0, "There were no functions left over!");
 
         #

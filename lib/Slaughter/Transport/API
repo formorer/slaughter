@@ -12,3 +12,6 @@ error
 
 fetchContents
   Fetch the contents of the named file.
+
+setup optional
+  Setup the transport - called only once, if present.

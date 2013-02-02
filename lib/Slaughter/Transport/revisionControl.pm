@@ -254,6 +254,46 @@ sub name
 
 =begin doc
 
+Clone the repository.
+
+This is called only once, when the object is constructed.  It will be called by slaughter, for
+example, to clone the repository prior to processing policies.
+
+=end doc
+
+=cut
+
+sub setup
+{
+    my ($self) = (@_);
+
+    #
+    #  The repository, and the destination to which we clone it.
+    #
+    my $repo = $self->{ 'prefix' };
+    my $dst  = $self->{ 'transportdir' };
+
+    $self->{ 'verbose' } && print "Fetching $repo into $dst\n";
+
+    #
+    #  Convert "#SRC#" and "#DST#" into the appropriate args from our
+    # cloning command, and then execute it.
+    #
+    my $cmd = $self->{ 'cmd_clone' };
+    $cmd =~ s/#SRC#/$repo/g;
+    $cmd =~ s/#DST#/$dst/g;
+
+    if ( system("$cmd") != 0 )
+    {
+        $self->{ 'verbose' } &&
+          print "WARNING: Failed to clone repository command failed: $cmd";
+    }
+}
+
+
+
+=begin doc
+
 This is an internal/private method that merely returns the contents of the
 named file - or undef on error.
 
