@@ -272,7 +272,7 @@ if ( $CONFIG{ 'delay' } > 0 )
 #  Attempt to load the policy from the remote source.
 #
 #
-my $policy = loadPolicy();
+my ( $policy, $modules ) = loadPolicy();
 if ( !$policy )
 {
     print "Failed to fetch policy from server.\n";
@@ -280,11 +280,12 @@ if ( !$policy )
 }
 
 
+
 #
 #  Write it out to disk, with the appropriate wrapper, such that it
 #  becomes executable as valid perl.
 #
-my $file = writeoutPolicy($policy);
+my $file = writeoutPolicy( $policy, $modules );
 $CONFIG{ 'verbose' } && print "Policy written to: $file\n";
 
 
@@ -853,12 +854,18 @@ sub loadPolicy
                               file   => "default.policy" );
 
 
-    return $contents if ( !$contents );
+    return ( $contents, undef ) if ( !$contents );
 
     #
     #  The expanded policy.
     #
     my $policy;
+
+    #
+    #  The modules the user might fetch.
+    #
+    my $modules = "";
+
 
     #
     #  Expand inclusions here.
@@ -912,12 +919,40 @@ sub loadPolicy
                                       file   => $include );
             if ($txt)
             {
-                $line = "#Policy inclusion - $include\n";
+                $line = "# Policy inclusion - $include\n";
                 $line .= $txt;
             }
             else
             {
-                $line = "#Policy inclusion failed - $include\n";
+                $line = "# Policy inclusion failed - $include\n";
+            }
+        }
+        if ( $line =~ /^([ \t]*)FetchModule(.*);*/ )
+        {
+            $::CONFIG{ 'verbose' } && print "Module inclusion: $line\n";
+
+            #  Get the initial value.
+            my $include = $2;
+
+            #  Strip the trailing ";".
+            $include =~ s/;$//g;
+
+            # Strip leading/trailing stuff.
+            $include =~ s/^([("' \t]+)|(['" \t)]+)$//g;
+
+            my $tmp =
+              $object->fetchContents( prefix => "/modules/",
+                                      file   => $include );
+            if ($tmp)
+            {
+                $modules = "# Module inclusion - $include\n";
+                $modules .= $tmp;
+                $line = "";
+            }
+            else
+            {
+                $modules = "# Module inclusion failed - $include\n";
+                $line    = "";
             }
         }
 
@@ -925,7 +960,7 @@ sub loadPolicy
         $policy .= "\n";
     }
 
-    return ($policy);
+    return ( $policy, $modules );
 }
 
 
@@ -945,7 +980,8 @@ system - so it will be valid perl.
 
 sub writeoutPolicy
 {
-    my ($txt) = (@_);
+    my ( $policy, $modules ) = (@_);
+
 
     #
     # Create the temporary file, and set the permissions on
@@ -1070,8 +1106,7 @@ EOFF
 #
 #  User-supplied policies.
 #
-
-$txt
+$policy
 
 
 #
@@ -1113,6 +1148,11 @@ if ( length( \$logOutput ) )
 
 $include
 
+
+#
+#  Modules:
+#
+$modules
 EOF
 
     #
