@@ -10,8 +10,5 @@ isAvailable
 error
   Is this transport available?  Return "0" or "1".  If 0 error() may be called for details.
 
-fetchPolicies
-  Fetch all policies, recursing as necessary.
-
 fetchContents
-  Fetch the contents of the named file, relative to the prefix.
+  Fetch the contents of the named file.

@@ -276,7 +276,8 @@ my $object = loadTransport();
 #
 #  Now fetch the policies, expanding and recursing, where appropriate.
 #
-my $policy = $object->fetchPolicies();
+my $policy = $object->fetchContents( prefix => "/policies/",
+                                     file   => "default.policy" );
 
 
 #

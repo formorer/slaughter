@@ -154,98 +154,6 @@ sub error
 
 
 
-=head2 fetchPolicies
-
-Fetch the policies which are required from the remote HTTP site.
-
-If we've been given a username & password we'll use HTTP basic-authentication.
-
-=cut
-
-sub fetchPolicies
-{
-    my ($self) = (@_);
-
-    #
-    #  The name of the policy we fetch by default.
-    #
-    my $url = $self->{ 'prefix' } . "/policies/default.policy";
-
-    #
-    #  Recursively expand the policy
-    #
-    my $contents = $self->fetchContents($url);
-
-    if ( defined $contents )
-    {
-        my $ret = "";
-
-        foreach my $line ( split( /[\r\n]/, $contents ) )
-        {
-
-            # Skip lines beginning with comments
-            next if ( $line =~ /^([ \t]*)\#/ );
-
-            # Skip blank lines
-            next if ( length($line) < 1 );
-
-            if ( $line =~ /FetchPolicy/ )
-            {
-                my $inc = expandPolicyInclusion($line);
-
-                if ($inc)
-                {
-
-                    $self->{ 'verbose' } &&
-                      print "\tFetching include: $inc\n";
-
-                    ##
-                    ## If this doesn't look like a fully qualified URL ..
-                    ##
-                    if ( $inc !~ /^https?:\/\//i )
-                    {
-
-                        #
-                        #  Try to resolve the path.
-                        #
-                        if ( $url =~ /^(.*)\/([^\/]+)$/ )
-                        {
-                            $inc = $1 . "/" . $inc;
-
-                            $self->{ 'verbose' } &&
-                              print "\tTurned relative URL into: $inc\n";
-                        }
-                    }
-
-                    #
-                    #  Now fetch it, resolved or relative.
-                    #
-                    my $policy = $self->fetchContents($inc);
-                    if ( defined($policy) )
-                    {
-                        $ret .= $policy;
-                    }
-                    else
-                    {
-                        $self->{ 'verbose' } &&
-                          print "Policy inclusion failed\n";
-                    }
-                }
-            }
-            else
-            {
-                $ret .= $line;
-            }
-
-            $ret .= "\n";
-
-        }
-        return ($ret);
-    }
-}
-
-
-
 =head2 fetchContents
 
 Fetch the contents of a remote URL, using HTTP basic-auth if we should
@@ -254,27 +162,21 @@ Fetch the contents of a remote URL, using HTTP basic-auth if we should
 
 sub fetchContents
 {
-    my ( $self, $url ) = (@_);
-
-    $self->{ 'verbose' } &&
-      print "\tfetchURLContents( $url ) \n";
+    my ( $self, %args ) = (@_);
 
 
     #
-    #  If the file isn't already qualified then setup the prefix.
+    #  The file to fetch, and the prefix from which to load it.
     #
-    #  In this module we'll internally use "fetchContents" in
-    # "fetchPolicies" and in that case we'll resolve things to make
-    # requests absolute.
+    my $pref = $args{ 'prefix' };
+    my $url  = $args{ 'file' };
+
     #
-    #  Otherwise we'll ultimately end up being called by user-code which
-    # will never be absolute
-    #
-    #   e.g. Policy -> Slaughter::Private -> Us
+    #  Is this fully-qualified?
     #
     if ( $url !~ /^http/i )
     {
-        $url = "$self->{'prefix'}/files/$url";
+        $url = "$self->{'prefix'}/$pref/$url";
 
         $self->{ 'verbose' } &&
           print "\tExpanded to: $url  \n";

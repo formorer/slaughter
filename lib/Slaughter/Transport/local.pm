@@ -131,87 +131,6 @@ sub error
 
 
 
-=head2 fetchPolicies
-
-Fetch the policies which are required from local filesystem.
-
-This method returns "undef" on failure, otherwise the content of the
-policy, expanded as necessary.
-
-=cut
-
-sub fetchPolicies
-{
-    my ($self) = (@_);
-
-    #
-    #  OK we've been given a local directory as our prefix - we append
-    # the /default/policy to it, and process that file.
-    #
-    my $base = $self->{ 'prefix' } . "/policies/default.policy";
-    if ( !-e $base )
-    {
-        $self->{ 'verbose' } && print "File not found: $base\n";
-        return undef;
-    }
-    $self->{ 'verbose' } && print "Processing $base\n";
-
-
-    #
-    #  Open the file, and expand it.
-    #
-    my $content = "";
-
-    open( my $handle, "<", $base );
-    foreach my $line (<$handle>)
-    {
-        chomp($line);
-
-        # Skip lines beginning with comments
-        next if ( $line =~ /^([ \t]*)\#/ );
-
-        # Skip blank lines
-        next if ( length($line) < 1 );
-
-        if ( $line =~ /FetchPolicy/ )
-        {
-            my $inc = expandPolicyInclusion($line);
-
-            if ($inc)
-            {
-                $self->{ 'verbose' } &&
-                  print "\tFetching include: $inc\n";
-
-                #
-                #  Now fetch it, resolved or relative.
-                #
-                my $policy =
-                  $self->_readFile( $self->{ 'prefix' } . "/policies/" . $inc );
-                if ( defined($policy) )
-                {
-                    $content .= $policy;
-                }
-                else
-                {
-                    $self->{ 'verbose' } &&
-                      print "Policy inclusion failed: $inc\n";
-                }
-            }
-        }
-        else
-        {
-            $content .= $line;
-        }
-
-        $content .= "\n";
-    }
-    close($handle);
-
-    return ($content);
-}
-
-
-
 =head2 fetchContents
 
 Fetch the contents of the specified file, relative to the specified prefix.
@@ -220,10 +139,26 @@ Fetch the contents of the specified file, relative to the specified prefix.
 
 sub fetchContents
 {
-    my ( $self, $file ) = (@_);
+    my ( $self, %args ) = (@_);
 
-    my $complete = $self->{ 'prefix' } . "/files/" . $file;
+    #
+    #  The prefix to fetch from:  /files/, /modules/, or /policies/.
+    #
+    my $prefix = $args{ 'prefix' };
 
+    #
+    #  The file to retrieve.
+    #
+    my $file = $args{ 'file' };
+
+    #
+    #  The complete path.
+    #
+    my $complete = $self->{ 'prefix' } . $prefix . $file;
+
+    #
+    #  Read the file.
+    #
     return ( $self->_readFile($complete) );
 }
 

@@ -237,115 +237,6 @@ sub error
 
 
 
-=head2 fetchPolicies
-
-Fetch the policies which are required from the remote server.
-
-This method begins by looking for the file "C<default.policy>" within
-the top-level policies sub-directory of the repository.  Additional
-included policies are fetched and interpolated.
-
-Fetching of the policies involves first cloning the remote repository,
-using the command specified in L</cmd_clone>, then looking beneath
-the repository for the C<policies/> subdirectory.
-
-=cut
-
-sub fetchPolicies
-{
-    my ($self) = (@_);
-
-    #
-    #  The repository, and the destination to which we clone it.
-    #
-    my $repo = $self->{ 'prefix' };
-    my $dst  = $self->{ 'transportdir' };
-
-    $self->{ 'verbose' } && print "Fetching $repo into $dst\n";
-
-    #
-    #  Convert "#SRC#" and "#DST#" into the appropriate args from our
-    # cloning command, and then execute it.
-    #
-    my $cmd = $self->{ 'cmd_clone' };
-    $cmd =~ s/#SRC#/$repo/g;
-    $cmd =~ s/#DST#/$dst/g;
-
-    if ( system("$cmd") != 0 )
-    {
-        $self->{ 'verbose' } && print "FAILED TO FETCH POLICY";
-        return undef;
-    }
-
-    #
-    #  OK we've cloned the policies/files to the local filesystem
-    # now we need to return to the caller an expanded policy file.
-    #
-    #  The name of the policy we fetch by default.
-    #
-    my $base = $dst . "/policies/default.policy";
-    if ( !-e $base )
-    {
-        $self->{ 'verbose' } && print "File not found, post-clone: $base\n";
-        return undef;
-    }
-    $self->{ 'verbose' } && print "Processing $base\n";
-
-
-    #
-    #  Open the file, and expand it.
-    #
-    my $content = "";
-
-    open( my $handle, "<", $base );
-    foreach my $line (<$handle>)
-    {
-        chomp($line);
-
-        # Skip lines beginning with comments
-        next if ( $line =~ /^([ \t]*)\#/ );
-
-        # Skip blank lines
-        next if ( length($line) < 1 );
-
-        if ( $line =~ /FetchPolicy/ )
-        {
-            my $inc = expandPolicyInclusion($line);
-
-            if ($inc)
-            {
-                $self->{ 'verbose' } &&
-                  print "\tFetching include: $inc\n";
-
-                #
-                #  Now fetch it, resolved or relative.
-                #
-                my $policy = $self->_readFile( $dst . "/policies/" . $inc );
-                if ( defined($policy) )
-                {
-                    $content .= $policy;
-                }
-                else
-                {
-                    $self->{ 'verbose' } &&
-                      print "Policy inclusion failed: $inc\n";
-                }
-            }
-        }
-        else
-        {
-            $content .= $line;
-        }
-
-        $content .= "\n";
-    }
-    close($handle);
-
-    return ($content);
-}
-
-
-
 =head2 name
 
 Return the name of this transport.  This will be setup in the derived class,
@@ -400,10 +291,26 @@ Given a root repository of /path/to/repo/ the file is looked for beneath
 
 sub fetchContents
 {
-    my ( $self, $file ) = (@_);
+    my ( $self, %args ) = (@_);
 
-    my $complete = $self->{ 'transportdir' } . "/files/" . $file;
+    #
+    #  The prefix to fetch from:  /files/, /modules/, or /policies/.
+    #
+    my $prefix = $args{ 'prefix' };
 
+    #
+    #  The file to retrieve.
+    #
+    my $file = $args{ 'file' };
+
+    #
+    #  The complete path.
+    #
+    my $complete = $self->{ 'transportdir' } . $prefix . $file;
+
+    #
+    #  Read the file.
+    #
     return ( $self->_readFile($complete) );
 }
 

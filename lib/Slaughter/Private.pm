@@ -87,7 +87,9 @@ sub fetchFromTransport
 
     foreach my $attempt (@urls)
     {
-        my $content = $::TRANSPORT->fetchContents($attempt);
+        my $content =
+          $::TRANSPORT->fetchContents( prefix => "/files/",
+                                       file   => $attempt );
 
         if ( defined($content) )
         {

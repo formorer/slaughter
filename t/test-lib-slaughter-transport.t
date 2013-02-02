@@ -64,7 +64,7 @@ foreach my $name ( sort( glob( $dir . "/*.pm" ) ) )
         # Test that our required methods are present
         #
         foreach my $method (
-                   qw! error fetchContents fetchPolicies isAvailable name new !)
+                   qw! error fetchContents isAvailable name new !)
         {
             ok( UNIVERSAL::can( $handle, $method ),
                 "required method available - $method" );
