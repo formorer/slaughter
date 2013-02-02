@@ -275,7 +275,7 @@ if ( $CONFIG{ 'delay' } > 0 )
 my $policy = loadPolicy();
 if ( !$policy )
 {
-    print      "Failed to fetch policy from server.\n";
+    print "Failed to fetch policy from server.\n";
     exit 0;
 }
 
@@ -833,18 +833,41 @@ sub loadPolicy
     #
     #  Now fetch the policies, expanding and recursing, where appropriate.
     #
-    my $policy = $object->fetchContents( prefix => "/policies/",
-                                         file   => "default.policy" );
+    my $contents =
+      $object->fetchContents( prefix => "/policies/",
+                              file   => "default.policy" );
 
-    return $policy if ( ! $policy );
+    return $contents if ( !$contents );
 
     #
-    #  TODO: Expand inclusions here.
+    #  The expanded policy.
     #
-    return( $policy );
+    my $policy;
 
+    #
+    #  Expand inclusions here.
+    #
+    foreach my $line ( split /[\r\n]/, $contents )
+    {
+        next unless ($line);
+        chomp($line);
+
+        # Skip lines beginning with comments
+        next if ( $line =~ /^([ \t]*)\#/ );
+
+        # Skip blank lines
+        next if ( length($line) < 1 );
+
+        if ( $line =~ /^([ \t]*)FetchPolicy/ )
+        {
+        }
+
+        $policy .= $line;
+        $policy .= "\n";
+    }
+
+    return ($policy);
 }
-
 
 
 
