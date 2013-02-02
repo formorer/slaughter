@@ -811,6 +811,17 @@ sub loadTransport
         exit(0);
     }
 
+    #
+    #  Some transports need an init-method to be called.  If the module
+    # supports it then call it.
+    #
+    if ( $object && ( UNIVERSAL::can( $object, "setup" ) ) )
+    {
+        $object->setup();
+
+    }
+
+
     return ($object);
 }
 
@@ -828,6 +839,10 @@ and then expand that for any policy inclusions.
 
 sub loadPolicy
 {
+
+    #
+    #  Load the transport the user has chosen.
+    #
     my $object = loadTransport();
 
     #
@@ -836,6 +851,7 @@ sub loadPolicy
     my $contents =
       $object->fetchContents( prefix => "/policies/",
                               file   => "default.policy" );
+
 
     return $contents if ( !$contents );
 
@@ -858,8 +874,51 @@ sub loadPolicy
         # Skip blank lines
         next if ( length($line) < 1 );
 
-        if ( $line =~ /^([ \t]*)FetchPolicy/ )
+        if ( $line =~ /^([ \t]*)FetchPolicy(.*);*/ )
         {
+            $::CONFIG{ 'verbose' } && print "Policy inclusion: $line\n";
+
+            #  Get the initial value.
+            my $include = $2;
+
+            #  Strip the trailing ";".
+            $include =~ s/;$//g;
+
+            # Strip leading/trailing stuff.
+            $include =~ s/^([("' \t]+)|(['" \t)]+)$//g;
+
+            # does it refer to a variable?
+            if ( $include =~ /\$/ )
+            {
+                $::CONFIG{ 'verbose' } && print "Expanding from: $include\n";
+
+                foreach my $key ( sort keys %::CONFIG )
+                {
+                    while ( $include =~ /(.*)\$\Q$key\E(.*)/ )
+                    {
+                        $include = $1 . $::CONFIG{ $key } . $2;
+                    }
+                }
+
+                $::CONFIG{ 'verbose' } && print "Expanded into: $include\n";
+
+            }
+
+            #
+            #  Fetch the included policy
+            #
+            my $txt =
+              $object->fetchContents( prefix => "/policies/",
+                                      file   => $include );
+            if ($txt)
+            {
+                $line = "#Policy inclusion - $include\n";
+                $line .= $txt;
+            }
+            else
+            {
+                $line = "#Policy inclusion failed - $include\n";
+            }
         }
 
         $policy .= $line;
