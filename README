@@ -18,8 +18,8 @@ allow the control and manipulation of multiple systems.
 The tasks we support are pretty basic, but they include:
 
    1.  Replacing a file, literally.
-   2.  Replacing a file, expanding content within it.
-   3.  Appending lines to files, or commenting out lines.
+   2.  Replacing a file, template-expanding content within it.
+   3.  Appending lines to files, commenting out lines, replacing lines, etc.
    4.  Running system commands.
    5.  Testing for the existence of local users, and fetching their details.
    6.  Checking disk space, and mount-points.
@@ -28,9 +28,9 @@ The tasks we support are pretty basic, but they include:
 The implementation is cleanly organized to allow it to be ported, tested,
 and used upon new systems easily.  Currently we support:
 
-    * GNU/Linux.
-    * OpenBSD.
-    * Microsoft Windows - using Strawberry perl.
+   * GNU/Linux.
+   * OpenBSD.
+   * Microsoft Windows - using Strawberry perl.
 
 
 
@@ -38,16 +38,15 @@ Overview
 --------
 
 We assume that we have a "server" somewhere.  This server is designed to
-allow files and policies to be retrieved from it.
+allow files, modules, and policies to be retrieved from it.
 
 The actual form of the server loosely specified, as slaughter allows different
-transport mechanisms to be used.  Currently there are four supported transports
-for fetching files:
+transport mechanisms to be used.  Currently there are several supported transports
+for fetching things from the remote server:
 
-  * A remote HTTP server.
-  * A remote rsync server.
-  * A remote GIT server.
-  * A remote Mercurial server.
+   * HTTP-transfers.
+   * rsync-transfers.
+   * Cloning remote git/mercurial/svn repositories.
 
 Each client which is running slaughter will connect to the server, using
 the appropriate mechanism, and download policies.  These policies describe
@@ -55,6 +54,8 @@ the actions that must be carried out upon the local system.
 
 Policies (and also files) are pulled by the client, meaning there is no
 central server which is in charge of initiating transactions, or connections.
+
+   i.e. Slaughter is client-pull rather than server-push.
 
 The attraction of client-pull is that there is no need to maintain state
 on the central server, and each client can be trusted to schedule itself
@@ -67,26 +68,24 @@ Policies
 --------
 
 The list of tasks which each node should carry out is defined in a policy
-file.  These policies are fetched from the server and may recursively
-include other policies.
+file.  An initial "default.policy" file is fetched from the server, and
+this may trigger the fetch of additional policies and modules in turn.
 
-When a client node launches the first thing it will do is attempt to fetch
-the policy "default.policy".
+This policy files may contain code in (standard) Perl, and they may also
+use the primitives that Slaughter provides.
 
-This default policy file can contain code in Perl, and the use of our
-additional primitives.  It is expected that because the file default.policy
-is fetched by all clients it should be used for house-keeping, and merely
-include other policies.
+It is expected that because the file default.policy is fetched by all clients
+it should be used for house-keeping, and merely include other policies.
 
-For example this might be a sane default.policy file:
+For example a default.policy file might look like this:
 
 ---
 
 # actions to carry out globally
-FetchPolicy  global.policy ;
+FetchPolicy "global.policy";
 
 # is there a per-client one?
-FetchPolicy $fqdn.policy;
+FetchPolicy "$fqdn.policy";
 
 ----
 
@@ -112,8 +111,8 @@ To get started a client needs to have :
 Once this is done cron may be used to ensure that /sbin/slaughter is invoked
 upon a regular basis.  (Hourly is a good choice.)
 
-You'll probably want to invoke it manually for the first few times as you're
-putting together your policies.
+You'll probably want to invoke slaughter manually for the first few times
+as you're putting together your policies.
 
   [*] - Alternatively you may specify these details on the command line.
         See the TRANSPORT file for some examples.
@@ -125,17 +124,20 @@ Server Layout
 
 Regardless of the transport which is in use, and examples are available in
 the included TRANSPORT file, slaughter does insist that the top-level of
-the server contain two sub-directories.
+the server contain the some fixed subdirectories.
 
 For example using the HTTP-transport the webserver should be configured to
 serve a tree which would look like this:
 
            /var/www/slaughter/
+           /var/www/slaughter/modules/
            /var/www/slaughter/policies/
            /var/www/slaughter/files/
 
 Here we see there are two specific directories:
 
+  modules/
+    This is the location of any modules which are implemented.
   policies/
     This is the location of the policies.
   files/
@@ -155,15 +157,14 @@ In Depth Operation
 ------------------
 
 The client node will first fetch the policy, which might contain
-recursive calls to include other policies via "FetchPolicy path ;".
+references to other policies to load.
 
-Once the (recursive) fetching has been completed the downloaded
+Once the policy fetching has been completed the downloaded
 content will be wrapped such that it becomes a locally executable file,
 making use of the Slaughter.pm module (this module is where the primitives
 are implemented and exported to the perl script).
 
-Finally the locally written script will be made executable and
-directly executed, before being removed.
+Finally the locally written script will be executed, before being removed.
 
 After your script(s) have executed any messages saved with the
 LogMessage function will be displayed, or sent via email.
