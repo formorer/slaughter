@@ -1,0 +1,10 @@
+
+modules/
+--------
+
+This is a directory containing sample modules.  Modules may be loaded from
+your default.policy file, and then invoked in your policy scripts.
+
+You might wish to abstract away common code such that your policy scripts
+become simpler and easier to read - that is the function of modules.
+
