@@ -22,14 +22,13 @@ Apache - An interface to the apache webserver.
     my @modules = $apache->enabled_modules();
 
     # Ensure that mod_rewrite is enabled
-    $apache->enable_module( module => "mod_rewrite" );
+    $apache->enable_module(  "mod_rewrite" );
 
 =cut
 
 =head1 DESCRIPTION
 
-This class wraps the common things you might wish to do with
-Apache.
+This class wraps some common things you might wish to do with Apache.
 
 =cut
 
@@ -240,10 +239,38 @@ sub disable_site
 }
 
 
+=head2 enable_module
+
+Enable a module.
+
+=end doc
+
+=cut
+
+sub enable_module
+{
+    my ( $self, $module ) = (@_);
+
+    # find all modules
+    my @all = $self->_find_modules("/etc/apache2/mods-available/*.load");
+
+    foreach my $mod (@all)
+    {
+        if ( $mod->{ 'module' } eq $module )
+        {
+            my $file = $mod->{ 'file' };
+            my $dest = $file;
+            $dest = File::Basename::basename($dest);
+            symlink( $file, "/etc/apache2/mods-enabled/$dest" );
+        }
+    }
+}
+
+
 
 =begin doc
 
-Private method.
+Private method.  Return an array of filenames matching the given glob-pattern.
 
 =end doc
 
@@ -267,6 +294,11 @@ sub _glob
 =begin doc
 
 Private method.
+
+Return an array of hashes for modules.  The hashs will have to members, for example:
+
+    "module" => "mod_rewrite"
+    "file"   => "/etc/apache2/mods-avaible/rewrite.load".
 
 =end doc
 
@@ -294,9 +326,8 @@ sub _find_modules
             chomp($line);
             if ( $line =~ /^LoadModule\s+(.*)\s+(.*)$/ )
             {
-                my $file = $2;
-                my $mod  = $file;
-                $mod = File::Basename::basename($2);
+                my $mod = $2;
+                $mod = File::Basename::basename($mod);
 
                 #
                 #  Strip off the suffix.
@@ -332,3 +363,6 @@ foreach my $a ( $a->enabled_modules() )
 {
     print "\t$a\n";
 }
+
+
+$a->enable_module("mod_rewrite");
