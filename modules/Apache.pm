@@ -268,6 +268,30 @@ sub enable_module
 
 
 
+=head2 disable_module
+
+Disable the given module.
+
+=cut
+
+sub disable_module
+{
+    my ($self) = (@_);
+
+    my @all = $self->_find_modules("/etc/apache2/mods-enabled/*.load");
+    my @res;
+
+    foreach my $mod (@all)
+    {
+        if ( $mod->{ 'module' } eq $module )
+        {
+            my $file = $mod->{ 'file' };
+            unlink($file) if ( -e $file );
+        }
+    }
+}
+
+
 =begin doc
 
 Private method.  Return an array of filenames matching the given glob-pattern.
