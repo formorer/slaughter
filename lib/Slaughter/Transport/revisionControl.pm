@@ -283,10 +283,15 @@ sub setup
     $cmd =~ s/#SRC#/$repo/g;
     $cmd =~ s/#DST#/$dst/g;
 
+    #
+    #  Hide output unless we're being verbose.
+    #  
+    $cmd .= " >/dev/null 2>/dev/null" unless( $self->{'verbose'} );
+
     if ( system("$cmd") != 0 )
     {
         $self->{ 'verbose' } &&
-          print "WARNING: Failed to clone repository command failed: $cmd";
+          print "WARNING: Failed to clone repository, command failed: $cmd";
     }
 }
 
