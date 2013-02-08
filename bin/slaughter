@@ -217,6 +217,7 @@ use File::Path qw/ mkpath /;
 use File::Spec;
 use File::Temp qw/ tempfile tempdir /;
 use Getopt::Long;
+use POSIX;
 use Pod::Usage;
 
 
@@ -359,6 +360,17 @@ sub defaultOptions
     # The platform/OS.
     #
     $defs{ 'os' } = $^O;
+
+    #
+    # Setup the day of the week we're currently on.
+    #
+    foreach
+      my $day (qw! monday tuesday wednesday thursday friday saturday sunday !)
+    {
+        $defs{ $day } = 0;
+    }
+    my $dow = strftime "%A", localtime;
+    $defs{ lc $dow } = 1;
 
     #
     #  Attempt to load the environment-specific module, and return the
