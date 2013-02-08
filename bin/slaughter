@@ -945,13 +945,13 @@ sub loadPolicy
                                       file   => $include );
             if ($tmp)
             {
-                $modules = "# Module inclusion - $include\n";
+                $modules .= "\n# Module inclusion - $include\n";
                 $modules .= $tmp;
                 $line = "";
             }
             else
             {
-                $modules = "# Module inclusion failed - $include\n";
+                $modules .= "\n# Module inclusion failed - $include\n";
                 $line    = "";
             }
         }
