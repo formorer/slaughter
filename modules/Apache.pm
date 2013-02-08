@@ -372,21 +372,3 @@ sub _find_modules
 
 1;
 
-
-
-my $a = Apache->new();
-
-print "available modules:\n";
-foreach my $a ( $a->available_modules() )
-{
-    print "\t$a\n";
-}
-
-print "enabled modules:\n";
-foreach my $a ( $a->enabled_modules() )
-{
-    print "\t$a\n";
-}
-
-
-$a->enable_module("mod_rewrite");
