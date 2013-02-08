@@ -245,6 +245,20 @@ parseConfigurationFile();
 #
 parseCommandLine();
 
+#
+#  If we're dumping, do that.
+#
+if ( $CONFIG{ 'dump' } )
+{
+    foreach my $var ( sort keys %CONFIG )
+    {
+        my $val = $CONFIG{ $var };
+        $val = "undefined" if ( !defined($val) );
+
+        print sprintf( "%-20s => %s", $var, $val ) . "\n";
+    }
+    exit;
+}
 
 #
 #  Create a temporary directory, some transports need such a thing.
@@ -636,15 +650,6 @@ sub parseCommandLine
         exit;
     }
 
-    #
-    #  If we're dumping, do that.
-    #
-    if ( $CONFIG{ 'dump' } )
-    {
-        use Data::Dumper;
-        print Dumper( \%CONFIG );
-        exit;
-    }
 
     #
     #  Dump transport modules
