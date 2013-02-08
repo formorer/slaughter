@@ -3,7 +3,7 @@ slaughter2 (2.5-1) stable; urgency=low
   * The git/rsync/svn/etc transports are quiet by default.
   * Module loading allows more than a single module to be loaded.
 
- -- Steve Kemp <steve@steve.org.uk>  Fru, 08 Feb 2013 11:33:11 +0000
+ -- Steve Kemp <steve@steve.org.uk>  Fri, 08 Feb 2013 11:33:11 +0000
 
 slaughter2 (2.4-1) stable; urgency=low
 

@@ -952,7 +952,7 @@ sub loadPolicy
             else
             {
                 $modules .= "\n# Module inclusion failed - $include\n";
-                $line    = "";
+                $line = "";
             }
         }
 

@@ -285,8 +285,8 @@ sub setup
 
     #
     #  Hide output unless we're being verbose.
-    #  
-    $cmd .= " >/dev/null 2>/dev/null" unless( $self->{'verbose'} );
+    #
+    $cmd .= " >/dev/null 2>/dev/null" unless ( $self->{ 'verbose' } );
 
     if ( system("$cmd") != 0 )
     {
