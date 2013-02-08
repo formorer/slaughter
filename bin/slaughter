@@ -372,6 +372,22 @@ sub defaultOptions
     my $dow = strftime "%A", localtime;
     $defs{ lc $dow } = 1;
 
+
+    #
+    #  Setup the hours
+    #
+    my $h = 0;
+    while ( $h <= 24 )
+    {
+        my $hr = sprintf "Hr%02d", $h;
+        $defs{ $hr } = 0;
+        $h += 1;
+    }
+    my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst ) =
+      localtime(time);
+    $defs{ sprintf "Hr%02d", $hour } = 1;
+
+
     #
     #  Attempt to load the environment-specific module, and return the
     # information from it.
