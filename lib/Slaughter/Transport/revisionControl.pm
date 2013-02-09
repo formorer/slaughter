@@ -98,7 +98,7 @@ For a sample implementation please consult C<Slaughter::Transport::hg>.
 
 =head1 LICENSE
 
-Copyright (c) 2012 by Steve Kemp.  All rights reserved.
+Copyright (c) 2012-2013 by Steve Kemp.  All rights reserved.
 
 This module is free software;
 you can redistribute it and/or modify it under
@@ -115,11 +115,6 @@ use warnings;
 
 package Slaughter::Transport::revisionControl;
 
-
-#
-#  For "expandPolicyInclusion".
-#
-use Slaughter::Private;
 
 
 

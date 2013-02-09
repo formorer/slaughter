@@ -25,7 +25,7 @@ Users are not expected to use, touch, browse, or modify the code in this module!
 
 =head1 LICENSE
 
-Copyright (c) 2010-2012 by Steve Kemp.  All rights reserved.
+Copyright (c) 2010-2013 by Steve Kemp.  All rights reserved.
 
 This module is free software;
 you can redistribute it and/or modify it under
@@ -178,61 +178,5 @@ sub checksumFile
     return ($hash);
 }
 
-
-
-#
-#  Handle "parsing" a FetchPolicy statement.
-#
-sub expandPolicyInclusion
-{
-    my ($line) = (@_);
-
-    my $include = undef;
-
-    #
-    #  Does it contain FetchPolicy ...;
-    #
-    if ( $line =~ /FetchPolicy(.*);*/i )
-    {
-
-        #
-        #  Get the initial value.
-        #
-        $include = $1;
-
-        #
-        #  Strip the trailing ";".
-        #
-        $include =~ s/;$//g;
-
-        #
-        #  Strip leading/trailing whitespace + quotes + "(" + ")".
-        #
-        $include =~ s/^([("' \t]+)|(['" \t)]+)$//g;
-
-    }
-
-    #
-    #  Look for variable expansion
-    #
-    if ( $include && ( $include =~ /\$/ ) )
-    {
-        $::template{ 'verbose' } && print "Expanding from: $include\n";
-
-        foreach my $key ( sort keys %::CONFIG )
-        {
-            while ( $include =~ /(.*)\$\Q$key\E(.*)/ )
-            {
-                $include = $1 . $::CONFIG{ $key } . $2;
-            }
-        }
-
-        $::template{ 'verbose' } && print "Expanded into: $include\n";
-
-    }
-
-    return ($include);
-
-}
 
 1;
