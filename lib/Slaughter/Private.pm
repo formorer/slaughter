@@ -70,6 +70,7 @@ sub fetchFromTransport
     #
     #  url.$fqdn
     #  url.$hostname
+    #  url.$role
     #  url.$os
     #  url.$arch
     #  url
@@ -80,6 +81,8 @@ sub fetchFromTransport
 
     push( @urls, $url . "." . $::fqdn );
     push( @urls, $url . "." . $::hostname );
+    push( @urls, $url . "." . $::role )
+      if ( defined($::role) && length($::role) );
     push( @urls, $url . "." . $::os );
     push( @urls, $url . "." . $::arch );
     push( @urls, $url );
