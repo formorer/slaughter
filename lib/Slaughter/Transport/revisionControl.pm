@@ -118,7 +118,6 @@ package Slaughter::Transport::revisionControl;
 
 
 
-
 =head2 new
 
 Create a new instance of this object.

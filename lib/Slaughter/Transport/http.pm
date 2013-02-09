@@ -50,7 +50,6 @@ package Slaughter::Transport::http;
 
 
 
-
 =head2 new
 
 Create a new instance of this object.
